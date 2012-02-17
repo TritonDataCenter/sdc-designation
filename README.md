@@ -64,19 +64,33 @@ Add other sections to your README as necessary. E.g. Running a demo, adding
 development data.
 
 
+# Design Ideas
+
+ * DAPI should support multiple allocation algorithms. Starting with "random"
+   and then adding scope for things like "random within this set of compute
+   nodes". 
+ * Data that DAPI shoudl take into account when selecting a machine (depending
+   on algorithm):
+     - Amount of RAM available
+     - Amount of DISK available
+     - Load (avg?) - ie, dont place new machines onto a "hot" box
+     - Is the machine being purged? Compute nodes may be in the process of
+       being shut down? (this may be a state that cnapi will just control)
+ * Users may be able to select a placement "policy". This policy will determine
+   which algorithm is used. For example, they may be building HA postgres setup.
+   They will want machines to be within the same availability zone, but not on
+   the same CN.
+ * The concept of distance between servers. If I want to be able to define a
+ * bunch of costs / weights of being close / far away in terms of physical
+ * machine placement. This includes. Same CN, Same Role, Same Rack, Different
+ * Rack, Different electrical circuit, different switch. Kind of complicated.
+ * For things like determining "distance" between compute nodes, we may want to
+   consider assigning weights to certain CN properties. ex: a different rack is
+   worth 1000, a different compute node, is worth 100. This would be like a
+   route metric - and the concept is familiar
+
 
 # TODO
 
 Remaining work for this repo:
-
-- any "TODO" or "XXX" in the repo
-- review from engineering group
-- [Trent] Finish the restdown "public" dir and other work as discussed with
-  Philip. `git rm docs/media/css`
-- Give a little starter guide on using this repo as a starter template for the
-  new repos (for NAPI, CNAPI, FWAPI, DAPI, Workflow API, ZAPI). Include
-  getting on mo.joyent.com and head.no.de/docs for this.
-- Should we spec JIRA projects for the new APIs?
-- Add the node/npm local build support a la Amon and DSAPI. I.e. deps/node
-  and deps/npm git submodules and build handling in the Makefile.
 
