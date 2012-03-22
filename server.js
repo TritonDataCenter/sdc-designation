@@ -16,6 +16,7 @@ var server = restify.createServer({
 server.log4js.setGlobalLogLevel('TRACE');
 
 
+
 // '/eggs/...' endpoints.
 var eggs = {}; // My lame in-memory database.
 server.get({path: '/eggs', name: 'ListEggs'}, function(req, res, next) {
