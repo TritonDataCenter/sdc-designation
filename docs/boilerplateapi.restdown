@@ -1,10 +1,15 @@
 ---
-title: Boilerplate API (BAPI)
+title: Designation API (ZAPI)
 apisections: Boiled Eggs
 markdown2extras: wiki-tables, code-friendly
 ---
 
-# Boilerplate API (BAPI)
+# DAPI
+
+* Repository: <git@git.joyent.com:dapi.git>
+* Browsing: <https://mo.joyent.com/dapi>
+* Who: <https://mo.joyent.com/docs/dapi>
+* Tickets/bugs: <https://devhub.joyent.com/jira/browse/DAPI>
 
 *This shows the API implemented by the example node.js server in this repo.
 The main point here is show a good way to document API endpoints. You
