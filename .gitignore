@@ -6,3 +6,5 @@ docs/*.html
 cscope.in.out
 cscope.po.out
 cscope.out
+/node_modules
+smf/manifests/dapi.xml
