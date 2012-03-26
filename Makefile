@@ -27,7 +27,7 @@ JS_FILES	:= $(shell ls *.js) $(shell find lib test -name '*.js')
 JSL_CONF_NODE	 = tools/jsl.node.conf
 JSL_FILES_NODE   = $(JS_FILES)
 JSSTYLE_FILES	 = $(JS_FILES)
-JSSTYLE_FLAGS    = -o indent=4,doxygen,unparenthesized-return=0
+JSSTYLE_FLAGS    = -o indent=2,doxygen,unparenthesized-return=0
 SMF_MANIFESTS_IN = smf/manifests/dapi.xml.in
 
 include ./tools/mk/Makefile.defs
@@ -44,6 +44,10 @@ all: $(SMF_MANIFESTS) | $(TAP) $(REPO_DEPS)
 
 $(TAP): | $(NPM_EXEC)
 	$(NPM) install
+
+  (test -d node_modules/sdc-clients || \
+	git clone git@git.joyent.com:node-sdc-clients.git node_modules/sdc-clients)
+	(cd node_modules/sdc-clients && $(NPM) install)
 
 CLEAN_FILES += $(TAP) ./node_modules/tap
 

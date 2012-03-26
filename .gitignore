@@ -8,3 +8,4 @@ cscope.po.out
 cscope.out
 /node_modules
 smf/manifests/dapi.xml
+config.json
