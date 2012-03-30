@@ -25,8 +25,8 @@ TAP		:= ./node_modules/.bin/tap
 DOC_FILES	 = index.restdown
 JS_FILES	:= $(shell ls *.js) $(shell find lib test -name '*.js')
 JSL_CONF_NODE	 = tools/jsl.node.conf
-JSL_FILES_NODE   = $(JS_FILES)
-JSSTYLE_FILES	 = $(JS_FILES)
+JSL_FILES_NODE   = server.js $(JS_FILES)
+JSSTYLE_FILES	 = server.js $(JS_FILES)
 JSSTYLE_FLAGS    = -o indent=2,doxygen,unparenthesized-return=0
 SMF_MANIFESTS_IN = smf/manifests/dapi.xml.in
 
@@ -34,6 +34,10 @@ include ./tools/mk/Makefile.defs
 include ./tools/mk/Makefile.node.defs
 include ./tools/mk/Makefile.node_deps.defs
 include ./tools/mk/Makefile.smf.defs
+
+ROOT            := $(shell pwd)
+RELEASE_TARBALL := dapi-pkg-$(STAMP).tar.bz2
+TMPDIR          := /tmp/$(STAMP)
 
 #
 # Repo-specific targets
@@ -45,11 +49,37 @@ all: $(SMF_MANIFESTS) | $(TAP) $(REPO_DEPS)
 $(TAP): | $(NPM_EXEC)
 	$(NPM) install
 
-  (test -d node_modules/sdc-clients || \
-	git clone git@git.joyent.com:node-sdc-clients.git node_modules/sdc-clients)
-	(cd node_modules/sdc-clients && $(NPM) install)
-
 CLEAN_FILES += $(TAP) ./node_modules/tap
+
+
+.PHONY: release
+release: all deps docs $(SMF_MANIFESTS)
+	@echo "Building $(RELEASE_TARBALL)"
+	@mkdir -p $(TMPDIR)/root/opt/smartdc/dapi
+	@mkdir -p $(TMPDIR)/site
+	@touch $(TMPDIR)/site/.do-not-delete-me
+	cp -r   $(ROOT)/build \
+    $(ROOT)/lib \
+    $(ROOT)/server.js \
+    $(ROOT)/Makefile \
+    $(ROOT)/node_modules \
+    $(ROOT)/package.json \
+    $(ROOT)/smf \
+    $(ROOT)/tools \
+    $(TMPDIR)/root/opt/smartdc/dapi/
+	(cd $(TMPDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
+	@rm -rf $(TMPDIR)
+
+
+.PHONY: publish
+publish: release
+	@if [[ -z "$(BITS_DIR)" ]]; then \
+    echo "error: 'BITS_DIR' must be set for 'publish' target"; \
+    exit 1; \
+  fi
+	mkdir -p $(BITS_DIR)/dapi
+	cp $(ROOT)/$(RELEASE_TARBALL) $(BITS_DIR)/dapi/$(RELEASE_TARBALL)
+
 
 .PHONY: test
 test: $(TAP)
