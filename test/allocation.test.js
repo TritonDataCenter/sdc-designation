@@ -35,10 +35,10 @@ test('Alocation OK', function (t) {
   var path = '/allocation';
   var theUuid = uuid();
 
-  var servers = [{
+  var servers = [ {
       uuid: theUuid,
       ram: 1024
-  }];
+  } ];
 
   var data = { servers: JSON.stringify(servers) };
 

@@ -7,7 +7,7 @@
 var path = require('path');
 var fs = require('fs');
 
-var DAPI = require('./lib/dapi')
+var DAPI = require('./lib/dapi');
 
 var VERSION = false;
 
@@ -35,13 +35,13 @@ function loadConfig() {
   var configPath = path.join(__dirname, 'config.json');
 
   if (!path.existsSync(configPath)) {
-    log.error('Config file not found: ' + configPath +
+    console.error('Config file not found: ' + configPath +
       ' does not exist. Aborting.');
     process.exit(1);
   }
 
-  var config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-  return config;
+  var theConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+  return theConfig;
 }
 
 var config = loadConfig();
@@ -50,7 +50,7 @@ config.version = version() || '7.0.0';
 var dapi;
 
 try {
-  dapi = new DAPI(config)
+  dapi = new DAPI(config);
   dapi.init();
 
 } catch (e) {
