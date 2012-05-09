@@ -34,10 +34,18 @@ test('setup', function (t) {
 test('Alocation OK', function (t) {
   var path = '/allocation';
   var theUuid = uuid();
+  var otherUuid = uuid();
 
   var servers = [ {
       uuid: theUuid,
-      ram: 1024
+      ram: 1024,
+      memory_total_bytes: 1073741824,
+      memory_available_bytes: 536870912
+  }, {
+      uuid: otherUuid,
+      ram: 2048,
+      memory_total_bytes: 2147483648,
+      memory_available_bytes: 1073741824
   } ];
 
   var data = { servers: JSON.stringify(servers) };
@@ -47,7 +55,7 @@ test('Alocation OK', function (t) {
     t.equal(res.statusCode, 200);
     common.checkHeaders(t, res.headers);
     t.ok(body);
-    t.equal(body.uuid, theUuid);
+    t.equal(body.uuid, otherUuid);
     t.end();
   });
 });
