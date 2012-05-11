@@ -38,14 +38,13 @@ test('Alocation OK', function (t) {
 
   var servers = [ {
       uuid: theUuid,
-      ram: 1024,
-      memory_total_bytes: 1073741824,
-      memory_available_bytes: 536870912
+      memorytotalbytes: 1073741824,
+      memoryavailablebytes: 536870912
   }, {
       uuid: otherUuid,
       ram: 2048,
-      memory_total_bytes: 2147483648,
-      memory_available_bytes: 1073741824
+      memorytotalbytes: 2147483648,
+      memoryavailablebytes: 1073741824
   } ];
 
   var data = { servers: JSON.stringify(servers) };
