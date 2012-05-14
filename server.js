@@ -65,6 +65,6 @@ dapi.on('ready', function () {
 });
 
 dapi.on('error', function (err) {
-  dapi.log.error(err, 'error connecting to UFDS. Aborting.');
+  console.error(err, 'error connecting to UFDS. Aborting.');
   process.exit(1);
 });

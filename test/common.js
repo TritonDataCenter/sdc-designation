@@ -47,7 +47,7 @@ module.exports = {
         client.basicAuth(USER, PASSWD);
 
         var ufds = new UFDS({
-            url: 'ldaps://10.99.99.15:636',
+            url: 'ldaps://10.99.99.14:636',
             bindDN: 'cn=root',
             bindPassword: 'secret'
         });
