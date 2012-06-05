@@ -12,9 +12,6 @@ var UFDS = require('sdc-clients').UFDS;
 
 // --- Globals
 
-var USER = 'admin';
-var PASSWD = 'z3cr3t';
-
 
 
 // --- Library
@@ -44,10 +41,8 @@ module.exports = {
             log: logger
         });
 
-        client.basicAuth(USER, PASSWD);
-
         var ufds = new UFDS({
-            url: 'ldaps://10.99.99.14:636',
+            url: 'ldaps://10.99.99.13:636',
             bindDN: 'cn=root',
             bindPassword: 'secret'
         });

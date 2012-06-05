@@ -1,8 +1,6 @@
 {
   "logLevel": "trace",
   "api": {
-    "username": "admin",
-    "password": "z3cr3t",
     "port": 8080
   },
   "ufds": {
