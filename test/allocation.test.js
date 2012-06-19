@@ -21,52 +21,52 @@ var client;
 // --- Tests
 
 test('setup', function (t) {
-  common.setup(function (err, _client) {
-    t.ifError(err);
-    t.ok(_client);
-    client = _client;
-    t.end();
-  });
+    common.setup(function (err, _client) {
+        t.ifError(err);
+        t.ok(_client);
+        client = _client;
+        t.end();
+    });
 });
 
 
 
 test('Alocation OK', function (t) {
-  var path = '/allocation';
-  var theUuid = uuid();
-  var otherUuid = uuid();
+    var path = '/allocation';
+    var theUuid = uuid();
+    var otherUuid = uuid();
 
-  var servers = [ {
-      uuid: uuid(),
-  }, {
-      uuid: otherUuid,
-      ram: 2048,
-      memory_total_bytes: 2147483648,
-      memory_available_bytes: 1073741824
-  }, {
-      uuid: theUuid,
-      ram: 1024,
-      memory_total_bytes: 1073741824,
-      memory_available_bytes: 536870912
-  } ];
+    var servers = [ {
+        uuid: uuid()
+    }, {
+        uuid: otherUuid,
+        ram: 2048,
+        memory_total_bytes: 2147483648,
+        memory_available_bytes: 1073741824
+    }, {
+        uuid: theUuid,
+        ram: 1024,
+        memory_total_bytes: 1073741824,
+        memory_available_bytes: 536870912
+    } ];
 
-  var data = { servers: JSON.stringify(servers) };
+    var data = { servers: JSON.stringify(servers) };
 
-  client.post(path, data, function (err, req, res, body) {
-    t.ifError(err);
-    t.equal(res.statusCode, 200);
-    common.checkHeaders(t, res.headers);
-    t.ok(body);
-    t.equal(body.uuid, otherUuid);
-    t.end();
-  });
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.equal(body.uuid, otherUuid);
+        t.end();
+    });
 });
 
 
 
 test('teardown', function (t) {
-  client.teardown(function (err) {
-    t.ifError(err);
-    t.end();
-  });
+    client.teardown(function (err) {
+        t.ifError(err);
+        t.end();
+    });
 });
