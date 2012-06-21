@@ -59,11 +59,11 @@ CLEAN_FILES += $(TAP) ./node_modules/tap
 .PHONY: release
 release: all deps docs $(SMF_MANIFESTS)
 	@echo "Building $(RELEASE_TARBALL)"
-	@mkdir -p $(TMPDIR)/root/opt/smartdc/dapi
+	@mkdir -p $(TMPDIR)/root/opt/smartdc/dapi/build
 	@mkdir -p $(TMPDIR)/site
 	@touch $(TMPDIR)/site/.do-not-delete-me
-	cp -r   $(ROOT)/build \
-    $(ROOT)/lib \
+	cp -PR $(NODE_INSTALL) $(TMPDIR)/root/opt/smartdc/dapi/build/node
+	cp -r $(ROOT)/lib \
     $(ROOT)/server.js \
     $(ROOT)/Makefile \
     $(ROOT)/node_modules \
