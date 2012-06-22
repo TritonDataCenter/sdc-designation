@@ -20,7 +20,7 @@ NODE_PREBUILT_TAG=zone
 #
 # Tools
 #
-TAP		:= ./node_modules/.bin/tap
+NODEUNIT  := ./node_modules/.bin/nodeunit
 
 #
 # Files
@@ -86,8 +86,8 @@ publish: release
 
 
 .PHONY: test
-test: $(TAP)
-	TAP=1 $(TAP) test/*.test.js
+test: $(NODEUNIT)
+	$(NODEUNIT) test/allocation.test.js
 
 include ./tools/mk/Makefile.deps
 include tools/mk/Makefile.node_prebuilt.targ

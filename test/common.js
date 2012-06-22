@@ -41,25 +41,7 @@ module.exports = {
             log: logger
         });
 
-        var ufds = new UFDS({
-            url: 'ldaps://10.99.99.13:636',
-            bindDN: 'cn=root',
-            bindPassword: 'secret'
-        });
-
-        ufds.on('error', function (err) {
-            return callback(err);
-        });
-
-        ufds.on('ready', function () {
-            client.ufds = ufds;
-            client.teardown = function teardown(cb) {
-                ufds.close(function () {});
-                return cb(null);
-            };
-
-            return callback(null, client);
-        });
+        return callback(null, client);
     },
 
     checkHeaders: function (t, headers) {

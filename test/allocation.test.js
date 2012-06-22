@@ -6,6 +6,7 @@
 
 var test = require('tap').test;
 var uuid = require('node-uuid');
+var assert = require('assert');
 
 var common = require('./common');
 
@@ -20,18 +21,18 @@ var client;
 
 // --- Tests
 
-test('setup', function (t) {
+exports.setUp =  function(callback) {
     common.setup(function (err, _client) {
-        t.ifError(err);
-        t.ok(_client);
+        assert.ifError(err);
+        assert.ok(_client);
         client = _client;
-        t.end();
+        callback();
     });
-});
+};
 
 
 
-test('Alocation OK', function (t) {
+exports.allocation_ok = function(t) {
     var path = '/allocation';
     var theUuid = uuid();
     var otherUuid = uuid();
@@ -50,7 +51,7 @@ test('Alocation OK', function (t) {
         memory_available_bytes: 536870912
     } ];
 
-    var data = { servers: JSON.stringify(servers) };
+    var data = { servers: servers, vm: { ram: 256 } };
 
     client.post(path, data, function (err, req, res, body) {
         t.ifError(err);
@@ -58,15 +59,39 @@ test('Alocation OK', function (t) {
         common.checkHeaders(t, res.headers);
         t.ok(body);
         t.equal(body.uuid, otherUuid);
-        t.end();
+        t.done();
     });
-});
+};
 
 
 
-test('teardown', function (t) {
-    client.teardown(function (err) {
-        t.ifError(err);
-        t.end();
+exports.allocation_not_ok = function(t) {
+    var path = '/allocation';
+    var theUuid = uuid();
+    var otherUuid = uuid();
+
+    var servers = [ {
+        uuid: uuid()
+    }, {
+        uuid: otherUuid,
+        ram: 2048,
+        memory_total_bytes: 2147483648,
+        memory_available_bytes: 1073741824
+    }, {
+        uuid: theUuid,
+        ram: 1024,
+        memory_total_bytes: 1073741824,
+        memory_available_bytes: 536870912
+    } ];
+
+    var data = { servers: servers, vm: { ram: 2048 } };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.done();
     });
-});
+};
+
+
