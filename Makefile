@@ -47,13 +47,13 @@ TMPDIR          := /tmp/$(STAMP)
 # Repo-specific targets
 #
 .PHONY: all
-all: $(SMF_MANIFESTS) | $(TAP) $(REPO_DEPS)
+all: $(SMF_MANIFESTS) | $(NODEUNIT) $(REPO_DEPS)
 	$(NPM) rebuild
 
-$(TAP): | $(NPM_EXEC)
+$(NODEUNIT): | $(NPM_EXEC)
 	$(NPM) install
 
-CLEAN_FILES += $(TAP) ./node_modules/tap
+CLEAN_FILES += $(NODEUNIT) ./node_modules/tap
 
 
 .PHONY: release
