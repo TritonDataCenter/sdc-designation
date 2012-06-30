@@ -42,11 +42,13 @@ exports.allocation_ok = function(t) {
     }, {
         uuid: otherUuid,
         ram: 2048,
+        setup: true,
         memory_total_bytes: 2147483648,
         memory_available_bytes: 1073741824
     }, {
         uuid: theUuid,
         ram: 1024,
+        setup: true,
         memory_total_bytes: 1073741824,
         memory_available_bytes: 536870912
     } ];
