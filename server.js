@@ -47,24 +47,7 @@ function loadConfig() {
 var config = loadConfig();
 config.version = version() || '7.0.0';
 
-var dapi;
+var dapi = new DAPI(config);
 
-try {
-    dapi = new DAPI(config);
-    dapi.init();
-
-} catch (e) {
-    console.error('Invalid UFDS config: ' + e.message);
-    process.exit(1);
-}
-
-
-
-dapi.on('ready', function () {
-    dapi.listen();
-});
-
-dapi.on('error', function (err) {
-    console.error(err, 'error connecting to UFDS. Aborting.');
-    process.exit(1);
-});
+dapi.init();
+dapi.listen();

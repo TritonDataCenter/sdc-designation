@@ -4,7 +4,6 @@
 
 /* Test the Boilerplate API endpoints */
 
-var test = require('tap').test;
 var uuid = require('node-uuid');
 var assert = require('assert');
 
