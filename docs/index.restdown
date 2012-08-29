@@ -1,6 +1,6 @@
 ---
 title: Designation API (DAPI)
-apisections: Boiled Eggs
+apisections: Allocation, Allocation Algorithms, Changelog
 markdown2extras: wiki-tables, code-friendly
 ---
 
@@ -8,7 +8,8 @@ markdown2extras: wiki-tables, code-friendly
 
 * Repository: git@git.joyent.com:dapi.git
 * Browsing: <https://mo.joyent.com/dapi>
-* Who: <https://mo.joyent.com/docs/dapi>
+* Docs: <https://mo.joyent.com/docs/dapi>
+* Who: Andres Rodriguez
 * Tickets/bugs: <https://devhub.joyent.com/jira/browse/DAPI>
 
 
@@ -48,34 +49,215 @@ dataset required, and quota. (At least).
 
 # Getting Started
 
+DAPI can run without any other SDC dependency. Since its purpose is to be able to allocate a VM on a server, DAPI should only rely in the request parameters in order to work correctly. With this in mind, a DAPI instance can run on any SmartOS machine for testing purposes without a full SDC install.
+
     # Get the source and build.
     git clone git@git.joyent.com:dapi.git
     cd dapi/
     make all
 
     # Setup config.
-    # Note that there is a dependency on a headnode instance with a running UFDS
-    cp config.mac.json config.json
+    cp config.coal.json config.json
+    # Edit config as needed
     vi config.json
 
     # node server.js
 
 
-# Boiled Eggs
+# Allocation
 
-{{Overview of this section of the API.}}
-
-## CreateEgg (POST /eggs)
-
-TODO
-
-## ListEggs (GET /eggs)
-
-TODO
-
-## GetEgg (GET /eggs/:uuid)
-
-TODO
+Currently, there are only two parameters required for allocating a VM to a server: VM payload and servers list. The allocation criteria depends only on the allocation algorithm chosen to be used, as we'll see later. Although we can freely choose which of the VM and/or server properties are considered for allocation, the request parameters must be valid in order for an allocation algorithm to run.
 
 
+## VM Payload
 
+As DAPI is still a work in progres, there is no definitive list of parameters for a VM payload to be valid yet. But in order to keep things simple, there is only one VM property that needs to be present in the payload for it to be valid: ***ram*** (in megabytes).
+
+The following are a couple of valid VM payload examples, note that as long as the ***ram*** attribute is present, the object will pass validation. Eventually we might consider more optional/required parameters that need to be considered as part of the VM payload.
+
+**NOTE**
+
+The RAM value is expected to be in megabytes.
+
+    # Simplest example
+
+    {
+      ram: 2048
+    }
+
+    # More complete VM payload, similar to `vmadm get <uuid>`
+
+    {
+      "uuid": "ef375f03-57ca-44a9-bc8d-63aec09fbc37",
+      "brand": "joyent",
+      "dataset_uuid": "01b2c898-945f-11e1-a523-af1afbe22822",
+      "image_uuid": "01b2c898-945f-11e1-a523-af1afbe22822",
+      "server_uuid": "564d6836-ed2e-18f8-bdf2-e900490a57a1",
+      "alias": "assets1",
+      "ram": 64,
+      "max_physical_memory": 64,
+      "max_swap": 256,
+      "quota": 10240,
+      "cpu_cap": 100,
+      "cpu_shares": 1,
+      "max_lwps": 1000,
+      "create_timestamp": "2012-05-16T23:33:09.809Z",
+      "destroyed": "",
+      "last_modified": "2012-05-16T23:33:12.000Z",
+      "zone_state": "running",
+      "state": "running",
+      "zpool": "zones",
+      "zfs_io_priority": 10,
+      "owner_uuid": "930896af-bf8c-48d4-885c-6573a94b1853",
+      "nics": [],
+      "customer_metadata": {},
+      "internal_metadata": {},
+      "tags": {}
+    }
+
+
+## Servers Payload
+
+The same way the VM payload follows the format that vmadm provides, the servers payload that is required by the allocation endpoint is expected to be CNAPI "compatible". CNAPI is the entity that manages and exposes all the information related to servers in an SDC install and therefore it should provide the standard representation for a server object.
+
+In contrast to VMs, server payloads are more strictly validated but the request is not necessarily rejected. A server object does only need to have an UUID to be a valid server payload, and a list of servers needs to be provided as a parameter. This means that the following is a valid servers list payload:
+
+    [
+      { uuid: <uuid1> },
+      { uuid: <uuid2> },
+      { uuid: <uuid3> }
+    ]
+
+However, this will result in DAPI returning a 409 response, since none of those servers are eligible for allocation. What makes a server eligible for inclusion in an allocation algorithm are the following attributes:
+
+|| **Attribute** || **Description** ||
+|| memory_available_bytes || Available memory in bytes ||
+|| memory_total_bytes || Total memory in bytes ||
+|| reserved || Reserved servers are not eligible ||
+|| setup || Unsetup servers are not eligible ||
+
+**NOTE**
+
+After these attributes are checked, a server's available memory value is tested to confirm that it has enough memory for the VM that needs to be provisioned. If this validation fails then the server is not eligible.
+
+The previous table implies that if 3 servers were passed in the request but only two were eligible, they would be the ones being passed to the allocation algorithm ignoring the rest. This is important so that API clients can provide a full list of servers from CNAPI not caring about which servers are actually in a provisionable state. The following is an example showing two eligible server objects:
+
+    [
+      {
+        uuid: <uuid1>,
+        ram: 2048,
+        memory_total_bytes: 2147483648,
+        memory_available_bytes: 1073741824
+      }, {
+        uuid: <uuid2>,
+        ram: 1024,
+        memory_total_bytes: 1073741824,
+        memory_available_bytes: 536870912
+      }
+    ]
+
+
+
+## Allocate Endpoint (POST /allocation)
+
+Unique endpoint for allocating a VM to a server.
+
+Both of the following inputs are required.
+
+||**Param**||**Type**||**Description**||
+||vm||Object||VM Payload, see "VM Payload" above||
+||servers||Object||List of servers, see "Servers Payload" above||
+
+### Programmatic Example
+
+    var servers = [ {
+        uuid: '7b23cf5d-eb2d-4f33-a956-92331cff3f34',
+        ram: 2048,
+        memory_total_bytes: 2147483648,
+        memory_available_bytes: 1073741824
+    }, {
+        uuid: '42bdc6c3-0e57-4f74-a0af-29186afa3553',
+        ram: 1024,
+        memory_total_bytes: 1073741824,
+        memory_available_bytes: 536870912
+    } ];
+
+    var data = { servers: servers, vm: { ram: 2048 } };
+
+    restify.post('/allocation', data, function (err, req, res, server) {
+        assert.ok(server);
+    });
+
+
+# Allocation Algorithms
+
+DAPI provides the ability for users to install custom allocation algorithms and test several allocation strategies without the need to modify the application source code. By default, and if DAPI's configuration file doesn't specify any algorithm, random allocation will be used. This is, from all the valid servers passed in the request, DAPI will choose a random one from the list that satisfy the minimum condition of enough space for the VM in question.
+
+This works, however it is not recommended if we want to allocate space for new VMs accordingly. DAPI comes with a simple "most ram" allocation algorithm and it can be activated by specifying it in the application configuration file (if not already there):
+
+    ...
+    "algorithms": ["most-ram"],
+    ...
+
+And placing its source code under
+
+    $DAPI_ROOT/lib/algorithms/
+
+
+The "algorithms" key value in the configuration file must be an array because DAPI provides the ability to use several algorithms at the same time. Some users might find it useful to have a list of prioritized algorithms when it is expected that any of them might not find a suitable server. In this case, the first algorithm in the array gets executed first. If a server it's returned, the rest of the algorithms won't be executed. If no server it's returned, the next algorithm will be executed until one of them returns a server object. If all algorithms have run and no suitable server was found DAPI will return a 409 response specifying that no suitable servers were found in the request.
+
+
+## Algorithm Structure
+
+Taking a closer look at the "most-ram" example source code, we can identify the structure that allocation algorithms must satfisty in order to be usable by DAPI. Note that DAPI has an algorithm structure validation code as part of the application initialization process, so that users can identify problems in their algorithms at load time.
+
+The simplest allocation algorithm looks like this:
+
+    function run(servers) {
+        return servers[0];
+    }
+
+    module.exports = {
+      name: 'Simple',
+      run: run
+    };
+
+From this, we can infer a list the requirements for a DAPI allocation algorithm:
+
+1. The file exports must be an object with the properties name and run
+2. **name** must be a string
+3. **run** must be a function
+4. The only parameter that is currently being passed to the run funcion is a list of servers
+5. DAPI makes sure to pass a non-empty list of servers to the run function, if the servers list was empty, then DAPI would not call any algorithm at all
+6. **run** is currently sync only (async support will be added eventually upon requirements)
+7. **run** functions should only return two possible values: a null/undefined/false object or a server object that was picked from the list
+8. A null/undefined/false response is interpreted by DAPI as "no suitable server found"
+
+As an additional example let's take a look at the most-ram algorithm:
+
+    function mostAvailableRam(servers) {
+        var maxRam = -1;
+        var maxIndex = -1;
+        var i;
+
+        for (i = 0; i < servers.length; i++) {
+            if (servers[i].memory_available_bytes > maxRam) {
+                maxRam = servers[i].memory_available_bytes;
+                maxIndex = i;
+            }
+        }
+
+        return servers[maxIndex];
+    }
+
+    module.exports = {
+      name: 'Most available RAM',
+      run: mostAvailableRam
+    };
+
+
+# Changelog
+
+## 2012-06-22
+
+  * /allocation now takes a VM payload parameter
