@@ -5,6 +5,7 @@
   "author": "Andres Rodriguez (joyent.com)",
   "private": true,
   "dependencies": {
+    "dtrace-provider": "0.0.7",
     "restify": "1.4.2",
     "node-uuid": "1.2.0",
     "filed": "0.0.5",

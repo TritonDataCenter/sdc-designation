@@ -2,6 +2,9 @@
   "name": "dapi",
   "version": "7.0.0",
   "dependencies": {
+    "dtrace-provider": {
+      "version": "0.0.7"
+    },
     "restify": {
       "version": "1.4.2",
       "dependencies": {
@@ -13,9 +16,6 @@
         },
         "formidable": {
           "version": "1.0.9"
-        },
-        "dtrace-provider": {
-          "version": "0.0.6"
         },
         "http-signature": {
           "version": "0.9.9",
