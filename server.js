@@ -51,7 +51,6 @@ function main() {
     config.version = version();
 
     var dapi = new DAPI(config);
-    dapi.init();
     dapi.listen();
 }
 
