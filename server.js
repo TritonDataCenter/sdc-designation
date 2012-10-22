@@ -4,7 +4,6 @@
  * Main entry-point for the Designation API.
  */
 
-var path = require('path');
 var fs = require('fs');
 
 var DAPI = require('./lib/dapi');
@@ -32,9 +31,9 @@ function version() {
  * Loads and parse the configuration file at config.json
  */
 function loadConfig() {
-    var configPath = path.join(__dirname, 'config.json');
+    var configPath = __dirname + '/config.json';
 
-    if (!path.existsSync(configPath)) {
+    if (!fs.existsSync(configPath)) {
         console.error('Config file not found: ' + configPath +
           ' does not exist. Aborting.');
         process.exit(1);
