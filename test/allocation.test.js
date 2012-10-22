@@ -20,7 +20,7 @@ var client;
 
 // --- Tests
 
-exports.setUp =  function(callback) {
+exports.setUp =  function (callback) {
     common.setup(function (err, _client) {
         assert.ifError(err);
         assert.ok(_client);
@@ -31,7 +31,7 @@ exports.setUp =  function(callback) {
 
 
 
-exports.allocation_ok = function(t) {
+exports.allocation_ok = function (t) {
     var path = '/allocation';
     var theUuid = uuid();
     var otherUuid = uuid();
@@ -66,7 +66,7 @@ exports.allocation_ok = function(t) {
 
 
 
-exports.allocation_not_ok = function(t) {
+exports.allocation_not_ok = function (t) {
     var path = '/allocation';
     var theUuid = uuid();
     var otherUuid = uuid();
@@ -94,5 +94,3 @@ exports.allocation_not_ok = function(t) {
         t.done();
     });
 };
-
-
