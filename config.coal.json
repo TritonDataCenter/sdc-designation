@@ -1,6 +1,5 @@
 {
   "logLevel": "trace",
-  "algorithms": ["filter-min-ram", "sort-ram", "pick-first"],
   "api": {
     "port": 8080
   }
