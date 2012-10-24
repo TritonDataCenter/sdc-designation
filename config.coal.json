@@ -1,6 +1,6 @@
 {
   "logLevel": "trace",
-  "algorithms": ["most-ram"],
+  "algorithms": ["sort-ram", "pick-first"],
   "api": {
     "port": 8080
   }
