@@ -87,7 +87,7 @@ publish: release
 
 .PHONY: test
 test: $(NODEUNIT)
-	$(NODEUNIT) test/allocation.test.js
+	$(NODEUNIT) test/*.test.js test/algorithms/*.test.js
 
 include ./tools/mk/Makefile.deps
 include tools/mk/Makefile.node_prebuilt.targ

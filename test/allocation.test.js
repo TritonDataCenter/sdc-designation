@@ -6,19 +6,13 @@
 
 var uuid = require('node-uuid');
 var assert = require('assert');
-
 var common = require('./common');
 
 
-// --- Globals
 
 var client;
 
 
-// --- Helpers
-
-
-// --- Tests
 
 exports.setUp =  function (callback) {
     common.setup(function (err, _client) {
