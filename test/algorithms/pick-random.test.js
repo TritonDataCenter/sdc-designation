@@ -18,8 +18,8 @@ function (t) {
     var pickedServers = [];
 
     for (var i = 0; i != 60; i++) {
-        var pickedServer = picker.run(givenServers);
-        var ram = pickedServer.memory_available_bytes;
+        var server = picker.run(givenServers)[0];
+        var ram = server.memory_available_bytes;
         pickedServers[ram] = true;
 
         t.ok(ram === 256 || ram === 512 || ram === 768);
@@ -35,8 +35,8 @@ function (t) {
 exports.pickRandom_with_no_servers =
 function (t) {
     for (var i = 0; i != 5; i++) {
-        var pickedServer = picker.run([]);
-        t.equal(pickedServer, null);
+        var pickedServers = picker.run([]);
+        t.deepEqual(pickedServers, []);
     }
 
     t.done();
