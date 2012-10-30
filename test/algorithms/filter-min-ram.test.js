@@ -10,10 +10,10 @@ var filter = require('../../lib/algorithms/filter-min-ram.js');
 exports.filterMinRam =
 function (t) {
     var givenServers = [
-        { memory_available_bytes: 256 },
-        { memory_available_bytes: 511 },
-        { memory_available_bytes: 512 },
-        { memory_available_bytes: 768 }
+        { memory_available_bytes: 256 * 1024 * 1024 },
+        { memory_available_bytes: 511 * 1024 * 1024 },
+        { memory_available_bytes: 512 * 1024 * 1024 },
+        { memory_available_bytes: 768 * 1024 * 1024 }
     ];
 
     var expectedServers = givenServers.slice(2, 4);
