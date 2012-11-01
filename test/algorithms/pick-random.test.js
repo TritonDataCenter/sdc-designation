@@ -5,6 +5,8 @@
 var assert = require('assert');
 var picker = require('../../lib/algorithms/pick-random.js');
 
+var log = { trace: function () {}, debug: function () {} };
+
 
 
 exports.pickRandom =
@@ -18,7 +20,7 @@ function (t) {
     var pickedServers = [];
 
     for (var i = 0; i != 60; i++) {
-        var server = picker.run(givenServers)[0];
+        var server = picker.run(log, givenServers)[0];
         var ram = server.memory_available_bytes;
         pickedServers[ram] = true;
 
@@ -35,7 +37,7 @@ function (t) {
 exports.pickRandom_with_no_servers =
 function (t) {
     for (var i = 0; i != 5; i++) {
-        var pickedServers = picker.run([]);
+        var pickedServers = picker.run(log, []);
         t.deepEqual(pickedServers, []);
     }
 

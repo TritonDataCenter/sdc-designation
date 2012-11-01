@@ -5,6 +5,8 @@
 var assert = require('assert');
 var filter = require('../../lib/algorithms/filter-running.js');
 
+var log = { trace: function () {}, debug: function () {} };
+
 
 
 exports.filterRunning =
@@ -18,7 +20,7 @@ function (t) {
 
     var expectedServers = givenServers.slice(1, 3);
 
-    var filteredServers = filter.run(givenServers);
+    var filteredServers = filter.run(log, givenServers);
     t.deepEqual(filteredServers, expectedServers);
 
     t.done();
@@ -28,7 +30,7 @@ function (t) {
 
 exports.filterRunning_with_no_servers =
 function (t) {
-    var filteredServers = filter.run([]);
+    var filteredServers = filter.run(log, []);
     t.equal(filteredServers.length, 0);
 
     t.done();

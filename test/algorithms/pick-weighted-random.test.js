@@ -5,6 +5,8 @@
 var assert = require('assert');
 var picker = require('../../lib/algorithms/pick-weighted-random.js');
 
+var log = { trace: function () {}, debug: function () {} };
+
 
 
 exports.pickWeightedRandom_with_many_servers =
@@ -25,7 +27,7 @@ function (t) {
 
     var iterations = numServers * weightRatio * iterPerServer;
     for (i = 0; i != iterations; i++) {
-        var servers = picker.run(givenServers);
+        var servers = picker.run(log, givenServers);
         t.equal(servers.length, 1);
 
         var index = servers[0].index;
@@ -51,7 +53,7 @@ function (t) {
     var givenServers = [ { memory_available_bytes: 256 } ];
 
     for (var i = 0; i != 60; i++) {
-        var pickedServers = picker.run(givenServers);
+        var pickedServers = picker.run(log, givenServers);
         t.equal(pickedServers.length, 1);
         t.deepEqual(pickedServers[0], givenServers[0]);
     }
@@ -64,7 +66,7 @@ function (t) {
 exports.pickWeightedRandom_with_no_servers =
 function (t) {
     for (var i = 0; i != 60; i++) {
-        var pickedServers = picker.run([]);
+        var pickedServers = picker.run(log, []);
         t.deepEqual(pickedServers, []);
     }
 

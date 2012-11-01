@@ -5,7 +5,7 @@
 var assert = require('assert');
 var sorter = require('../../lib/algorithms/sort-2adic.js');
 
-
+var log = { trace: function () {}, debug: function () {} };
 
 var givenServers = [];
 
@@ -30,7 +30,7 @@ function init() {
 
 
 function check(t, requestedRam, expectedRams) {
-    var sortedServers = sorter.run(givenServers, requestedRam);
+    var sortedServers = sorter.run(log, givenServers, requestedRam);
 
     var sortedRams = sortedServers.map(function (server) {
         var ram = server.memory_available_bytes;

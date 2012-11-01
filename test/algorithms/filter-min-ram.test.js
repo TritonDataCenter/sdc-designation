@@ -5,6 +5,8 @@
 var assert = require('assert');
 var filter = require('../../lib/algorithms/filter-min-ram.js');
 
+var log = { trace: function () {}, debug: function () {} };
+
 
 
 exports.filterMinRam =
@@ -18,7 +20,7 @@ function (t) {
 
     var expectedServers = givenServers.slice(2, 4);
 
-    var filteredServers = filter.run(givenServers, 512);
+    var filteredServers = filter.run(log, givenServers, 512);
     t.deepEqual(filteredServers, expectedServers);
 
     t.done();
@@ -28,7 +30,7 @@ function (t) {
 
 exports.filterMinRam_with_no_servers =
 function (t) {
-    var filteredServers = filter.run([], 512);
+    var filteredServers = filter.run(log, [], 512);
     t.equal(filteredServers.length, 0);
 
     t.done();

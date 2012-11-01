@@ -5,7 +5,7 @@
 var assert = require('assert');
 var filter = require('../../lib/algorithms/filter-vlans.js');
 
-
+var log = { trace: function () {}, debug: function () {} };
 
 var servers = [
     {
@@ -58,7 +58,7 @@ var servers = [
 
 
 function test(t, vlans, expectedUuids) {
-    var filteredServers = filter.run(servers, null, vlans);
+    var filteredServers = filter.run(log, servers, null, vlans);
     var serverUuids = filteredServers.map(function (s) { return s.uuid; });
 
     t.deepEqual(serverUuids.sort(), expectedUuids);
@@ -111,7 +111,7 @@ function (t) {
 
 exports.filterVlans_with_no_servers =
 function (t) {
-    var filteredServers = filter.run([], null, ['admin']);
+    var filteredServers = filter.run(log, [], null, ['admin']);
     t.equal(filteredServers.length, 0);
 
     t.done();

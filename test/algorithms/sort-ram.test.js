@@ -5,6 +5,8 @@
 var assert = require('assert');
 var sorter = require('../../lib/algorithms/sort-ram.js');
 
+var log = { trace: function () {}, debug: function () {} };
+
 
 
 exports.sortRam =
@@ -21,7 +23,7 @@ function (t) {
         { memory_available_bytes: 256 }
     ];
 
-    var sortedServers = sorter.run(givenServers);
+    var sortedServers = sorter.run(log, givenServers);
     t.deepEqual(sortedServers, expectedServers);
 
     t.done();

@@ -5,6 +5,8 @@
 var assert = require('assert');
 var filter = require('../../lib/algorithms/filter-reserved.js');
 
+var log = { trace: function () {}, debug: function () {} };
+
 
 
 exports.filterReserved =
@@ -19,7 +21,7 @@ function (t) {
 
     var expectedServers = [ givenServers[0], givenServers[3] ];
 
-    var filteredServers = filter.run(givenServers);
+    var filteredServers = filter.run(log, givenServers);
     t.deepEqual(filteredServers, expectedServers);
 
     t.done();
@@ -29,7 +31,7 @@ function (t) {
 
 exports.filterReserved_with_no_servers =
 function (t) {
-    var filteredServers = filter.run([]);
+    var filteredServers = filter.run(log, []);
     t.equal(filteredServers.length, 0);
 
     t.done();
