@@ -3,7 +3,7 @@
  */
 
 var assert = require('assert');
-var filter = require('../../lib/algorithms/filter-reserved.js');
+var filter = require('../../lib/algorithms/hard-filter-reserved.js');
 
 var log = { trace: function () {}, debug: function () {} };
 

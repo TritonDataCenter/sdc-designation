@@ -3,7 +3,7 @@
  */
 
 var assert = require('assert');
-var filter = require('../../lib/algorithms/filter-min-ram.js');
+var filter = require('../../lib/algorithms/hard-filter-min-ram.js');
 
 var log = { trace: function () {}, debug: function () {} };
 
