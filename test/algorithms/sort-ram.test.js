@@ -23,8 +23,12 @@ function (t) {
         { memory_available_bytes: 256 }
     ];
 
-    var sortedServers = sorter.run(log, givenServers);
+    var state = {};
+
+    var sortedServers = sorter.run(log, state, givenServers);
+
     t.deepEqual(sortedServers, expectedServers);
+    t.deepEqual(state, {});
 
     t.done();
 };

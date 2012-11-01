@@ -20,9 +20,12 @@ function (t) {
     ];
 
     var expectedServers = [ givenServers[0], givenServers[3] ];
+    var state = {};
 
-    var filteredServers = filter.run(log, givenServers);
+    var filteredServers = filter.run(log, state, givenServers);
+
     t.deepEqual(filteredServers, expectedServers);
+    t.deepEqual(state, {});
 
     t.done();
 };
@@ -31,8 +34,12 @@ function (t) {
 
 exports.filterReserved_with_no_servers =
 function (t) {
-    var filteredServers = filter.run(log, []);
+    var state = {};
+
+    var filteredServers = filter.run(log, state, []);
+
     t.equal(filteredServers.length, 0);
+    t.deepEqual(state, {});
 
     t.done();
 };

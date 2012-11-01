@@ -30,7 +30,8 @@ function init() {
 
 
 function check(t, requestedRam, expectedRams) {
-    var sortedServers = sorter.run(log, givenServers, requestedRam);
+    var state = {};
+    var sortedServers = sorter.run(log, state, givenServers, requestedRam);
 
     var sortedRams = sortedServers.map(function (server) {
         var ram = server.memory_available_bytes;
@@ -39,6 +40,7 @@ function check(t, requestedRam, expectedRams) {
     });
 
     t.deepEqual(sortedRams, expectedRams);
+    t.deepEqual(state, {});
 
     t.done();
 }

@@ -58,10 +58,13 @@ var servers = [
 
 
 function test(t, vlans, expectedUuids) {
-    var filteredServers = filter.run(log, servers, null, vlans);
+    var state = {};
+    var filteredServers = filter.run(log, state, servers, null, vlans);
+
     var serverUuids = filteredServers.map(function (s) { return s.uuid; });
 
     t.deepEqual(serverUuids.sort(), expectedUuids);
+    t.deepEqual(state, {});
 }
 
 
@@ -111,8 +114,12 @@ function (t) {
 
 exports.filterVlans_with_no_servers =
 function (t) {
-    var filteredServers = filter.run(log, [], null, ['admin']);
+    var state = {};
+
+    var filteredServers = filter.run(log, state, [], null, ['admin']);
+
     t.equal(filteredServers.length, 0);
+    t.deepEqual(state, {});
 
     t.done();
 };

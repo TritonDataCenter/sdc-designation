@@ -19,9 +19,12 @@ function (t) {
     ];
 
     var expectedServers = givenServers.slice(2, 4);
+    var state = {};
 
-    var filteredServers = filter.run(log, givenServers, 512);
+    var filteredServers = filter.run(log, state, givenServers, 512);
+
     t.deepEqual(filteredServers, expectedServers);
+    t.deepEqual(state, {});
 
     t.done();
 };
@@ -30,8 +33,12 @@ function (t) {
 
 exports.filterMinRam_with_no_servers =
 function (t) {
-    var filteredServers = filter.run(log, [], 512);
+    var state = {};
+
+    var filteredServers = filter.run(log, state, [], 512);
+
     t.equal(filteredServers.length, 0);
+    t.deepEqual(state, {});
 
     t.done();
 };
