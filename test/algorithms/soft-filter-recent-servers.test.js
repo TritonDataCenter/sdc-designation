@@ -107,7 +107,7 @@ function (t) {
     filter.post(log, state, server);
 
     t.equal(Object.keys(state.recent_servers).length, 1);
-    t.ok(state.recent_servers[server.uuid] <= now);
+    t.ok(state.recent_servers[server.uuid] >= now);
 
     t.done();
 };
