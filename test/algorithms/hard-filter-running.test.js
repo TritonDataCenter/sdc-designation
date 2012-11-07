@@ -2,7 +2,6 @@
  * Copyright (c) 2012, Joyent, Inc. All rights reserved.
  */
 
-var assert = require('assert');
 var filter = require('../../lib/algorithms/hard-filter-running.js');
 
 var log = { trace: function () {}, debug: function () {} };

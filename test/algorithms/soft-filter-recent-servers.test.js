@@ -2,7 +2,6 @@
  * Copyright (c) 2012, Joyent, Inc. All rights reserved.
  */
 
-var assert = require('assert');
 var uuid = require('node-uuid');
 var filter = require('../../lib/algorithms/soft-filter-recent-servers.js');
 
