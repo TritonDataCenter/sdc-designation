@@ -1,8 +1,10 @@
 /*
  * Copyright (c) 2012, Joyent, Inc. All rights reserved.
  *
- * Main entry-point for the Designation API.
+ * Starts up a process which answers HTTP requests for server allocations.
  */
+
+
 
 var fs   = require('fs');
 var DAPI = require('./lib/dapi');

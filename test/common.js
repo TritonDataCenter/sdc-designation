@@ -1,4 +1,11 @@
-// Copyright 2011 Joyent, Inc.  All rights reserved.
+/*
+ * Copyright 2011 Joyent, Inc.  All rights reserved.
+ *
+ * Grab-bag of common functions.
+ */
+
+
+
 var assert = require('assert');
 var crypto = require('crypto');
 
@@ -7,12 +14,6 @@ var restify = require('restify');
 var uuid = require('node-uuid');
 
 
-
-// --- Globals
-
-
-
-// --- Library
 
 module.exports = {
 
