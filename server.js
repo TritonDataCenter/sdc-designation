@@ -7,7 +7,7 @@
 
 
 var fs   = require('fs');
-var DAPI = require('./lib/dapi');
+var HTTP = require('./lib/http-interface');
 
 var CONFIG_PATH  = __dirname + '/config.json';
 var PACKAGE_PATH = __dirname + '/package.json';
@@ -52,8 +52,8 @@ function main() {
     var config = loadConfig();
     config.version = version();
 
-    var dapi = new DAPI(config);
-    dapi.listen();
+    var http = new HTTP(config);
+    http.listen();
 }
 
 
