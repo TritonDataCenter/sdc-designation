@@ -110,3 +110,11 @@ function (t) {
 
     check(t, 64 * 1024, expectedRams);
 };
+
+
+
+exports.name =
+function (t) {
+    t.ok(typeof (sorter.name) === 'string');
+    t.done();
+};

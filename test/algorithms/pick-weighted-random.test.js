@@ -81,3 +81,11 @@ function (t) {
 
     t.done();
 };
+
+
+
+exports.name =
+function (t) {
+    t.ok(typeof (picker.name) === 'string');
+    t.done();
+};

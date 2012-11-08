@@ -41,3 +41,11 @@ function (t) {
 
     t.done();
 };
+
+
+
+exports.name =
+function (t) {
+    t.ok(typeof (filter.name) === 'string');
+    t.done();
+};
