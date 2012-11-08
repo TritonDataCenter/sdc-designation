@@ -12,13 +12,11 @@ exports.filterReserved =
 function (t) {
     var givenServers = [
         { memory_available_bytes: 128, reserved: false   },
-        { memory_available_bytes: 256, reserved: 'true'  },
         { memory_available_bytes: 384                    },
-        { memory_available_bytes: 512, reserved: 'false' },
         { memory_available_bytes: 768, reserved: true    }
     ];
 
-    var expectedServers = [ givenServers[0], givenServers[3] ];
+    var expectedServers = givenServers.slice(0, 2);
     var state = {};
 
     var filteredServers = filter.run(log, state, givenServers);
