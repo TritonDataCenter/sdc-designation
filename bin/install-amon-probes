@@ -124,3 +124,19 @@ putprobe $account "{
     }
 }"
 
+# raise an alarm if server objects are being filtered out of requests
+# because they are malformed
+putprobe $account "{
+    \"skipauthz\": true,
+    \"group\": \"$group_uuid\",
+    \"name\": \"dapi saw malformed server object in request\",
+    \"type\": \"log-scan\",
+    \"agent\": \"$zonename\",
+    \"config\": {
+        \"path\": \"/var/svc/log/smartdc-site-dapi:default.log\",
+        \"match\": {
+            \"pattern\": \"Skipping server in request\"
+        }
+    }
+}"
+
