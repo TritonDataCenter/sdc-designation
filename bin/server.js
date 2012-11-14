@@ -7,10 +7,10 @@
 
 
 var fs   = require('fs');
-var HTTP = require('./lib/http-interface');
+var HTTP = require('../lib/http-interface');
 
-var CONFIG_PATH  = __dirname + '/config.json';
-var PACKAGE_PATH = __dirname + '/package.json';
+var CONFIG_PATH  = __dirname + '/../config.json';
+var PACKAGE_PATH = __dirname + '/../package.json';
 
 
 

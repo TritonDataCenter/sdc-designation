@@ -26,10 +26,10 @@ NODEUNIT  := ./node_modules/.bin/nodeunit
 # Files
 #
 DOC_FILES	 = index.restdown
-JS_FILES	:= $(shell ls *.js) $(shell find lib test -name '*.js')
+JS_FILES	:= $(shell find lib test bin -name '*.js')
 JSL_CONF_NODE	 = tools/jsl.node.conf
-JSL_FILES_NODE   = server.js $(JS_FILES)
-JSSTYLE_FILES	 = server.js $(JS_FILES)
+JSL_FILES_NODE   = $(JS_FILES)
+JSSTYLE_FILES	 = $(JS_FILES)
 JSSTYLE_FLAGS    = -o indent=4,doxygen,unparenthesized-return=0
 SMF_MANIFESTS_IN = smf/manifests/dapi.xml.in
 
@@ -64,10 +64,10 @@ release: all deps docs $(SMF_MANIFESTS)
 	@touch $(TMPDIR)/site/.do-not-delete-me
 	cp -PR $(NODE_INSTALL) $(TMPDIR)/root/opt/smartdc/dapi/build/node
 	cp -r $(ROOT)/lib \
-    $(ROOT)/server.js \
     $(ROOT)/Makefile \
     $(ROOT)/node_modules \
     $(ROOT)/package.json \
+    $(ROOT)/bin \
     $(ROOT)/smf \
     $(ROOT)/tools \
     $(TMPDIR)/root/opt/smartdc/dapi/

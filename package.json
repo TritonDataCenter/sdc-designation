@@ -14,6 +14,6 @@
     "nodeunit": "0.7.4"
   },
   "scripts": {
-    "start": "node ./server.js"
+    "start": "node bin/server.js"
   }
 }
