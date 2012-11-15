@@ -117,7 +117,7 @@ putprobe $account "{
     \"skipauthz\": true,
     \"group\": \"$group_uuid\",
     \"name\": \"root dataset running low on space\",
-    \"type\": \"disk-dapi\",
+    \"type\": \"disk-usage\",
     \"agent\": \"$zonename\",
     \"config\": {
         \"path\": \"/\"
