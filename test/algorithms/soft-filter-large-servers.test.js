@@ -10,7 +10,7 @@ var log = { trace: function () {}, debug: function () {} };
 
 var givenServers = [];
 for (var ii = 0; ii < 20; ii++)
-    givenServers.push({ memory_available_bytes: ii * 8 * 1024 * 1024 * 1024 });
+    givenServers.push({ unreserved_ram: ii * 8 * 1024 });
 
 
 

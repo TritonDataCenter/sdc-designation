@@ -11,15 +11,15 @@ var log = { trace: function () {}, debug: function () {} };
 exports.sortRam =
 function (t) {
     var givenServers = [
-        { memory_available_bytes: 256 },
-        { memory_available_bytes: 768 },
-        { memory_available_bytes: 512 }
+        { unreserved_ram: 256 },
+        { unreserved_ram: 768 },
+        { unreserved_ram: 512 }
     ];
 
     var expectedServers = [
-        { memory_available_bytes: 768 },
-        { memory_available_bytes: 512 },
-        { memory_available_bytes: 256 }
+        { unreserved_ram: 768 },
+        { unreserved_ram: 512 },
+        { unreserved_ram: 256 }
     ];
 
     var state = {};

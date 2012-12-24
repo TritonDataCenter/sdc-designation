@@ -30,6 +30,17 @@ var servers = [ {
                'NIC Names': [ 'admin' ]
             }
         }
+    },
+    vms: {
+        '564d9386-8c67-b674-587f-101f1db2eda7': {
+            uuid: '564d9386-8c67-b674-587f-101f1db2eda7',
+            owner_uuid: '00000000-0000-0000-0000-000000000000',
+            quota: 50,
+            max_physical_memory: 512,
+            zone_state: 'running',
+            state: 'running',
+            last_modified: '2012-12-19T05:26:05.000Z'
+        }
     }
 }, {
     uuid: uuid(),
@@ -49,6 +60,26 @@ var servers = [ {
                'Link Status': 'up',
                'NIC Names': [ 'admin' ]
             }
+        }
+    },
+    vms: {
+        'f954f487-0e70-4e76-b87b-38182a6e3b4d': {
+            uuid: 'f954f487-0e70-4e76-b87b-38182a6e3b4d',
+            owner_uuid: '00000000-0000-0000-0000-000000000000',
+            quota: 50,
+            max_physical_memory: 128,
+            zone_state: 'running',
+            state: 'running',
+            last_modified: '2012-12-19T05:26:05.000Z'
+        },
+        '0e07ab09-d725-436f-884a-759fa3ed7183': {
+            uuid: '0e07ab09-d725-436f-884a-759fa3ed7183',
+            owner_uuid: '00000000-0000-0000-0000-000000000000',
+            quota: 50,
+            max_physical_memory: 128,
+            zone_state: 'running',
+            state: 'running',
+            last_modified: '2012-12-19T05:26:05.000Z'
         }
     }
 } ];

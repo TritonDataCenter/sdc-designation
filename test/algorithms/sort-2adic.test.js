@@ -13,17 +13,17 @@ var givenServers = [];
 function init() {
     // 128MB to 256GB
     for (var i = 6; i <= 28; i++) {
-        var ram = Math.pow(2, i) * 1024 * 1024;
-        var server = { memory_available_bytes: ram };
+        var ram = Math.pow(2, i);
+        var server = { unreserved_ram: ram };
         givenServers.push(server);
     }
 
     // add some non-n^2 servers
-    givenServers.push({ memory_available_bytes:  48 * 1024 * 1024 * 1024 });
-    givenServers.push({ memory_available_bytes: 192 * 1024 * 1024 * 1024 });
-    givenServers.push({ memory_available_bytes:  12 * 1024 * 1024 * 1024 });
-    givenServers.push({ memory_available_bytes:  80 * 1024 * 1024 * 1024 });
-    givenServers.push({ memory_available_bytes:        768 * 1024 * 1024 });
+    givenServers.push({ unreserved_ram:  48 * 1024 });
+    givenServers.push({ unreserved_ram: 192 * 1024 });
+    givenServers.push({ unreserved_ram:  12 * 1024 });
+    givenServers.push({ unreserved_ram:  80 * 1024 });
+    givenServers.push({ unreserved_ram:        768 });
 }
 
 
@@ -33,9 +33,9 @@ function check(t, requestedRam, expectedRams) {
     var sortedServers = sorter.run(log, state, givenServers, requestedRam);
 
     var sortedRams = sortedServers.map(function (server) {
-        var ram = server.memory_available_bytes;
+        var ram = server.unreserved_ram;
         t.ok(ram > 0);
-        return ram / 1024 / 1024;
+        return ram;
     });
 
     t.deepEqual(sortedRams, expectedRams);

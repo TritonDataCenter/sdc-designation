@@ -11,10 +11,10 @@ var log = { trace: function () {}, debug: function () {} };
 exports.filterMinRam =
 function (t) {
     var givenServers = [
-        { memory_available_bytes: 256 * 1024 * 1024 },
-        { memory_available_bytes: 511 * 1024 * 1024 },
-        { memory_available_bytes: 512 * 1024 * 1024 },
-        { memory_available_bytes: 768 * 1024 * 1024 }
+        { unreserved_ram: 256 },
+        { unreserved_ram: 511 },
+        { unreserved_ram: 512 },
+        { unreserved_ram: 768 }
     ];
 
     var expectedServers = givenServers.slice(2, 4);
