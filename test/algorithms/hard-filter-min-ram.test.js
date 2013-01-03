@@ -20,7 +20,7 @@ function (t) {
     var expectedServers = givenServers.slice(2, 4);
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, 512);
+    var filteredServers = filter.run(log, state, givenServers, { ram: 512 });
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -34,7 +34,7 @@ exports.filterMinRam_with_no_servers =
 function (t) {
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], 512);
+    var filteredServers = filter.run(log, state, [], { ram: 512 });
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

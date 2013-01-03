@@ -30,7 +30,8 @@ function init() {
 
 function check(t, requestedRam, expectedRams) {
     var state = {};
-    var sortedServers = sorter.run(log, state, givenServers, requestedRam);
+    var sortedServers = sorter.run(log, state, givenServers,
+                                   { ram: requestedRam });
 
     var sortedRams = sortedServers.map(function (server) {
         var ram = server.unreserved_ram;

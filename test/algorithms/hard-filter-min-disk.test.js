@@ -20,7 +20,7 @@ function (t) {
     var expectedServers = givenServers.slice(2, 4);
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, null, 5120);
+    var filteredServers = filter.run(log, state, givenServers, { disk: 5120 });
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -34,7 +34,7 @@ exports.filterMinDisk_with_no_servers =
 function (t) {
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], null, 5120);
+    var filteredServers = filter.run(log, state, [], { disk: 5120 });
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
@@ -54,7 +54,7 @@ function (t) {
 
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, null, null);
+    var filteredServers = filter.run(log, state, givenServers, {});
 
     t.deepEqual(filteredServers, givenServers);
     t.deepEqual(state, {});

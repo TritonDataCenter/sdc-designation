@@ -20,12 +20,13 @@ function (t) {
     var state = {};
     var ram = 30 * 1024;  // for vm, in MiB
 
-    var filteredServers = filter.run(log, state, givenServers, ram);
+    var filteredServers = filter.run(log, state, givenServers, { ram: ram });
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers.reverse(), ram);
+    filteredServers = filter.run(log, state, givenServers.reverse(),
+                                 { ram: ram });
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -41,12 +42,13 @@ function (t) {
     var state = {};
     var ram = 34 * 1024;  // for vm, in MiB
 
-    var filteredServers = filter.run(log, state, givenServers, ram);
+    var filteredServers = filter.run(log, state, givenServers, { ram: ram });
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers.reverse(), ram);
+    filteredServers = filter.run(log, state, givenServers.reverse(),
+                                 { ram: ram });
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -62,7 +64,7 @@ function (t) {
     var state = {};
     var ram = 34 * 1024;  // for vm, in MiB
 
-    var filteredServers = filter.run(log, state, servers, ram);
+    var filteredServers = filter.run(log, state, servers, { ram: ram });
 
     t.deepEqual(filteredServers, servers);
     t.deepEqual(state, {});
@@ -77,7 +79,7 @@ function (t) {
     var state = {};
     var ram = 34 * 1024;  // for vm, in MiB
 
-    var filteredServers = filter.run(log, state, [], ram);
+    var filteredServers = filter.run(log, state, [], { ram: ram });
 
     t.deepEqual(filteredServers, []);
     t.deepEqual(state, {});
