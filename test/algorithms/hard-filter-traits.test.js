@@ -85,18 +85,18 @@ function (t) {
 
 exports.filterTraits_with_no_traits_on_vm =
 function (t) {
-    var givenServers = [ { traits: { ssd: true} } ];
+    var givenServers = [ { traits: { ssd: true } },
+                         { traits: {} },
+                         {} ];
     var state = {};
     var filteredServers;
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: {} });
-    t.deepEqual(filteredServers, givenServers);
+    filteredServers = filter.run(log, state, givenServers, { traits: {} });
+    t.deepEqual(filteredServers, givenServers.slice(1, 3));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 {});
-    t.deepEqual(filteredServers, givenServers);
+    filteredServers = filter.run(log, state, givenServers, {});
+    t.deepEqual(filteredServers, givenServers.slice(1, 3));
     t.deepEqual(state, {});
 
     t.done();
