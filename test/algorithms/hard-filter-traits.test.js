@@ -13,8 +13,10 @@ function (t) {
     var givenServers = [
         { traits: { ssd: true,  users: 'john' } },
         { traits: { ssd: true,  users: ['john', 'jane']} },
+        { traits: { ssd: true  } },
         { traits: { ssd: false } },
-        { traits: { users: ['jack', 'jane'] } }
+        { traits: { users: ['jack', 'jane'] } },
+        { traits: { users: 'john' } }
     ];
 
     var filteredServers;
@@ -22,22 +24,22 @@ function (t) {
 
     filteredServers = filter.run(log, state, givenServers,
                                  { traits: { ssd: true } });
-    t.deepEqual(filteredServers, givenServers.slice(0, 2));
-    t.deepEqual(state, {});
-
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: false } });
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
     t.deepEqual(state, {});
 
     filteredServers = filter.run(log, state, givenServers,
+                                 { traits: { ssd: false } });
+    t.deepEqual(filteredServers, givenServers.slice(3, 4));
+    t.deepEqual(state, {});
+
+    filteredServers = filter.run(log, state, givenServers,
                                  { traits: { users: 'john' } });
-    t.deepEqual(filteredServers, givenServers.slice(0, 2));
+    t.deepEqual(filteredServers, givenServers.slice(5, 6));
     t.deepEqual(state, {});
 
     filteredServers = filter.run(log, state, givenServers,
                                  { traits: { users: 'jack' } });
-    t.deepEqual(filteredServers, givenServers.slice(3, 4));
+    t.deepEqual(filteredServers, givenServers.slice(4, 5));
     t.deepEqual(state, {});
 
     filteredServers = filter.run(log, state, givenServers,
@@ -52,9 +54,7 @@ function (t) {
 
     filteredServers = filter.run(log, state, givenServers,
                                  { traits: { users: ['john', 'jane' ] } });
-    t.deepEqual(filteredServers, [ givenServers[0],
-                                   givenServers[1],
-                                   givenServers[3] ]);
+    t.deepEqual(filteredServers, givenServers.slice(4, 6));
     t.deepEqual(state, {});
 
     t.done();
