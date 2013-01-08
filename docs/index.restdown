@@ -9,47 +9,28 @@ markdown2extras: wiki-tables, code-friendly
 * Repository: git@git.joyent.com:dapi.git
 * Browsing: <https://mo.joyent.com/dapi>
 * Docs: <https://mo.joyent.com/docs/dapi>
-* Who: Andres Rodriguez
+* Who: Andres Rodriguez, Marsell Kukuljevic
 * Tickets/bugs: <https://devhub.joyent.com/jira/browse/DAPI>
+
 
 
 # Introduction to Designation API
 
 ## What is DAPI?
 
-The Designation API's purpose is to respond with the UUID of a compute node on
-which to place a new machine or machine reservation. It needs to be passed a
-full payload of the machine in question, the server role, IP address required,
-dataset required, and quota. (At least).
+The Designation API's purpose is to respond with a compute node on which to
+place a new machine or machine reservation. It needs to be passed a full payload
+of the machine in question, and a list of all compute nodes extracted from CNAPI
+to be considered for allocation.
 
-## Design & Requirements
 
-* DAPI should support multiple allocation algorithms. Starting with "random"
-  and then adding scope for things like "random within this set of compute
-  nodes".
-* Data that DAPI shoudl take into account when selecting a machine (depending
-  on algorithm):
-    - Amount of RAM available
-    - Amount of DISK available
-    - Load (avg?) - ie, dont place new machines onto a "hot" box
-    - Is the machine being purged? Compute nodes may be in the process of
-      being shut down? (this may be a state that cnapi will just control)
-* Users may be able to select a placement "policy". This policy will determine
-  which algorithm is used. For example, they may be building HA postgres setup.
-  They will want machines to be within the same availability zone, but not on
-  the same CN.
-* The concept of distance between servers. If I want to be able to define a
-* bunch of costs / weights of being close / far away in terms of physical
-* machine placement. This includes. Same CN, Same Role, Same Rack, Different
-* Rack, Different electrical circuit, different switch. Kind of complicated.
-* For things like determining "distance" between compute nodes, we may want to
-  consider assigning weights to certain CN properties. ex: a different rack is
-  worth 1000, a different compute node, is worth 100. This would be like a
-  route metric - and the concept is familiar
 
 # Getting Started
 
-DAPI can run without any other SDC dependency. Since its purpose is to be able to allocate a VM on a server, DAPI should only rely in the request parameters in order to work correctly. With this in mind, a DAPI instance can run on any SmartOS machine for testing purposes without a full SDC install.
+DAPI can run without any other SDC dependency. Since its purpose is to select a
+compute node to allocate a VM to, DAPI relies solely on the request parameters
+in order to do its job. With this in mind, a DAPI instance can run on any
+SmartOS machine for testing purposes without a full SDC install.
 
     # Get the source and build.
     git clone git@git.joyent.com:dapi.git
@@ -61,28 +42,36 @@ DAPI can run without any other SDC dependency. Since its purpose is to be able t
     # Edit config as needed
     vi config.json
 
-    # node server.js
+    # node bin/server.js
+
 
 
 # Allocation
 
-Currently, there are only two parameters required for allocating a VM to a server: VM payload and servers list. The allocation criteria depends only on the allocation algorithm chosen to be used, as we'll see later. Although we can freely choose which of the VM and/or server properties are considered for allocation, the request parameters must be valid in order for an allocation algorithm to run.
+Currently, there are only two parameters required for allocating a VM to a
+server: VM payload and a servers list.
+
 
 
 ## VM Payload
 
-As DAPI is still a work in progres, there is no definitive list of parameters for a VM payload to be valid yet. But in order to keep things simple, there is only one VM property that needs to be present in the payload for it to be valid: ***ram*** (in megabytes).
+The VM payload describes the VM to be allocated. For example, how much disk it
+needs, how much RAM, and so forth. DAPI accepts arbitrary descriptions of the
+VM, but the current version only considers the following characteristics:
 
-The following are a couple of valid VM payload examples, note that as long as the ***ram*** attribute is present, the object will pass validation. Eventually we might consider more optional/required parameters that need to be considered as part of the VM payload.
+|| **Attribute** || **Type** || **Description**                                      ||
+|| ram           || integer  || RAM required, in MiB                                 ||
+|| quota         || integer  || Disk required, in MiB                                ||
+|| traits        || hash     || Optionally, traits that a compute node must match    ||
+|| nic_tags      || array    || If VLAN filtering is enabled, nic_tags needed for VM ||
 
-**NOTE**
-
-The RAM value is expected to be in megabytes.
+The following are a couple of valid VM payload examples. As long as the
+***ram*** attribute is present, the object will pass validation. 
 
     # Simplest example
 
     {
-      ram: 2048
+      "ram": 2048
     }
 
     # More complete VM payload, similar to `vmadm get <uuid>`
@@ -90,69 +79,80 @@ The RAM value is expected to be in megabytes.
     {
       "uuid": "ef375f03-57ca-44a9-bc8d-63aec09fbc37",
       "brand": "joyent",
-      "dataset_uuid": "01b2c898-945f-11e1-a523-af1afbe22822",
-      "image_uuid": "01b2c898-945f-11e1-a523-af1afbe22822",
-      "server_uuid": "564d6836-ed2e-18f8-bdf2-e900490a57a1",
       "alias": "assets1",
       "ram": 64,
-      "max_physical_memory": 64,
       "max_swap": 256,
       "quota": 10240,
       "cpu_cap": 100,
       "cpu_shares": 1,
       "max_lwps": 1000,
-      "create_timestamp": "2012-05-16T23:33:09.809Z",
-      "destroyed": "",
-      "last_modified": "2012-05-16T23:33:12.000Z",
-      "zone_state": "running",
-      "state": "running",
       "zpool": "zones",
       "zfs_io_priority": 10,
       "owner_uuid": "930896af-bf8c-48d4-885c-6573a94b1853",
       "nics": [],
       "customer_metadata": {},
       "internal_metadata": {},
-      "tags": {}
+      "tags": {},
+      "traits": { "ssd": true }
     }
+
 
 
 ## Servers Payload
 
-The same way the VM payload follows the format that vmadm provides, the servers payload that is required by the allocation endpoint is expected to be CNAPI "compatible". CNAPI is the entity that manages and exposes all the information related to servers in an SDC install and therefore it should provide the standard representation for a server object.
+The same way the VM payload follows the format that vmadm provides, the servers
+payload that is required by the allocation endpoint is expected to be CNAPI
+"compatible". CNAPI is the entity that manages and exposes all the information
+related to servers in an SDC install, and therefore it provides the standard
+representation for a server object.
 
-In contrast to VMs, server payloads are more strictly validated but the request is not necessarily rejected. A server object does only need to have an UUID to be a valid server payload, and a list of servers needs to be provided as a parameter. This means that the following is a valid servers list payload:
+In contrast to VMs, server payloads are more strictly validated. DAPI accepts
+arbitrary descriptions of each server, but the current version only considers
+the following characteristics:
 
-    [
-      { uuid: <uuid1> },
-      { uuid: <uuid2> },
-      { uuid: <uuid3> }
-    ]
+|| **Attribute**          || **Type** || **Description**                                 ||
+|| uuid                   || string   || UUID of server                                  ||
+|| memory_available_bytes || integer  || RAM available for allocation, in bytes          ||
+|| memory_total_bytes     || integer  || Total RAM on server, in bytes                   ||
+|| reserved               || boolean  || If the server has been reserved by an operator  ||
+|| setup                  || boolean  || If the server has been setup                    ||
+|| 'Zpool Size in GiB'    || integer  || Total disk space on server, in GiB              ||
+|| vms                    || hash     || Description of VMs already on server            ||
+|| traits                 || hash     || Traits on a server                              ||
 
-However, this will result in DAPI returning a 409 response, since none of those servers are eligible for allocation. What makes a server eligible for inclusion in an allocation algorithm are the following attributes:
+The ***vms*** attribute is a hash. Each key is a VM UUID, and each value is a
+hash with the following format:
 
-|| **Attribute** || **Description** ||
-|| memory_available_bytes || Available memory in bytes ||
-|| memory_total_bytes || Total memory in bytes ||
-|| reserved || Reserved servers are not eligible ||
-|| setup || Unsetup servers are not eligible ||
+|| **Attribute**       || **Type** || **Description**                         ||
+|| max_physical_memory || integer  || RAM promised to this VM, in MiB         ||
+|| quota               || integer  || Disk promised to this VM, in MiB        ||
+|| owner_uuid          || string   || UUID of VM's owner                      ||
 
-**NOTE**
-
-After these attributes are checked, a server's available memory value is tested to confirm that it has enough memory for the VM that needs to be provisioned. If this validation fails then the server is not eligible.
-
-The previous table implies that if 3 servers were passed in the request but only two were eligible, they would be the ones being passed to the allocation algorithm ignoring the rest. This is important so that API clients can provide a full list of servers from CNAPI not caring about which servers are actually in a provisionable state. The following is an example showing two eligible server objects:
+As an example of a valid servers payload:
 
     [
       {
-        uuid: <uuid1>,
-        ram: 2048,
-        memory_total_bytes: 2147483648,
-        memory_available_bytes: 1073741824
+        "uuid": "cdc1b052-1df9-4a3d-b34d-3f0afadac883",
+        "memory_total_bytes": 2147483648,
+        "memory_available_bytes": 1073741824,
+        "reserved": false,
+        "setup": true,
+        "Zpool Size in GiB": 1024,
+        "vms": {
+          "fbbbdc6d-011c-4931-9420-c702f53e4154": {
+            "max_physical_memory": 1024,
+            "quota": 10240,
+            "owner_uuid": "9b81f9e7-55e1-4e00-a8f7-917bd054b320"
+          }
+        }
       }, {
-        uuid: <uuid2>,
-        ram: 1024,
-        memory_total_bytes: 1073741824,
-        memory_available_bytes: 536870912
+        "uuid": "82c53a64-b19c-4266-bf16-3ee1d34318d2",
+        "memory_total_bytes": 1073741824,
+        "memory_available_bytes": 536870912
+        "reserved": false,
+        "setup": false,
+        "Zpool Size in GiB": null,
+        "vms": {}
       }
     ]
 
@@ -162,98 +162,249 @@ The previous table implies that if 3 servers were passed in the request but only
 
 Unique endpoint for allocating a VM to a server.
 
-Both of the following inputs are required.
+Both of the following inputs are required:
 
-||**Param**||**Type**||**Description**||
-||vm||Object||VM Payload, see "VM Payload" above||
-||servers||Object||List of servers, see "Servers Payload" above||
+|| **Param** || **Type** || **Description**                              ||
+|| vm        || hash     || VM Payload, see "VM Payload" above           ||
+|| servers   || hash     || List of servers, see "Servers Payload" above ||
+
+The endpoint will either return a 409, or a 200:
+
+|| **HTTP code** || **Description**                                                 ||
+|| 409           || No compute node found to satisfy the request                    ||
+|| 200           || Compute node found, description of chosen compute node returned ||
+
+The description returned in the case of a HTTP 200 is the same JSON
+representation of the compute node which was provided to DAPI in the servers
+payload.
+
+
 
 ### Programmatic Example
 
     var servers = [ {
-        uuid: '7b23cf5d-eb2d-4f33-a956-92331cff3f34',
-        ram: 2048,
-        memory_total_bytes: 2147483648,
-        memory_available_bytes: 1073741824
+      uuid: 'cdc1b052-1df9-4a3d-b34d-3f0afadac883',
+      memory_total_bytes: 2147483648,
+      memory_available_bytes: 1073741824,
+      reserved: false,
+      setup: true,
+      'Zpool Size in GiB': 1024,
+      vms: {
+        'fbbbdc6d-011c-4931-9420-c702f53e4154': {
+          max_physical_memory: 1024,
+          quota: 10240,
+          owner_uuid: '9b81f9e7-55e1-4e00-a8f7-917bd054b320'
+        }
+      }
     }, {
-        uuid: '42bdc6c3-0e57-4f74-a0af-29186afa3553',
-        ram: 1024,
-        memory_total_bytes: 1073741824,
-        memory_available_bytes: 536870912
+      uuid: '82c53a64-b19c-4266-bf16-3ee1d34318d2',
+      memory_total_bytes: 1073741824,
+      memory_available_bytes: 536870912
+      reserved: false,
+      setup: false,
+      'Zpool Size in GiB': null,
+      vms: {}
     } ];
 
     var data = { servers: servers, vm: { ram: 2048 } };
 
     restify.post('/allocation', data, function (err, req, res, server) {
-        assert.ok(server);
+      assert.ok(server);
     });
+
 
 
 # Allocation Algorithms
 
-DAPI provides the ability for users to install custom allocation algorithms and test several allocation strategies without the need to modify the application source code. By default, and if DAPI's configuration file doesn't specify any algorithm, random allocation will be used. This is, from all the valid servers passed in the request, DAPI will choose a random one from the list that satisfy the minimum condition of enough space for the VM in question.
+DAPI provides the ability for users to install custom allocation algorithms and
+test several allocation strategies without the need to modify the application
+source code. By default -- if DAPI's configuration file doesn't specify any
+algorithms -- the following chain of algorithms will be used (see below for
+description of what each one does):
 
-This works, however it is not recommended if we want to allocate space for new VMs accordingly. DAPI comes with a simple "most ram" allocation algorithm and it can be activated by specifying it in the application configuration file (if not already there):
+    hard-filter-min-ram  =>  hard-filter-running  =>  hard-filter-setup  =>
+    hard-filter-reserved  =>  hard-filter-headnode  =>
+    soft-filter-large-servers  =>  soft-filter-recent-servers  =>  sort-2adic  =>
+    pick-weighted-random
+
+Also see DEFAULT_ALGORITHMS in ***$DAPI_ROOT/lib/http-interface.js*** file.
+
+This default chain gives reasonable allocation results for a datacenter; make
+sure to do your research before modifying it. The servers pass through each
+algorithm in turn, until one or zero servers are returned at the other end
+(either the compute node to allocate to, or no compute node could fulfill the
+request).
+
+To change to default chain, edit DAPI's configuration file
+(***$DAPI_ROOT/config.json***). Edit or add the 'algorithms' attribute:
 
     ...
-    "algorithms": ["most-ram"],
+    "algorithms": ["hard-filter-setup", "hard-filter-min-ram", "pick-random"],
     ...
 
-And placing its source code under
+In this case, a chain of only those three algorithms would be used in selecting
+a compute node for the VM.
 
-    $DAPI_ROOT/lib/algorithms/
+Custom algorithms can be added under ***$DAPI_ROOT/lib/algorithms/***, but be
+aware that you'll need to add the custom file back after any DAPI zone upgrade.
 
 
-The "algorithms" key value in the configuration file must be an array because DAPI provides the ability to use several algorithms at the same time. Some users might find it useful to have a list of prioritized algorithms when it is expected that any of them might not find a suitable server. In this case, the first algorithm in the array gets executed first. If a server it's returned, the rest of the algorithms won't be executed. If no server it's returned, the next algorithm will be executed until one of them returns a server object. If all algorithms have run and no suitable server was found DAPI will return a 409 response specifying that no suitable servers were found in the request.
+
+## Provided Algorithms
+
+|| **Name**                   || **Action**                                                  ||
+|| hard-filter-headnode       || Removes any headnodes                                       ||
+|| hard-filter-min-disk       || Removes CNs with insufficient disk                          ||
+|| hard-filter-min-ram        || Removes CNs with insufficient RAM                           ||
+|| hard-filter-reserved       || Removes reserved CNs                                        ||
+|| hard-filter-running        || Removes CNs which are not running                           ||
+|| hard-filter-setup          || Removes CNs which are not setup                             ||
+|| hard-filter-traits         || Removes CNs with traits that cannot fulfill VM traits       ||
+|| hard-filter-vlans          || Removes CNs which do not have required nic tags             ||
+|| pick-random                || Pick a random CN from a list                                ||
+|| pick-weighted-random       || Pick one of top 20% of CNs so far                           ||
+|| soft-filter-large-servers  || Tries to reserve some servers for large VMs                 ||
+|| soft-filter-recent-servers || Tries to ignore recently allocated-to CNs, to prevent races ||
+|| sort-2adic                 || Order CNs by 2adic ordering of available RAM                ||
+|| sort-ram                   || Order CNs by available RAM                                  ||
+
+The allocation pipeline typically starts with the hard filters, then soft
+filters, then sorters, and finally a picker.
+
+Hard filters remove CNs from allocation consideration because the compute node
+fails to fulfill some requirement. Soft filters remove some compute nodes from
+consideration if there's still enough compute nodes left afterwards to
+effectively allocate with. Sorters order compute nodes by how desirable they are
+to fulfill this allocation request -- most desirable come first. Lastly, the
+pickers pick one of the compute nodes; some pickers take order into account, and
+some do not.
 
 
-## Algorithm Structure
 
-Taking a closer look at the "most-ram" example source code, we can identify the structure that allocation algorithms must satfisty in order to be usable by DAPI. Note that DAPI has an algorithm structure validation code as part of the application initialization process, so that users can identify problems in their algorithms at load time.
+## Traits
 
-The simplest allocation algorithm looks like this:
+Although traits are only used by one algorithm, they serve the important purpose
+of describing arbitrary user-defined requirements for a VM, and matching those
+requirements with CNs that can fulfill them. Ergo I'll describe how they work
+here.
 
-    function run(servers) {
-        return servers[0];
+Imagine for a moment you'd like to reserve some servers for just one customer.
+In this cause you'd add a customer trait to both the CNs and to the VM request.
+E.g.
+
+Server object:
+
+    {
+      "uuid": "cdc1b052-1df9-4a3d-b34d-3f0afadac883",
+      "memory_total_bytes": 2147483648,
+      ...
+      "traits": {
+        "customer": "9b81f9e7-55e1-4e00-a8f7-917bd054b320"
+      }
     }
 
-    module.exports = {
-      name: 'Simple',
-      run: run
-    };
+VM request:
 
-From this, we can infer a list the requirements for a DAPI allocation algorithm:
-
-1. The file exports must be an object with the properties name and run
-2. **name** must be a string
-3. **run** must be a function
-4. The only parameter that is currently being passed to the run funcion is a list of servers
-5. DAPI makes sure to pass a non-empty list of servers to the run function, if the servers list was empty, then DAPI would not call any algorithm at all
-6. **run** is currently sync only (async support will be added eventually upon requirements)
-7. **run** functions should only return two possible values: a null/undefined/false object or a server object that was picked from the list
-8. A null/undefined/false response is interpreted by DAPI as "no suitable server found"
-
-As an additional example let's take a look at the most-ram algorithm:
-
-    function mostAvailableRam(servers) {
-        var maxRam = -1;
-        var maxIndex = -1;
-        var i;
-
-        for (i = 0; i < servers.length; i++) {
-            if (servers[i].memory_available_bytes > maxRam) {
-                maxRam = servers[i].memory_available_bytes;
-                maxIndex = i;
-            }
-        }
-
-        return servers[maxIndex];
+    {
+      "ram": 2048,
+      "traits": {
+        "customer": "9b81f9e7-55e1-4e00-a8f7-917bd054b320"
+      }
     }
 
-    module.exports = {
-      name: 'Most available RAM',
-      run: mostAvailableRam
-    };
+It does not need to be named ***customer*** specifically; it could be named
+***owner*** or something else, so long as the attribute name matches between
+both the server trait and the VM request trait. The VM request requires a
+compute node with a trait named "customer" and value
+"9b81f9e7-55e1-4e00-a8f7-917bd054b320". The compute node has both that name and
+value in the traits, so it can fulfill this request.
+
+The same applies for booleans:
+
+    {
+      "ram": 2048,
+      "traits": {
+        "ssd": true
+      }
+    }
+
+Any compute node that has a single trait named ***ssd*** and a value of true
+will match.
+
+Multiple traits can be used:
+
+    {
+      "ram": 2048,
+      "traits": {
+        "ssd": false,
+        "manta": true,
+        "customer": "9b81f9e7-55e1-4e00-a8f7-917bd054b320"
+      }
+    }
+
+In which case only compute nodes that have traits like this will match:
+
+    {
+      "uuid": "cdc1b052-1df9-4a3d-b34d-3f0afadac883",
+      "memory_total_bytes": 2147483648,
+      ...
+      "traits": {
+        "ssd": false,
+        "manta": true,
+        "customer": "9b81f9e7-55e1-4e00-a8f7-917bd054b320"
+      }
+    }
+
+Things get a bit more complicated with arrays: traits also allow arrays of
+strings for a given name, in both VM requests and on compute nodes. If a VM
+trait has a string and a compute node's associated trait has an array of
+strings, then that compute node will match if the VM's string matches any of the
+ones in the compute node's:
+
+    {
+      "ram": 2048,
+      "traits": {
+        "customer": "9b81f9e7-55e1-4e00-a8f7-917bd054b320"
+      }
+    }
+
+    {
+      "uuid": "cdc1b052-1df9-4a3d-b34d-3f0afadac883",
+      "memory_total_bytes": 2147483648,
+      ...
+      "traits": {
+        "customer": ["9b81f9e7-55e1-4e00-a8f7-917bd054b320",
+                     "82c53a64-b19c-4266-bf16-3ee1d34318d2"]
+      }
+    }
+
+The above compute node will match because the VM request is looking for customer
+9b81f9e7..., and the compute node can fulfill 9b81f9e7... and 82c53a64... .
+
+Lastly, if a VM trait contains an array of strings, and the compute node does
+as well, the compute node will match if there's an intersection in the array
+values. In other words, if any values in the VM trait matches any values in the
+compute node's trait. E.g. the following will match because "richmond-a" is in
+common between the two (and ssd is true for both too, just to demonstrate):
+
+    {
+      "ram": 2048,
+      "traits": {
+        "hw": ["richmond-a", "mantis-shrimp"],
+        "ssd": true
+      }
+    }
+
+    {
+      "uuid": "cdc1b052-1df9-4a3d-b34d-3f0afadac883",
+      "memory_total_bytes": 2147483648,
+      ...
+      "traits": {
+        "hw": ["richmond-b", "richmond-a"]
+        "ssd": true
+      }
+    }
+
 
 
 # Changelog
@@ -261,3 +412,7 @@ As an additional example let's take a look at the most-ram algorithm:
 ## 2012-06-22
 
   * /allocation now takes a VM payload parameter
+
+## 2013-01-07
+
+  * Redid much of the docs
