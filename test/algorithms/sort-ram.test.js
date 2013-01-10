@@ -4,7 +4,8 @@
 
 var sorter = require('../../lib/algorithms/sort-ram.js');
 
-var log = { trace: function () {}, debug: function () {} };
+var log = { trace: function () { return true; },
+            debug: function () { return true; } };
 
 
 

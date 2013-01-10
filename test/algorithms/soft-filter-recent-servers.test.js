@@ -7,7 +7,8 @@ var filter = require('../../lib/algorithms/soft-filter-recent-servers.js');
 
 
 
-var log = { trace: function () {}, debug: function () {} };
+var log = { trace: function () { return true; },
+            debug: function () { return true; } };
 
 var givenServers = [];
 for (var ii = 0; ii < 12; ii++) {

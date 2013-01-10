@@ -4,7 +4,8 @@
 
 var algorithms = require('../lib/algorithms.js');
 
-var logStub = { trace: function () {}, debug: function () {} };
+var logStub = { trace: function () { return true; },
+                debug: function () { return true; } };
 
 
 

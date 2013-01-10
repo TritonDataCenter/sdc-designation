@@ -4,7 +4,8 @@
 
 var filter = require('../../lib/algorithms/hard-filter-min-ram.js');
 
-var log = { trace: function () {}, debug: function () {} };
+var log = { trace: function () { return true; },
+            debug: function () { return true; } };
 
 
 

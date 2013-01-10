@@ -4,7 +4,8 @@
 
 var picker = require('../../lib/algorithms/pick-weighted-random.js');
 
-var log = { trace: function () {}, debug: function () {} };
+var log = { trace: function () { return true; },
+            debug: function () { return true; } };
 
 
 
