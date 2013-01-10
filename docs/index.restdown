@@ -359,7 +359,9 @@ Things get a bit more complicated with arrays: traits also allow arrays of
 strings for a given name, in both VM requests and on compute nodes. If a VM
 trait has a string and a compute node's associated trait has an array of
 strings, then that compute node will match if the VM's string matches any of the
-ones in the compute node's:
+ones in the compute node's. The opposite applies as well, with the compute node
+trait having an array of strings, and the VM trait being a single string. An
+example:
 
     {
       "ram": 2048,
