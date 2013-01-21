@@ -218,32 +218,48 @@ payload.
 
 DAPI provides the ability for users to install custom allocation algorithms and
 test several allocation strategies without the need to modify the application
-source code. By default -- if DAPI's configuration file doesn't specify any
-algorithms -- the following chain of algorithms will be used (see below for
-description of what each one does):
+source code. An allocation algorithms takes a list of servers and various other
+pieces of data as input, and returns a filtered list of servers.
+
+
+By default -- if DAPI's configuration file doesn't specify any algorithms --
+the following chain of algorithms will be used (see below for description of
+what each one does):
 
     hard-filter-min-ram  =>  hard-filter-running  =>  hard-filter-setup  =>
     hard-filter-reserved  =>  hard-filter-headnode  =>
     soft-filter-large-servers  =>  soft-filter-recent-servers  =>  sort-2adic  =>
     pick-weighted-random
 
-Also see DEFAULT_ALGORITHMS in ***$DAPI_ROOT/lib/http-interface.js*** file.
+Also see DEFAULT_FLOW in ***$DAPI_ROOT/lib/http-interface.js*** file.
 
-This default chain gives reasonable allocation results for a datacenter; make
-sure to do your research before modifying it. The servers pass through each
-algorithm in turn, until one or zero servers are returned at the other end
-(either the compute node to allocate to, or no compute node could fulfill the
-request).
+This default flow gives reasonable allocation results for a datacenter; make
+sure to do your research before modifying it. The flow is organized as a list
+of algorithms and lists, each list prefixed with a command. For example:
+
+    [ 'pipe', 'hard-filter-min-ram.js',
+              'hard-filter-running.js',
+              [ 'or', 'hard-filter-large-servers.js',
+                      'hard-filter-recent-servers.js' ],
+              'pick-weighted-random.js' ]
+
+The 'pipe' and 'or' are commands, and the rest of the elements in the list will
+be executed in that context. 'pipe' forms a pipeline, feeding the output (list
+of servers) from one algorithms to the input of the next. 'or' feeds an
+identical list of servers to each plugin in turn, until one of the plugins
+returns a non-empty list of servers.
 
 To change to default chain, edit DAPI's configuration file
 (***$DAPI_ROOT/config.json***). Edit or add the 'algorithms' attribute:
 
     ...
-    "algorithms": ["hard-filter-setup", "hard-filter-min-ram", "pick-random"],
+    "algorithms": ["pipe", "hard-filter-setup.js",
+                           "hard-filter-min-ram.js",
+                           "pick-random.js"],
     ...
 
-In this case, a chain of only those three algorithms would be used in selecting
-a compute node for the VM.
+In this case, a pipeline of only those three algorithms would be used in
+selecting a compute node for the VM.
 
 Custom algorithms can be added under ***$DAPI_ROOT/lib/algorithms/***, but be
 aware that you'll need to add the custom file back after any DAPI zone upgrade.

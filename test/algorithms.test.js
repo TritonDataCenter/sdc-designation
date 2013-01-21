@@ -5,7 +5,8 @@
 var algorithms = require('../lib/algorithms.js');
 
 var logStub = { trace: function () { return true; },
-                debug: function () { return true; } };
+                debug: function () { return true; },
+                error: function (err) { console.log(err); return true; } };
 
 
 
@@ -15,6 +16,7 @@ function (t) {
     var executed = [];
 
     var plugins = [
+        'pipe',
         {
             name: 'foo',
             run: function (log, state, servers) {
@@ -75,6 +77,7 @@ function (t) {
     var executed = [];
 
     var plugins = [
+        'pipe',
         {
             name: 'foo',
             run: function (log, state, servers) {
@@ -113,6 +116,7 @@ function (t) {
     var executed = [];
 
     var plugins = [
+        'pipe',
         {
             name: 'foo',
             run: function () {
