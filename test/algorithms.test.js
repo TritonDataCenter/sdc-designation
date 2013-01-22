@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Joyent, Inc. All rights reserved.
  */
 
-var algorithms = require('../lib/algorithms.js');
+var Algorithms = require('../lib/algorithms.js');
 
 var logStub = { trace: function () { return true; },
                 debug: function () { return true; },
@@ -62,7 +62,8 @@ function (t) {
         }
     ];
 
-    var serverStub = algorithms.allocate(logStub, plugins, serverStubs);
+    var algorithms = new Algorithms(logStub, plugins);
+    var serverStub = algorithms.allocate(serverStubs);
     t.equal(serverStub, 3);
     t.deepEqual(executed, [1, 2, 4, 3]);
 
@@ -102,7 +103,8 @@ function (t) {
         }
     ];
 
-    var serverStub = algorithms.allocate(logStub, plugins, [1]);
+    var algorithms = new Algorithms(logStub, plugins);
+    var serverStub = algorithms.allocate([1]);
     t.equal(serverStub, 1);
     t.deepEqual(executed, [1, 2, 3]);
 
@@ -159,7 +161,8 @@ function (t) {
         }
     ];
 
-    var serverStub = algorithms.allocate(logStub, plugins, [1]);
+    var algorithms = new Algorithms(logStub, plugins);
+    var serverStub = algorithms.allocate([1]);
     t.equal(serverStub, undefined);
     t.deepEqual(executed, [1, 3, 5, 6, 4, 2]);
 
