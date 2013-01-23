@@ -238,11 +238,11 @@ make sure to do your research before modifying it. The description is organized
 as a list of algorithms and lists, each list prefixed with a command. For
 example:
 
-    [ 'pipe', 'hard-filter-min-ram.js',
-              'hard-filter-running.js',
-              [ 'or', 'hard-filter-large-servers.js',
-                      'hard-filter-recent-servers.js' ],
-              'pick-weighted-random.js' ]
+    [ 'pipe', 'hard-filter-min-ram',
+              'hard-filter-running',
+              [ 'or', 'hard-filter-large-servers',
+                      'hard-filter-recent-servers' ],
+              'pick-weighted-random' ]
 
 The 'pipe' and 'or' are commands, and the rest of the elements in the list will
 be executed in that context. 'pipe' forms a pipeline, feeding the output (list
@@ -254,9 +254,9 @@ To change to default chain, edit DAPI's configuration file
 (***$DAPI_ROOT/config.json***). Edit or add the 'algorithms' attribute:
 
     ...
-    "allocationDescription": ["pipe", "hard-filter-setup.js",
-                                      "hard-filter-min-ram.js",
-                                      "pick-random.js"],
+    "allocationDescription": ["pipe", "hard-filter-setup",
+                                      "hard-filter-min-ram",
+                                      "pick-random"],
     ...
 
 In this case, a pipeline of only those three algorithms would be used in
