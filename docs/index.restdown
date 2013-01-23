@@ -231,11 +231,12 @@ what each one does):
     soft-filter-large-servers  =>  soft-filter-recent-servers  =>  sort-2adic  =>
     pick-weighted-random
 
-Also see DEFAULT_FLOW in ***$DAPI_ROOT/lib/http-interface.js*** file.
+Also see DEFAULT_DESC in ***$DAPI_ROOT/lib/algorithms.js*** file.
 
-This default flow gives reasonable allocation results for a datacenter; make
-sure to do your research before modifying it. The flow is organized as a list
-of algorithms and lists, each list prefixed with a command. For example:
+This default description gives reasonable allocation results for a datacenter;
+make sure to do your research before modifying it. The description is organized
+as a list of algorithms and lists, each list prefixed with a command. For
+example:
 
     [ 'pipe', 'hard-filter-min-ram.js',
               'hard-filter-running.js',

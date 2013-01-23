@@ -64,7 +64,7 @@ function (t) {
     ];
 
     var algorithms = new Algorithms(logStub);
-    algorithms.algorithms = plugins;
+    algorithms.expression = plugins;
 
     var serverStub = algorithms.allocate(serverStubs);
     t.equal(serverStub, 3);
@@ -107,7 +107,7 @@ function (t) {
     ];
 
     var algorithms = new Algorithms(logStub);
-    algorithms.algorithms = plugins;
+    algorithms.expression = plugins;
 
     var serverStub = algorithms.allocate([1]);
     t.equal(serverStub, 1);
@@ -167,7 +167,7 @@ function (t) {
     ];
 
     var algorithms = new Algorithms(logStub);
-    algorithms.algorithms = plugins;
+    algorithms.expression = plugins;
 
     var serverStub = algorithms.allocate([1]);
     t.equal(serverStub, undefined);
