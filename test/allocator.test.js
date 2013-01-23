@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Joyent, Inc. All rights reserved.
  */
 
-var Algorithms = require('../lib/algorithms.js');
+var Allocator = require('../lib/allocator.js');
 
 var logStub = { trace: function () { return true; },
                 debug: function () { return true; },
@@ -63,7 +63,7 @@ function (t) {
         }
     ];
 
-    var algorithms = new Algorithms(logStub);
+    var algorithms = new Allocator(logStub);
     algorithms.expression = plugins;
 
     var serverStub = algorithms.allocate(serverStubs);
@@ -106,7 +106,7 @@ function (t) {
         }
     ];
 
-    var algorithms = new Algorithms(logStub);
+    var algorithms = new Allocator(logStub);
     algorithms.expression = plugins;
 
     var serverStub = algorithms.allocate([1]);
@@ -166,7 +166,7 @@ function (t) {
         }
     ];
 
-    var algorithms = new Algorithms(logStub);
+    var algorithms = new Allocator(logStub);
     algorithms.expression = plugins;
 
     var serverStub = algorithms.allocate([1]);

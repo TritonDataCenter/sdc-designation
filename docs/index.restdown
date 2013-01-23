@@ -218,20 +218,20 @@ payload.
 
 DAPI provides the ability for users to install custom allocation algorithms and
 test several allocation strategies without the need to modify the application
-source code. An allocation algorithms takes a list of servers and various other
+source code. An allocation algorithm takes a list of servers and various other
 pieces of data as input, and returns a filtered list of servers.
 
 
-By default -- if DAPI's configuration file doesn't specify any algorithms --
-the following chain of algorithms will be used (see below for description of
-what each one does):
+By default -- if DAPI's configuration file doesn't specify an
+`allocationDescription` -- the following chain of algorithms will be used (see
+below for description of what each one does):
 
     hard-filter-min-ram  =>  hard-filter-running  =>  hard-filter-setup  =>
     hard-filter-reserved  =>  hard-filter-headnode  =>
     soft-filter-large-servers  =>  soft-filter-recent-servers  =>  sort-2adic  =>
     pick-weighted-random
 
-Also see DEFAULT_DESC in ***$DAPI_ROOT/lib/algorithms.js*** file.
+Also see DEFAULT_DESC in ***$DAPI_ROOT/lib/allocator.js*** file.
 
 This default description gives reasonable allocation results for a datacenter;
 make sure to do your research before modifying it. The description is organized
@@ -254,9 +254,9 @@ To change to default chain, edit DAPI's configuration file
 (***$DAPI_ROOT/config.json***). Edit or add the 'algorithms' attribute:
 
     ...
-    "algorithms": ["pipe", "hard-filter-setup.js",
-                           "hard-filter-min-ram.js",
-                           "pick-random.js"],
+    "allocationDescription": ["pipe", "hard-filter-setup.js",
+                                      "hard-filter-min-ram.js",
+                                      "pick-random.js"],
     ...
 
 In this case, a pipeline of only those three algorithms would be used in
