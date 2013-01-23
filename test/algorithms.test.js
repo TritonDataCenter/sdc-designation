@@ -6,6 +6,7 @@ var Algorithms = require('../lib/algorithms.js');
 
 var logStub = { trace: function () { return true; },
                 debug: function () { return true; },
+                info:  function () { return true; },
                 error: function (err) { console.log(err); return true; } };
 
 
@@ -62,7 +63,9 @@ function (t) {
         }
     ];
 
-    var algorithms = new Algorithms(logStub, plugins);
+    var algorithms = new Algorithms(logStub);
+    algorithms.algorithms = plugins;
+
     var serverStub = algorithms.allocate(serverStubs);
     t.equal(serverStub, 3);
     t.deepEqual(executed, [1, 2, 4, 3]);
@@ -103,7 +106,9 @@ function (t) {
         }
     ];
 
-    var algorithms = new Algorithms(logStub, plugins);
+    var algorithms = new Algorithms(logStub);
+    algorithms.algorithms = plugins;
+
     var serverStub = algorithms.allocate([1]);
     t.equal(serverStub, 1);
     t.deepEqual(executed, [1, 2, 3]);
@@ -161,7 +166,9 @@ function (t) {
         }
     ];
 
-    var algorithms = new Algorithms(logStub, plugins);
+    var algorithms = new Algorithms(logStub);
+    algorithms.algorithms = plugins;
+
     var serverStub = algorithms.allocate([1]);
     t.equal(serverStub, undefined);
     t.deepEqual(executed, [1, 3, 5, 6, 4, 2]);
