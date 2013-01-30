@@ -269,21 +269,23 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 
 ## Provided Algorithms
 
-|| **Name**                   || **Action**                                                  ||
-|| hard-filter-headnode       || Removes any headnodes                                       ||
-|| hard-filter-min-disk       || Removes CNs with insufficient disk                          ||
-|| hard-filter-min-ram        || Removes CNs with insufficient RAM                           ||
-|| hard-filter-reserved       || Removes reserved CNs                                        ||
-|| hard-filter-running        || Removes CNs which are not running                           ||
-|| hard-filter-setup          || Removes CNs which are not setup                             ||
-|| hard-filter-traits         || Removes CNs with traits that cannot fulfill VM traits       ||
-|| hard-filter-vlans          || Removes CNs which do not have required nic tags             ||
-|| pick-random                || Pick a random CN from a list                                ||
-|| pick-weighted-random       || Pick one of top 20% of CNs so far                           ||
-|| soft-filter-large-servers  || Tries to reserve some servers for large VMs                 ||
-|| soft-filter-recent-servers || Tries to ignore recently allocated-to CNs, to prevent races ||
-|| sort-2adic                 || Order CNs by 2adic ordering of available RAM                ||
-|| sort-ram                   || Order CNs by available RAM                                  ||
+|| **Name**                       || **Action**                                                  ||
+|| hard-filter-owner-same-racks   || Removes racks already containing an owner's VM(s)           ||
+|| hard-filter-owner-same-servers || Removes servers already containing an owner's VM(s)         ||
+|| hard-filter-headnode           || Removes any headnodes                                       ||
+|| hard-filter-min-disk           || Removes CNs with insufficient disk                          ||
+|| hard-filter-min-ram            || Removes CNs with insufficient RAM                           ||
+|| hard-filter-reserved           || Removes reserved CNs                                        ||
+|| hard-filter-running            || Removes CNs which are not running                           ||
+|| hard-filter-setup              || Removes CNs which are not setup                             ||
+|| hard-filter-traits             || Removes CNs with traits that cannot fulfill VM traits       ||
+|| hard-filter-vlans              || Removes CNs which do not have required nic tags             ||
+|| pick-random                    || Pick a random CN from a list                                ||
+|| pick-weighted-random           || Pick one of top 20% of CNs so far                           ||
+|| soft-filter-large-servers      || Tries to reserve some servers for large VMs                 ||
+|| soft-filter-recent-servers     || Tries to ignore recently allocated-to CNs, to prevent races ||
+|| sort-2adic                     || Order CNs by 2adic ordering of available RAM                ||
+|| sort-ram                       || Order CNs by available RAM                                  ||
 
 The allocation pipeline typically starts with the hard filters, then soft
 filters, then sorters, and finally a picker.

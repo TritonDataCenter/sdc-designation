@@ -596,6 +596,8 @@ function (t) {
         'hard-filter-headnode',
         'hard-filter-min-disk',
         'hard-filter-min-ram',
+        'hard-filter-owner-same-racks',
+        'hard-filter-owner-same-servers',
         'hard-filter-reserved',
         'hard-filter-running',
         'hard-filter-setup',
