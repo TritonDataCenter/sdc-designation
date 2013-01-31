@@ -226,23 +226,33 @@ By default -- if DAPI's configuration file doesn't specify an
 `allocationDescription` -- the following chain of algorithms will be used (see
 below for description of what each one does):
 
-    hard-filter-min-ram  =>  hard-filter-running  =>  hard-filter-setup  =>
-    hard-filter-reserved  =>  hard-filter-headnode  =>
-    soft-filter-large-servers  =>  soft-filter-recent-servers  =>  sort-2adic  =>
-    pick-weighted-random
+    ['pipe', 'hard-filter-min-ram',
+             'hard-filter-running',
+             'hard-filter-setup',
+             'hard-filter-reserved',
+             'hard-filter-headnode',
+             'soft-filter-recent-servers',
+             ['or', ['pipe', 'soft-filter-large-servers',
+                             ['or', 'hard-filter-owner-same-racks',
+                                    'hard-filter-owner-same-servers']],
+                    ['or', 'hard-filter-owner-same-racks',
+                           'hard-filter-owner-same-servers'],
+                    'identity'],
+             'sort-2adic',
+             'pick-weighted-random']
 
-Also see DEFAULT_DESC in ***$DAPI_ROOT/lib/allocator.js*** file.
+Also see DEFAULT_DESC in ***$DAPI_ROOT/lib/allocator.js***.
 
 This default description gives reasonable allocation results for a datacenter;
 make sure to do your research before modifying it. The description is organized
 as a list of algorithms and lists, each list prefixed with a command. For
 example:
 
-    [ 'pipe', 'hard-filter-min-ram',
-              'hard-filter-running',
-              [ 'or', 'hard-filter-large-servers',
-                      'hard-filter-recent-servers' ],
-              'pick-weighted-random' ]
+    ['pipe', 'hard-filter-min-ram',
+             'hard-filter-running',
+             ['or', 'hard-filter-large-servers',
+                    'hard-filter-recent-servers'],
+             'pick-weighted-random']
 
 The 'pipe' and 'or' are commands, and the rest of the elements in the list will
 be executed in that context. 'pipe' forms a pipeline, feeding the output (list

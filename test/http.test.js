@@ -2,9 +2,6 @@
  * Copyright (c) 2012, Joyent, Inc. All rights reserved.
  */
 
-/* Test the Boilerplate API endpoints */
-
-var uuid = require('node-uuid');
 var assert = require('assert');
 var common = require('./common');
 
@@ -12,13 +9,14 @@ var common = require('./common');
 
 var client;
 var servers = [ {
-    uuid: uuid(),
+    uuid: '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
     ram: 2048,
     setup: true,
     reserved: false,
     status: 'running',
     memory_total_bytes: 2147483648,
     memory_available_bytes: 1073741824,
+    rack_identifier: 'ams-1',
     sysinfo: {
         'Network Interfaces': {
             e1000g0: {
@@ -34,7 +32,7 @@ var servers = [ {
     vms: {
         '564d9386-8c67-b674-587f-101f1db2eda7': {
             uuid: '564d9386-8c67-b674-587f-101f1db2eda7',
-            owner_uuid: '00000000-0000-0000-0000-000000000000',
+            owner_uuid: '8edf8cdc-a96f-4dee-8566-687f2ea75f84',
             quota: 50,
             max_physical_memory: 512,
             zone_state: 'running',
@@ -43,13 +41,14 @@ var servers = [ {
         }
     }
 }, {
-    uuid: uuid(),
+    uuid: '85526a01-9310-44fd-9637-ed1501cc69a1',
     ram: 1024,
     setup: true,
     reserved: false,
     status: 'running',
     memory_total_bytes: 1073741824,
     memory_available_bytes: 536870912,
+    rack_identifier: 'ams-2',
     sysinfo: {
         'Network Interfaces': {
             e1000g0: {
@@ -65,7 +64,7 @@ var servers = [ {
     vms: {
         'f954f487-0e70-4e76-b87b-38182a6e3b4d': {
             uuid: 'f954f487-0e70-4e76-b87b-38182a6e3b4d',
-            owner_uuid: '00000000-0000-0000-0000-000000000000',
+            owner_uuid: '5ae17d0f-652a-4cbe-9b35-3c058793aee1',
             quota: 50,
             max_physical_memory: 128,
             zone_state: 'running',
@@ -74,7 +73,7 @@ var servers = [ {
         },
         '0e07ab09-d725-436f-884a-759fa3ed7183': {
             uuid: '0e07ab09-d725-436f-884a-759fa3ed7183',
-            owner_uuid: '00000000-0000-0000-0000-000000000000',
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
             quota: 50,
             max_physical_memory: 128,
             zone_state: 'running',
@@ -97,11 +96,13 @@ exports.setUp =  function (callback) {
 
 
 
-exports.allocation_ok = function (t) {
+exports.allocation_ok_1 = function (t) {
     var path = '/allocation';
 
     var data = { servers: servers,
-                 vm: { ram: 256, nic_tags: [ 'external' ] } };
+                 vm: { ram: 256,
+                       nic_tags: [ 'external' ],
+                       owner_uuid: 'f176970e-6f1a-45d0-a1ea-2a61a76cf7e5' } };
 
     client.post(path, data, function (err, req, res, body) {
         t.ifError(err);
@@ -115,11 +116,32 @@ exports.allocation_ok = function (t) {
 
 
 
+exports.allocation_ok_2 = function (t) {
+    var path = '/allocation';
+
+    var data = { servers: servers,
+                 vm: { ram: 256,
+                       nic_tags: [ 'external' ],
+                       owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb' } };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.equal(body.uuid, servers[0].uuid);
+        t.done();
+    });
+};
+
+
 exports.allocation_not_enough_ram = function (t) {
     var path = '/allocation';
 
     var data = { servers: servers,
-                 vm: { ram: 2048, nic_tags: [ 'external' ] } };
+                 vm: { ram: 2048,
+                       nic_tags: [ 'external' ],
+                       owner_uuid: 'f176970e-6f1a-45d0-a1ea-2a61a76cf7e5' } };
 
     client.post(path, data, function (err, req, res, body) {
         t.equal(res.statusCode, 409);
