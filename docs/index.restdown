@@ -280,6 +280,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 || hard-filter-setup              || Removes CNs which are not setup                             ||
 || hard-filter-traits             || Removes CNs with traits that cannot fulfill VM traits       ||
 || hard-filter-vlans              || Removes CNs which do not have required nic tags             ||
+|| identity                       || Returns the same servers it received                        ||
 || pick-random                    || Pick a random CN from a list                                ||
 || pick-weighted-random           || Pick one of top 20% of CNs so far                           ||
 || soft-filter-large-servers      || Tries to reserve some servers for large VMs                 ||

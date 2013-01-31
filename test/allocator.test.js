@@ -603,6 +603,7 @@ function (t) {
         'hard-filter-setup',
         'hard-filter-traits',
         'hard-filter-vlans',
+        'identity',
         'pick-random',
         'pick-weighted-random',
         'soft-filter-large-servers',
