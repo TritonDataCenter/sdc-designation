@@ -24,19 +24,14 @@ module.exports = {
             level: process.env.LOG_LEVEL || 'info',
             name: 'dapi_unit_test',
             stream: process.stderr,
-            serializers: {
-                err: Logger.stdSerializers.err,
-                req: Logger.stdSerializers.req,
-                res: restify.bunyan.serializers.response
-            }
+            serializers: restify.bunyan.serializers
         });
 
         var client = restify.createJsonClient({
             url: 'http://localhost:8080',
             version: '*',
-            retryOptions: {
-                retry: 0
-            },
+            retryOptions: { retry: 0 },
+            agent: false,
             log: logger
         });
 
@@ -47,14 +42,12 @@ module.exports = {
         assert.ok(t);
 
         t.ok(headers);
-        t.ok(headers['access-control-allow-origin']);
-        t.ok(headers['access-control-allow-methods']);
         t.ok(headers.date);
-        t.ok(headers['x-request-id']);
-        t.ok(headers['x-response-time'] >= 0);
-        t.equal(headers.server, 'Designation API');
-        t.equal(headers.connection, 'Keep-Alive');
-        // t.equal(headers['x-api-version'], '7.0.0');
+        t.equal(headers['content-type'], 'application/json');
+        t.equal(headers['api-version'], '7.0.0');
+        t.ok(headers['request-id']);
+        t.ok(headers['response-time'] >= 0);
+        t.ok(headers['content-length'] >= 0);
     }
 
 };
