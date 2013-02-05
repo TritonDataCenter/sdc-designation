@@ -43,7 +43,7 @@ function genServers(numServers, serverRam, numVmsPerServer, vmRam) {
             var vm = {
                 uuid: uuid(),
                 owner_uuid: '98c9f65b-ad6d-4819-bb27-5d00dd54de29',
-                //owner_uuid: uuid(),
+                // owner_uuid: uuid(),
                 quota: 15,
                 max_physical_memory: vmRam,
                 zone_state: 'running',
@@ -72,14 +72,14 @@ function bench(name, numServers, serverRam, numVmsPerServer, vmRam, callback) {
     });
 
     var servers = genServers(numServers, serverRam, numVmsPerServer, vmRam);
-    //var data = { servers: servers, vm: { ram: vmRam, owner_uuid: uuid() } };
+    // var data = { servers: servers, vm: { ram: vmRam, owner_uuid: uuid() } };
     var data = { servers: servers,
                  vm: { ram: vmRam,
                        owner_uuid: '98c9f65b-ad6d-4819-bb27-5d00dd54de29' } };
     var json = JSON.stringify(data);
 
     var start = new Date();
- 
+
     client.post('/allocation', json, function (err, req, res, body) {
         console.log(name, 'time:', (new Date() - start) / 1000);
 
@@ -93,7 +93,7 @@ function bench(name, numServers, serverRam, numVmsPerServer, vmRam, callback) {
         if (callback)
             callback();
     });
-};
+}
 
 
 
