@@ -64,6 +64,7 @@ function genServers(numServers, serverRam, numVmsPerServer, vmRam) {
 
 function bench(name, numServers, serverRam, numVmsPerServer, vmRam, callback) {
     var client = restify.createStringClient({
+        agent: false,
         url: 'http://localhost:8080',
         version: '*',
         retryOptions: { retry: 0 },
