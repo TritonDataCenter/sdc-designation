@@ -609,6 +609,7 @@ function (t) {
         'soft-filter-large-servers',
         'soft-filter-recent-servers',
         'sort-2adic',
+        'sort-min-ram',
         'sort-ram'
     ];
 
