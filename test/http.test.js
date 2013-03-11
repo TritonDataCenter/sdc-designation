@@ -17,6 +17,7 @@ var servers = [ {
     memory_total_bytes: 2147483648,
     memory_available_bytes: 1073741824,
     rack_identifier: 'ams-1',
+    current_platform: '20121210T203034Z',
     sysinfo: {
         'Network Interfaces': {
             e1000g0: {
@@ -49,6 +50,7 @@ var servers = [ {
     memory_total_bytes: 1073741824,
     memory_available_bytes: 536870912,
     rack_identifier: 'ams-2',
+    current_platform: '20130122T122401Z',
     sysinfo: {
         'Network Interfaces': {
             e1000g0: {
@@ -172,6 +174,39 @@ exports.allocation_ok_3 = function (t) {
 
 
 
+exports.allocation_ok_4 = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        },
+        image: {
+            requirements: {
+                min_platform: [
+                    ['7.0', '20130122T122401Z']
+                ],
+                traits: {
+                }
+            }
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.equal(body.uuid, servers[1].uuid);
+        t.done();
+    });
+};
+
+
+
 exports.allocation_not_enough_ram = function (t) {
     var path = '/allocation';
 
@@ -230,7 +265,7 @@ exports.allocation_malformed_image_2 = function (t) {
         },
         image: {
             requirements: {
-                max_platform: [{'7.0': '20121218T203452Z'}]
+                max_platform: [ {'7.0': '20121218T203452Z'} ]
             }
         }
     };
@@ -242,4 +277,3 @@ exports.allocation_malformed_image_2 = function (t) {
         t.done();
     });
 };
-

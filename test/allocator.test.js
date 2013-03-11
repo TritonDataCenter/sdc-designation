@@ -598,6 +598,7 @@ function (t) {
         'hard-filter-min-ram',
         'hard-filter-owner-same-racks',
         'hard-filter-owner-same-servers',
+        'hard-filter-platform-versions',
         'hard-filter-reserved',
         'hard-filter-running',
         'hard-filter-setup',
