@@ -331,3 +331,67 @@ exports.vm_ram_larger_than_image_requirement = function (t) {
         t.done();
     });
 };
+
+
+
+exports.vm_with_malformed_traits = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 768,
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+            traits: { true: 1 }
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.done();
+    });
+};
+
+
+
+exports.vm_with_malformed_traits = function (t) {
+    var path = '/allocation';
+
+    var server = {
+        uuid: '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+        ram: 2048,
+        setup: true,
+        reserved: false,
+        status: 'running',
+        memory_total_bytes: 2147483648,
+        memory_available_bytes: 1073741824,
+        rack_identifier: 'ams-1',
+        current_platform: '20121210T203034Z',
+        sysinfo: {
+            'Network Interfaces': {
+                e1000g0: {
+                    'Link Status': 'up',
+                    'NIC Names': [ 'external' ]
+                }
+            }
+        },
+        traits: { true: 0 }
+    };
+
+    var data = {
+        servers: server,
+        vm: {
+            ram: 768,
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.done();
+    });
+};
