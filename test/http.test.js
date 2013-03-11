@@ -207,7 +207,7 @@ exports.allocation_ok_4 = function (t) {
 
 
 
-exports.allocation_not_enough_ram = function (t) {
+exports.allocation_not_enough_server_ram = function (t) {
     var path = '/allocation';
 
     var data = { servers: servers,
@@ -266,6 +266,60 @@ exports.allocation_malformed_image_2 = function (t) {
         image: {
             requirements: {
                 max_platform: [ {'7.0': '20121218T203452Z'} ]
+            }
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.done();
+    });
+};
+
+
+
+exports.vm_ram_smaller_than_image_requirement = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        },
+        image: {
+            requirements: {
+                min_ram: 512
+            }
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.done();
+    });
+};
+
+
+
+exports.vm_ram_larger_than_image_requirement = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 768,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        },
+        image: {
+            requirements: {
+                max_ram: 512
             }
         }
     };
