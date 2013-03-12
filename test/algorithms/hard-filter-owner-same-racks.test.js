@@ -172,6 +172,28 @@ function (t) {
 
 
 
+exports.filterSameRacks_with_no_vms =
+function (t) {
+    var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
+    var state = {};
+    var givenServers = [
+        {
+            uuid: '626f74d3-c163-4b5d-96e4-e89e8d63e3b5',
+            rack_identifier: 'bar'
+        }
+    ];
+
+    var filteredServers = filter.run(log, state, givenServers,
+                                     { owner_uuid: owner_uuid });
+
+    t.equal(filteredServers.length, 1);
+    t.deepEqual(state, {});
+
+    t.done();
+};
+
+
+
 exports.filterSameRacks_with_no_servers =
 function (t) {
     var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
