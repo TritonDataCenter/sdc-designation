@@ -152,10 +152,10 @@ exports.allocation_ok_3 = function (t) {
         },
         image: {
             requirements: {
-                max_platform: [
-                    ['6.5', '20121218T203452Z'],
-                    ['7.0', '20121218T203452Z']
-                ]
+                max_platform: {
+                    '6.5': '20121218T203452Z',
+                    '7.0': '20121218T203452Z'
+                }
             }
         }
     };
@@ -184,9 +184,7 @@ exports.allocation_ok_4 = function (t) {
         },
         image: {
             requirements: {
-                min_platform: [
-                    ['7.0', '20130122T122401Z']
-                ]
+                min_platform: { '7.0': '20130122T122401Z' }
             }
         }
     };
@@ -272,7 +270,7 @@ exports.allocation_malformed_image_1 = function (t) {
         },
         image: {
             requirements: {
-                max_platform: [['7.0', '2012-12-18']]
+                max_platform: { '7.0': '2012-12-18' }
             }
         }
     };
@@ -281,8 +279,8 @@ exports.allocation_malformed_image_1 = function (t) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
         t.equal(body.code, 'InvalidArgument');
-        t.equal(body.message, '"requirements.max_platform" contains invalid ' +
-                              'platform date');
+        t.equal(body.message, '"requirements.max_platform" contains an ' +
+                              'invalid platform date');
         t.done();
     });
 };
@@ -301,7 +299,7 @@ exports.allocation_malformed_image_2 = function (t) {
         },
         image: {
             requirements: {
-                max_platform: [ {'7.0': '20121218T203452Z'} ]
+                max_platform: [ ['7.0', '20121218T203452Z'] ]
             }
         }
     };
@@ -310,8 +308,7 @@ exports.allocation_malformed_image_2 = function (t) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
         t.equal(body.code, 'InvalidArgument');
-        t.equal(body.message, 'An element in "requirements.max_platform" is ' +
-                              'not an array');
+        t.equal(body.message, '"requirements.max_platform" is not a hash');
         t.done();
     });
 };

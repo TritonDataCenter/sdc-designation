@@ -45,8 +45,8 @@ function (t) {
     var vmDetails = {};
     var imgDetails = {
         requirements: {
-            min_platform: [['6.5', '20121211T203034Z']],
-            max_platform: [['6.5', '20130101T203034Z']]
+            min_platform: {'6.5': '20121211T203034Z'},
+            max_platform: {'6.5': '20130101T203034Z'}
         }
     };
 
@@ -73,7 +73,8 @@ function (t) {
     var vmDetails = {};
     var imgDetails = {
         requirements: {
-            min_platform: [['7.0', '20121211T203034Z']]
+            // should only obey 7.0
+            min_platform: {'6.5': '20130101T000000Z', '7.0': '20121211T203034Z'}
         }
     };
 
@@ -100,7 +101,8 @@ function (t) {
     var vmDetails = {};
     var imgDetails = {
         requirements: {
-            max_platform: [['7.0', '20130101T000000Z']]
+            // should only obey 7.0
+            max_platform: {'6.5': '20110101T000000Z', '7.0': '20130101T000000Z'}
         }
     };
 
@@ -127,8 +129,8 @@ function (t) {
     var vmDetails = {};
     var imgDetails = {
         requirements: {
-            min_platform: [['7.0', '20121211T203034Z']],
-            max_platform: [['7.0', '20130101T000000Z']]
+            min_platform: {'7.0': '20121211T203034Z'},
+            max_platform: {'7.0': '20130101T000000Z'}
         }
     };
 
