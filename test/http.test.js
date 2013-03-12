@@ -252,7 +252,8 @@ exports.allocation_not_enough_server_ram = function (t) {
     client.post(path, data, function (err, req, res, body) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
-        t.ok(body);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, 'No allocatable servers found');
         t.done();
     });
 };
@@ -279,7 +280,9 @@ exports.allocation_malformed_image_1 = function (t) {
     client.post(path, data, function (err, req, res, body) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
-        t.ok(body);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, '"requirements.max_platform" contains invalid ' +
+                              'platform date');
         t.done();
     });
 };
@@ -306,7 +309,9 @@ exports.allocation_malformed_image_2 = function (t) {
     client.post(path, data, function (err, req, res, body) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
-        t.ok(body);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, 'An element in "requirements.max_platform" is ' +
+                              'not an array');
         t.done();
     });
 };
@@ -333,7 +338,9 @@ exports.vm_ram_smaller_than_image_requirement = function (t) {
     client.post(path, data, function (err, req, res, body) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
-        t.ok(body);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, '"vm.ram" is smaller than ' +
+                              '"image.requirements.min_ram"');
         t.done();
     });
 };
@@ -360,7 +367,9 @@ exports.vm_ram_larger_than_image_requirement = function (t) {
     client.post(path, data, function (err, req, res, body) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
-        t.ok(body);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, '"vm.ram" is larger than ' +
+                              '"image.requirements.max_ram"');
         t.done();
     });
 };
@@ -382,41 +391,21 @@ exports.vm_with_malformed_traits = function (t) {
     client.post(path, data, function (err, req, res, body) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
-        t.ok(body);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, 'VM Trait "true" is an invalid type');
         t.done();
     });
 };
 
 
 
-exports.vm_with_malformed_traits = function (t) {
+exports.malformed_vm = function (t) {
     var path = '/allocation';
 
-    var server = {
-        uuid: '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-        ram: 2048,
-        setup: true,
-        reserved: false,
-        status: 'running',
-        memory_total_bytes: 2147483648,
-        memory_available_bytes: 1073741824,
-        rack_identifier: 'ams-1',
-        current_platform: '20121210T203034Z',
-        sysinfo: {
-            'Network Interfaces': {
-                e1000g0: {
-                    'Link Status': 'up',
-                    'NIC Names': [ 'external' ]
-                }
-            }
-        },
-        traits: { true: 0 }
-    };
-
     var data = {
-        servers: server,
+        servers: servers,
         vm: {
-            ram: 768,
+            ram: 'not-a-number',
             owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
         }
     };
@@ -424,7 +413,8 @@ exports.vm_with_malformed_traits = function (t) {
     client.post(path, data, function (err, req, res, body) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
-        t.ok(body);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, 'VM "ram" is not a number');
         t.done();
     });
 };
