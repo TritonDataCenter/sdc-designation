@@ -155,9 +155,7 @@ exports.allocation_ok_3 = function (t) {
                 max_platform: [
                     ['6.5', '20121218T203452Z'],
                     ['7.0', '20121218T203452Z']
-                ],
-                traits: {
-                }
+                ]
             }
         }
     };
@@ -188,9 +186,7 @@ exports.allocation_ok_4 = function (t) {
             requirements: {
                 min_platform: [
                     ['7.0', '20130122T122401Z']
-                ],
-                traits: {
-                }
+                ]
             }
         }
     };
@@ -201,6 +197,43 @@ exports.allocation_ok_4 = function (t) {
         common.checkHeaders(t, res.headers);
         t.ok(body);
         t.equal(body.uuid, servers[1].uuid);
+        t.done();
+    });
+};
+
+
+
+exports.allocation_ok_5 = function (t) {
+    var path = '/allocation';
+
+    // make sure to undo this change at end of this function
+    var originalServerTraits = servers[0].traits;
+
+    servers[1].traits = { ssd: true, users: ['john'] };
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+            traits: { ssd: true }
+        },
+        image: {
+            traits: { users: 'john' }
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.equal(body.uuid, servers[1].uuid);
+
+        // undo change to server traits
+        servers[1].traits = originalServerTraits;
+
         t.done();
     });
 };
