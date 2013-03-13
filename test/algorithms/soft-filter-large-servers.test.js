@@ -17,17 +17,12 @@ for (var ii = 0; ii < 20; ii++)
 
 exports.filterLargeServers_with_small_allocation =
 function (t) {
-    var expectedServers = givenServers.slice(3, givenServers.length);
+    var expectedServers = givenServers.slice(0, givenServers.length - 3).
+                                       reverse();
     var state = {};
     var ram = 30 * 1024;  // for vm, in MiB
 
     var filteredServers = filter.run(log, state, givenServers, { ram: ram });
-
-    t.deepEqual(filteredServers, expectedServers);
-    t.deepEqual(state, {});
-
-    filteredServers = filter.run(log, state, givenServers.reverse(),
-                                 { ram: ram });
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -39,18 +34,12 @@ function (t) {
 
 exports.filterLargeServers_with_large_allocation =
 function (t) {
-    var expectedServers = givenServers.slice(0, 3);
+    var expectedServers = givenServers.slice(givenServers.length - 3,
+                                             givenServers.length).reverse();
     var state = {};
     var ram = 34 * 1024;  // for vm, in MiB
 
     var filteredServers = filter.run(log, state, givenServers, { ram: ram });
-
-    t.deepEqual(filteredServers, expectedServers);
-    t.deepEqual(state, {});
-
-    filteredServers = filter.run(log, state, givenServers.reverse(),
-                                 { ram: ram });
-
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -61,7 +50,7 @@ function (t) {
 
 exports.filterLargeServers_with_few_servers =
 function (t) {
-    var servers = givenServers.slice(0, 3);
+    var servers = givenServers.slice(0, 3).reverse();
     var state = {};
     var ram = 34 * 1024;  // for vm, in MiB
 
