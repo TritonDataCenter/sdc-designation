@@ -48,8 +48,8 @@ SmartOS machine for testing purposes without a full SDC install.
 
 # Allocation
 
-Currently, there are only two parameters required for allocating a VM to a
-server: VM payload and a servers list.
+Currently, there are three parameters required for allocating a VM to a
+server: VM payload, image manifest, and the servers list.
 
 
 
@@ -62,8 +62,9 @@ VM, but the current version only considers the following characteristics:
 || **Attribute** || **Type** || **Description**                                      ||
 || ram           || integer  || RAM required, in MiB                                 ||
 || quota         || integer  || Disk required, in MiB                                ||
-|| traits        || hash     || Optionally, traits that a compute node must match    ||
+|| traits        || hash     || Traits that a compute node must match                ||
 || nic_tags      || array    || If VLAN filtering is enabled, nic_tags needed for VM ||
+|| owner_uuid    || string   || UUID of the new zone's owner                         ||
 
 The following are a couple of valid VM payload examples. As long as the
 ***ram*** attribute is present, the object will pass validation. 
@@ -98,7 +99,52 @@ The following are a couple of valid VM payload examples. As long as the
 
 
 
-## Servers Payload
+## Image Manifest
+
+The image manifest is what IMGAPI provides. It contains various information and
+restrictions on VMs and CNs required by the dataset which will be used to create
+a VM.
+
+In contrast to VMs, image manifests are more strictly validated. Currently DAPI
+the following characteristics:
+
+|| **Attribute** || **Type** || **Description**                          ||
+|| traits        || hash     || Traits that a compute node must match    ||
+|| requirements  || hash     || Various restrictions that a CN must meet ||
+
+Currently, DAPI considers the following attributes in ***requirements***, all
+attributes being optional:
+
+|| **Attribute** || **Type** || **Description**                             ||
+|| min_ram       || integer  || Minimum RAM in MiB needed for a zone        ||
+|| max_ram       || integer  || Maximum RAM in MiB allowed for a zone       ||
+|| min_platform  || hash     || Minimum platform on a CN for an SDC version ||
+|| max_platform  || hash     || Minimum platform on a CN for an SDC version ||
+
+min_platform and max_platform are hashes with SDC versions as keys, and CN
+platform versions as values. This is used to ensure that datasets which require
+certain features from an underlying platform do not end up used in a VM on a CN
+running a platform that doesn't support those features (the platform either
+being too old, or no longer supporting a removed feature).
+
+An example of a valid manifest:
+
+    {
+      "traits": {
+        "ssd": true
+      },
+      "requirements": {
+        "min_ram": 1024,
+        "min_platform": {
+          "6.5": "20121211T203034Z",
+          "7.0": "20121117T221253Z"
+        }
+      }
+    }
+
+
+
+## Servers List
 
 The same way the VM payload follows the format that vmadm provides, the servers
 payload that is required by the allocation endpoint is expected to be CNAPI
@@ -231,6 +277,8 @@ below for description of what each one does):
              'hard-filter-setup',
              'hard-filter-reserved',
              'hard-filter-headnode',
+             'hard-filter-platform-versions',
+             'hard-filter-traits',
              'soft-filter-recent-servers',
              ['or', ['pipe', 'soft-filter-large-servers',
                              ['or', 'hard-filter-owner-same-racks',
@@ -280,11 +328,13 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 ## Provided Algorithms
 
 || **Name**                       || **Action**                                                  ||
-|| hard-filter-owner-same-racks   || Removes racks already containing an owner's VM(s)           ||
-|| hard-filter-owner-same-servers || Removes servers already containing an owner's VM(s)         ||
 || hard-filter-headnode           || Removes any headnodes                                       ||
+|| hard-filter-large-servers      || Removes the top 15% servers with the most available RAM     ||
 || hard-filter-min-disk           || Removes CNs with insufficient disk                          ||
 || hard-filter-min-ram            || Removes CNs with insufficient RAM                           ||
+|| hard-filter-owner-same-racks   || Removes racks already containing an owner's VM(s)           ||
+|| hard-filter-owner-same-servers || Removes servers already containing an owner's VM(s)         ||
+|| hard-filter-platform-versions  || Removes servers that don't pass image manifest platform requirements ||
 || hard-filter-reserved           || Removes reserved CNs                                        ||
 || hard-filter-running            || Removes CNs which are not running                           ||
 || hard-filter-setup              || Removes CNs which are not setup                             ||
@@ -296,6 +346,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 || soft-filter-large-servers      || Tries to reserve some servers for large VMs                 ||
 || soft-filter-recent-servers     || Tries to ignore recently allocated-to CNs, to prevent races ||
 || sort-2adic                     || Order CNs by 2adic ordering of available RAM                ||
+|| sort-min-ram                   || Order CNs by how little available RAM is left
 || sort-ram                       || Order CNs by available RAM                                  ||
 
 The allocation pipeline typically starts with the hard filters, then soft
@@ -314,9 +365,9 @@ some do not.
 ## Traits
 
 Although traits are only used by one algorithm, they serve the important purpose
-of describing arbitrary user-defined requirements for a VM, and matching those
-requirements with CNs that can fulfill them. Ergo I'll describe how they work
-here.
+of describing arbitrary user-defined requirements for a VM and image manifest,
+and matching those requirements with CNs that can fulfill them. Ergo I'll
+describe how they work here.
 
 Imagine for a moment you'd like to reserve some servers for just one customer.
 In this cause you'd add a customer trait to both the CNs and to the VM request.
@@ -437,6 +488,12 @@ common between the two (and ssd is true for both too, just to demonstrate):
       }
     }
 
+Image manifests also can contain traits, and they take priority over traits in
+a VM payload. A union is made between traits between the VM payload and image
+manifest, attributes from the image manifest's traits taking priority when both
+the VM payload and image manifest share some attributes in their traits, and
+the resulting traits union is used to match against CN traits.
+
 
 
 # Changelog
@@ -448,3 +505,7 @@ common between the two (and ssd is true for both too, just to demonstrate):
 ## 2013-01-07
 
   * Redid much of the docs
+
+## 2013-03-14
+
+  * Add section about image manifests, update traits, and update plugin list
