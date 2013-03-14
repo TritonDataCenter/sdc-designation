@@ -7,22 +7,26 @@ var filter = require('../../lib/algorithms/hard-filter-platform-versions.js');
 var log = { trace: function () { return true; },
             debug: function () { return true; } };
 
+var testServers = genServers([[128, '6.5', '20121218T203452Z'],
+                              [384, '6.5', '20121210T203034Z'],
+                              [768, '6.5', '20130129T122401Z'],
+                              [128, '7.0', '20121218T203452Z'],
+                              [384, '7.0', '20121210T203034Z'],
+                              [768, '7.0', '20130129T122401Z'],
+                              [128, '7.1', '20121218T203452Z'],
+                              [384, '7.1', '20121210T203034Z'],
+                              [768, '7.1', '20130129T122401Z']]);
+
 
 
 exports.filterPlatformVersions_no_platform_requirements =
 function (t) {
-    var givenServers = [
-        { memory_available_bytes: 128, current_platform: '20121218T203452Z' },
-        { memory_available_bytes: 384, current_platform: '20121210T203034Z' },
-        { memory_available_bytes: 768, current_platform: '20121322T122401Z' }
-    ];
-
     var state = {};
-    var expectedServers = givenServers;
+    var expectedServers = testServers;
     var vmDetails = {};
     var imgDetails = {};
 
-    var filteredServers = filter.run(log, state, givenServers, vmDetails,
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
                                      imgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -32,25 +36,65 @@ function (t) {
 
 
 
-exports.filterPlatformVersions_65_platform_requirements =
+exports.filterPlatformVersions_min_platform_requirements =
 function (t) {
-    var givenServers = [
-        { memory_available_bytes: 128, current_platform: '20121218T203452Z' },
-        { memory_available_bytes: 384, current_platform: '20121210T203034Z' },
-        { memory_available_bytes: 768, current_platform: '20130122T122401Z' }
-    ];
+    var expectedServers = testServers.slice(5, 9);
+    expectedServers.unshift(testServers[3]);
 
     var state = {};
-    var expectedServers = givenServers;
+    var vmDetails = {};
+    var imgDetails = {
+        requirements: {
+            min_platform: {'7.0': '20121211T203034Z'}
+        }
+    };
+
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
+                                     imgDetails);
+    t.deepEqual(filteredServers, expectedServers);
+    t.deepEqual(state, {});
+
+    t.done();
+};
+
+
+
+exports.filterPlatformVersions_max_platform_requirements =
+function (t) {
+    var expectedServers = testServers.slice(0, 3);
+    expectedServers.push(testServers[4]);
+
+    var state = {};
+    var vmDetails = {};
+    var imgDetails = {
+        requirements: {
+            max_platform: {'7.0': '20121211T203034Z'}
+        }
+    };
+
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
+                                     imgDetails);
+    t.deepEqual(filteredServers, expectedServers);
+    t.deepEqual(state, {});
+
+    t.done();
+};
+
+
+
+exports.filterPlatformVersions_minmax_platform_requirements_1 =
+function (t) {
+    var state = {};
+    var expectedServers = testServers.slice(0, 1);
     var vmDetails = {};
     var imgDetails = {
         requirements: {
             min_platform: {'6.5': '20121211T203034Z'},
-            max_platform: {'6.5': '20130101T203034Z'}
+            max_platform: {'6.5': '20130128T203034Z'}
         }
     };
 
-    var filteredServers = filter.run(log, state, givenServers, vmDetails,
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
                                      imgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -60,25 +104,22 @@ function (t) {
 
 
 
-exports.filterPlatformVersions_min_platform =
+exports.filterPlatformVersions_minmax_platform_requirements_2 =
 function (t) {
-    var givenServers = [
-        { memory_available_bytes: 128, current_platform: '20121218T203452Z' },
-        { memory_available_bytes: 384, current_platform: '20121210T203034Z' },
-        { memory_available_bytes: 768, current_platform: '20130122T122401Z' }
-    ];
+    var expectedServers = testServers.slice(2, 6);
+    expectedServers.unshift(testServers[0]);
+    expectedServers[expectedServers.length] = testServers[7];
 
     var state = {};
-    var expectedServers = [givenServers[0], givenServers[2]];
     var vmDetails = {};
     var imgDetails = {
         requirements: {
-            // should only obey 7.0
-            min_platform: {'6.5': '20130101T000000Z', '7.0': '20121211T203034Z'}
+            min_platform: {'6.5': '20121211T203034Z'},
+            max_platform: {'7.1': '20121217T203452Z'}
         }
     };
 
-    var filteredServers = filter.run(log, state, givenServers, vmDetails,
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
                                      imgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -88,25 +129,23 @@ function (t) {
 
 
 
-exports.filterPlatformVersions_max_platform =
+exports.filterPlatformVersions_minmax_platform_requirements_3 =
 function (t) {
-    var givenServers = [
-        { memory_available_bytes: 128, current_platform: '20121218T203452Z' },
-        { memory_available_bytes: 384, current_platform: '20121210T203034Z' },
-        { memory_available_bytes: 768, current_platform: '20130122T122401Z' }
-    ];
+    var expectedServers = testServers.slice(3, 6);
+    expectedServers.unshift(testServers[0]);
+    expectedServers[expectedServers.length] = testServers[7];
 
     var state = {};
-    var expectedServers = givenServers.slice(0, 2);
     var vmDetails = {};
     var imgDetails = {
         requirements: {
-            // should only obey 7.0
-            max_platform: {'6.5': '20110101T000000Z', '7.0': '20130101T000000Z'}
+            min_platform: {'6.5': '20121211T203034Z'},
+            max_platform: {'6.5': '20130101T122401Z',
+                           '7.1': '20121217T203452Z'}
         }
     };
 
-    var filteredServers = filter.run(log, state, givenServers, vmDetails,
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
                                      imgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -116,25 +155,22 @@ function (t) {
 
 
 
-exports.filterPlatformVersions_min_max_platform =
+exports.filterPlatformVersions_minmax_platform_requirements_4 =
 function (t) {
-    var givenServers = [
-        { memory_available_bytes: 128, current_platform: '20121218T203452Z' },
-        { memory_available_bytes: 384, current_platform: '20121210T203034Z' },
-        { memory_available_bytes: 768, current_platform: '20130122T122401Z' }
-    ];
+    var expectedServers = testServers.slice(2, 7);
+    expectedServers.unshift(testServers[0]);
 
     var state = {};
-    var expectedServers = givenServers.slice(0, 1);
     var vmDetails = {};
     var imgDetails = {
         requirements: {
-            min_platform: {'7.0': '20121211T203034Z'},
-            max_platform: {'7.0': '20130101T000000Z'}
+            min_platform: {'6.5': '20121211T203034Z',
+                           '7.1': '20121211T203034Z'},
+            max_platform: {'7.1': '20121219T203452Z'}
         }
     };
 
-    var filteredServers = filter.run(log, state, givenServers, vmDetails,
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
                                      imgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -167,3 +203,14 @@ function (t) {
     t.ok(typeof (filter.name) === 'string');
     t.done();
 };
+
+
+
+function genServers(serverData) {
+    var servers = serverData.map(function (data) {
+        return { memory_available_bytes: data[0],
+                 sysinfo: { 'SDC Version': data[1], 'Live Image': data[2] } };
+    });
+
+    return servers;
+}

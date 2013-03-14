@@ -17,8 +17,9 @@ var servers = [ {
     memory_total_bytes: 2147483648,
     memory_available_bytes: 1073741824,
     rack_identifier: 'ams-1',
-    current_platform: '20121210T203034Z',
     sysinfo: {
+        'SDC Version': '7.0',
+        'Live Image': '20121210T203034Z',
         'Network Interfaces': {
             e1000g0: {
                 'Link Status': 'up',
@@ -50,8 +51,9 @@ var servers = [ {
     memory_total_bytes: 1073741824,
     memory_available_bytes: 536870912,
     rack_identifier: 'ams-2',
-    current_platform: '20130122T122401Z',
     sysinfo: {
+        'SDC Version': '7.0',
+        'Live Image': '20130122T122401Z',
         'Network Interfaces': {
             e1000g0: {
                 'Link Status': 'up',
