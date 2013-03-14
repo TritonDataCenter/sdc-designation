@@ -381,7 +381,7 @@ function displayLayout(servers, newestServerUuid, vmUuid, removedVmUuids) {
 
     console.log('\033[m'); // reset to normal colours
     console.log('(q)uit, (n)ext, (d)etails, iterations: ' +
-                '10^(1) 10^(2) 10^(3) 10^(4)');
+                '10^(1) 10^(2) 10^(3) 10^(4) 10^(5)');
 }
 
 
@@ -460,7 +460,7 @@ function doInputCommand(key, client, activityList, servers) {
         displayVmLayout(servers);
     }
 
-    if (key === '1' || key === '2' || key === '3' || key === '4') {
+    if (['1', '2', '3', '4', '5'].indexOf(key) !== -1) {
         var iterations = Math.pow(10, key);
 
         var intervalId = setInterval(function () {
