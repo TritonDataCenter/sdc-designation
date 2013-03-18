@@ -12,7 +12,7 @@ var log = { trace: function () { return true; },
 exports.pickWeightedRandom_with_many_servers =
 function (t) {
     var numServers = 100;
-    var weightRatio = 0.1;
+    var weightRatio = 0.05;
     var iterPerServer = 60;
     var selectedServerRange = numServers * weightRatio;
 
