@@ -85,6 +85,50 @@ var servers = [ {
             last_modified: '2012-12-19T05:26:05.000Z'
         }
     }
+}, {
+    uuid: 'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+    ram: 1024,
+    setup: true,
+    reserved: false,
+    status: 'running',
+    memory_total_bytes: 1073741824,
+    memory_available_bytes: 536870912,
+    overprovision_ratio: 1.5,
+    rack_identifier: 'ams-2',
+    sysinfo: {
+        'SDC Version': '7.0',
+        'Live Image': '20130122T122401Z',
+        'Network Interfaces': {
+            e1000g0: {
+                'Link Status': 'up',
+                'NIC Names': [ 'external' ]
+            },
+            e1000g1: {
+               'Link Status': 'up',
+               'NIC Names': [ 'admin' ]
+            }
+        }
+    },
+    vms: {
+        '813b0c77-8e8d-4fbb-83e2-0dc0a3ba388a': {
+            uuid: '813b0c77-8e8d-4fbb-83e2-0dc0a3ba388a',
+            owner_uuid: 'ba09128c-ddf2-4bc4-9a16-a556afdc55b5',
+            quota: 50,
+            max_physical_memory: 512,
+            zone_state: 'running',
+            state: 'running',
+            last_modified: '2012-12-19T05:26:05.000Z'
+        },
+        '4ab04a6b-f045-41fe-a61a-8eb91604d0a1': {
+            uuid: '4ab04a6b-f045-41fe-a61a-8eb91604d0a1',
+            owner_uuid: '2f100ea6-74c4-4c4f-9751-499e1aaad769',
+            quota: 50,
+            max_physical_memory: 512,
+            zone_state: 'running',
+            state: 'running',
+            last_modified: '2012-12-19T05:26:05.000Z'
+        }
+    }
 } ];
 
 
@@ -142,7 +186,7 @@ exports.allocation_ok_2 = function (t) {
 
 
 
-exports.allocation_ok_3 = function (t) {
+exports.allocation_max_platform = function (t) {
     var path = '/allocation';
 
     var data = {
@@ -174,7 +218,7 @@ exports.allocation_ok_3 = function (t) {
 
 
 
-exports.allocation_ok_4 = function (t) {
+exports.allocation_min_platform = function (t) {
     var path = '/allocation';
 
     var data = {
@@ -203,7 +247,7 @@ exports.allocation_ok_4 = function (t) {
 
 
 
-exports.allocation_ok_5 = function (t) {
+exports.allocation_with_traits = function (t) {
     var path = '/allocation';
 
     // make sure to undo this change at end of this function
@@ -233,6 +277,32 @@ exports.allocation_ok_5 = function (t) {
 
         // undo change to server traits
         servers[1].traits = originalServerTraits;
+
+        t.done();
+    });
+};
+
+
+
+exports.allocation_overprovisioning = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
+            overprovision_ratio: 1.5
+        },
+        image: {}
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.equal(body.uuid, servers[2].uuid);
 
         t.done();
     });

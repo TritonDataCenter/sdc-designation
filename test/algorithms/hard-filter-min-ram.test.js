@@ -31,6 +31,29 @@ function (t) {
 
 
 
+exports.filterMinRam_with_overprovision_ratio =
+function (t) {
+    var givenServers = [
+        { unreserved_ram: 256 },
+        { unreserved_ram: 511 },
+        { unreserved_ram: 512 },
+        { unreserved_ram: 768 }
+    ];
+
+    var expectedServers = givenServers.slice(2, 4);
+    var vm = { ram: 768, overprovision_ratio: 1.5 };
+    var state = {};
+
+    var filteredServers = filter.run(log, state, givenServers, vm);
+
+    t.deepEqual(filteredServers, expectedServers);
+    t.deepEqual(state, {});
+
+    t.done();
+};
+
+
+
 exports.filterMinRam_with_no_servers =
 function (t) {
     var state = {};

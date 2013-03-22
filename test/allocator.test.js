@@ -568,6 +568,21 @@ function (t) {
                     max_physical_memory: 4096
                 }
             }
+        },
+        {
+            'Zpool Size in GiB': 52,
+            overprovision_ratio: 1.5,
+            memory_total_bytes: 9132881112,
+            vms: {
+                '62559b33-4f3a-4505-a942-87cc557fdf4e': {
+                    quota: 20,
+                    max_physical_memory: 512
+                },
+                '335498f7-a1ed-420c-8367-7f2769ca1e84': {
+                    quota: 10,
+                    max_physical_memory: 4096
+                }
+            }
         }
     ];
 
@@ -579,6 +594,9 @@ function (t) {
 
     t.equal(serversInfo[1].unreserved_disk, 22528);
     t.equal(serversInfo[1].unreserved_ram, 2795);
+
+    t.equal(serversInfo[2].unreserved_disk, 22528);
+    t.equal(serversInfo[2].unreserved_ram, 4331);
 
     t.done();
 };
@@ -597,6 +615,7 @@ function (t) {
         'hard-filter-large-servers',
         'hard-filter-min-disk',
         'hard-filter-min-ram',
+        'hard-filter-overprovision-ratio',
         'hard-filter-owner-same-racks',
         'hard-filter-owner-same-servers',
         'hard-filter-platform-versions',
