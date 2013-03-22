@@ -272,7 +272,8 @@ By default -- if DAPI's configuration file doesn't specify an
 `allocationDescription` -- the following chain of algorithms will be used (see
 below for description of what each one does):
 
-    ['pipe', 'hard-filter-min-ram',
+    ['pipe', 'hard-filter-overprovision-ratio',
+             'hard-filter-min-ram',
              'hard-filter-running',
              'hard-filter-setup',
              'hard-filter-reserved',
@@ -326,27 +327,28 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 
 ## Provided Algorithms
 
-|| **Name**                       || **Action**                                                  ||
-|| hard-filter-headnode           || Removes any headnodes                                       ||
-|| hard-filter-large-servers      || Removes the top 15% servers with the most available RAM     ||
-|| hard-filter-min-disk           || Removes CNs with insufficient disk                          ||
-|| hard-filter-min-ram            || Removes CNs with insufficient RAM                           ||
-|| hard-filter-owner-same-racks   || Removes racks already containing an owner's VM(s)           ||
-|| hard-filter-owner-same-servers || Removes servers already containing an owner's VM(s)         ||
-|| hard-filter-platform-versions  || Removes servers that don't pass image manifest platform requirements ||
-|| hard-filter-reserved           || Removes reserved CNs                                        ||
-|| hard-filter-running            || Removes CNs which are not running                           ||
-|| hard-filter-setup              || Removes CNs which are not setup                             ||
-|| hard-filter-traits             || Removes CNs with traits that cannot fulfill VM traits       ||
-|| hard-filter-vlans              || Removes CNs which do not have required nic tags             ||
-|| identity                       || Returns the same servers it received                        ||
-|| pick-random                    || Pick a random CN from a list                                ||
-|| pick-weighted-random           || Pick one of top 20% of CNs so far                           ||
-|| soft-filter-large-servers      || Tries to reserve some servers for large VMs                 ||
-|| soft-filter-recent-servers     || Tries to ignore recently allocated-to CNs, to prevent races ||
-|| sort-2adic                     || Order CNs by 2adic ordering of available RAM                ||
-|| sort-min-ram                   || Order CNs by how little available RAM is left
-|| sort-ram                       || Order CNs by available RAM                                  ||
+|| **Name**                        || **Action**                                                  ||
+|| hard-filter-headnode            || Removes any headnodes                                       ||
+|| hard-filter-large-servers       || Removes the top 15% servers with the most available RAM     ||
+|| hard-filter-min-disk            || Removes CNs with insufficient disk                          ||
+|| hard-filter-min-ram             || Removes CNs with insufficient RAM                           ||
+|| hard-filter-overprovision-ratio || Removes CNs with a different overprovision ratio than the request    ||
+|| hard-filter-owner-same-racks    || Removes racks already containing an owner's VM(s)           ||
+|| hard-filter-owner-same-servers  || Removes servers already containing an owner's VM(s)         ||
+|| hard-filter-platform-versions   || Removes servers that don't pass image manifest platform requirements ||
+|| hard-filter-reserved            || Removes reserved CNs                                        ||
+|| hard-filter-running             || Removes CNs which are not running                           ||
+|| hard-filter-setup               || Removes CNs which are not setup                             ||
+|| hard-filter-traits              || Removes CNs with traits that cannot fulfill VM traits       ||
+|| hard-filter-vlans               || Removes CNs which do not have required nic tags             ||
+|| identity                        || Returns the same servers it received                        ||
+|| pick-random                     || Pick a random CN from a list                                ||
+|| pick-weighted-random            || Pick one of top 20% of CNs so far                           ||
+|| soft-filter-large-servers       || Tries to reserve some servers for large VMs                 ||
+|| soft-filter-recent-servers      || Tries to ignore recently allocated-to CNs, to prevent races ||
+|| sort-2adic                      || Order CNs by 2adic ordering of available RAM                ||
+|| sort-min-ram                    || Order CNs by how little available RAM is left
+|| sort-ram                        || Order CNs by available RAM                                  ||
 
 The allocation pipeline typically starts with the hard filters, then soft
 filters, then sorters, and finally a picker.
@@ -508,3 +510,7 @@ the resulting traits union is used to match against CN traits.
 ## 2013-03-14
 
   * Add section about image manifests, update traits, and update plugin list
+
+## 2013-03-22
+
+  * Add minor details about overprovision plugin
