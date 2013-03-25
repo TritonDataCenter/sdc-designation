@@ -180,6 +180,33 @@ function (t) {
 
 
 
+exports.filterPlatformVersions_ignore_non_versions =
+function (t) {
+    var expectedServers = testServers.slice(2, 6);
+    expectedServers.unshift(testServers[0]);
+    expectedServers[expectedServers.length] = testServers[7];
+
+    var state = {};
+    var vmDetails = {};
+    var imgDetails = {
+        requirements: {
+            min_platform: {'6.5': '20121211T203034Z',
+                           'smartos': '20121217T203452Z'},
+            max_platform: {'7.1': '20121217T203452Z',
+                           'smartos': '20121211T203034Z'}
+        }
+    };
+
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
+                                     imgDetails);
+    t.deepEqual(filteredServers, expectedServers);
+    t.deepEqual(state, {});
+
+    t.done();
+};
+
+
+
 exports.filterPlatformVersions_with_no_servers =
 function (t) {
     var givenServers = [];
