@@ -161,6 +161,7 @@ the following characteristics:
 || memory_available_bytes || integer  || RAM available for allocation, in bytes          ||
 || memory_total_bytes     || integer  || Total RAM on server, in bytes                   ||
 || reservation_ratio      || float    || Amount of memory to reserve for ZFS ARC and OS  ||
+|| overprovision_ratio    || float    || How much VMs will overprovision RAM             ||
 || reserved               || boolean  || If the server has been reserved by an operator  ||
 || setup                  || boolean  || If the server has been setup                    ||
 || 'Zpool Size in GiB'    || integer  || Total disk space on server, in GiB              ||
