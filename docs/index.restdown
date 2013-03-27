@@ -160,6 +160,7 @@ the following characteristics:
 || uuid                   || string   || UUID of server                                  ||
 || memory_available_bytes || integer  || RAM available for allocation, in bytes          ||
 || memory_total_bytes     || integer  || Total RAM on server, in bytes                   ||
+|| reservation_ratio      || float    || Amount of memory to reserve for ZFS ARC and OS  ||
 || reserved               || boolean  || If the server has been reserved by an operator  ||
 || setup                  || boolean  || If the server has been setup                    ||
 || 'Zpool Size in GiB'    || integer  || Total disk space on server, in GiB              ||
@@ -181,6 +182,7 @@ As an example of a valid servers payload:
         "uuid": "cdc1b052-1df9-4a3d-b34d-3f0afadac883",
         "memory_total_bytes": 2147483648,
         "memory_available_bytes": 1073741824,
+        "reservation_ratio": 0.15,
         "reserved": false,
         "setup": true,
         "Zpool Size in GiB": 1024,
@@ -195,6 +197,7 @@ As an example of a valid servers payload:
         "uuid": "82c53a64-b19c-4266-bf16-3ee1d34318d2",
         "memory_total_bytes": 1073741824,
         "memory_available_bytes": 536870912
+        "reservation_ratio": 0.25,
         "reserved": false,
         "setup": false,
         "Zpool Size in GiB": null,
@@ -232,6 +235,7 @@ payload.
       uuid: 'cdc1b052-1df9-4a3d-b34d-3f0afadac883',
       memory_total_bytes: 2147483648,
       memory_available_bytes: 1073741824,
+      reservation_ratio: 0.15,
       reserved: false,
       setup: true,
       'Zpool Size in GiB': 1024,
@@ -246,6 +250,7 @@ payload.
       uuid: '82c53a64-b19c-4266-bf16-3ee1d34318d2',
       memory_total_bytes: 1073741824,
       memory_available_bytes: 536870912
+      reservation_ratio: 0.25,
       reserved: false,
       setup: false,
       'Zpool Size in GiB': null,

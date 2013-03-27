@@ -544,6 +544,7 @@ function (t) {
         {
             'Zpool Size in GiB': 39,
             memory_total_bytes: 2942881792,
+            reservation_ratio: 0.15,
             vms: {
                 '1ac434da-01aa-4663-8420-d3524ed1de0c': {
                     quota: 25,
@@ -558,6 +559,7 @@ function (t) {
         {
             'Zpool Size in GiB': 52,
             memory_total_bytes: 9132881112,
+            reservation_ratio: 0.25,
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
                     quota: 20,
@@ -573,6 +575,7 @@ function (t) {
             'Zpool Size in GiB': 52,
             overprovision_ratio: 1.5,
             memory_total_bytes: 9132881112,
+            reservation_ratio: 0.15,
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
                     quota: 20,
@@ -593,7 +596,7 @@ function (t) {
     t.equal(serversInfo[0].unreserved_ram, 209);
 
     t.equal(serversInfo[1].unreserved_disk, 22528);
-    t.equal(serversInfo[1].unreserved_ram, 2795);
+    t.equal(serversInfo[1].unreserved_ram, 1924);
 
     t.equal(serversInfo[2].unreserved_disk, 22528);
     t.equal(serversInfo[2].unreserved_ram, 4331);

@@ -16,6 +16,7 @@ var servers = [ {
     status: 'running',
     memory_total_bytes: 2147483648,
     memory_available_bytes: 1073741824,
+    reservation_ratio: 0.15,
     rack_identifier: 'ams-1',
     sysinfo: {
         'SDC Version': '7.0',
@@ -50,6 +51,7 @@ var servers = [ {
     status: 'running',
     memory_total_bytes: 1073741824,
     memory_available_bytes: 536870912,
+    reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
     sysinfo: {
         'SDC Version': '7.0',
@@ -94,6 +96,7 @@ var servers = [ {
     memory_total_bytes: 1073741824,
     memory_available_bytes: 536870912,
     overprovision_ratio: 1.5,
+    reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
     sysinfo: {
         'SDC Version': '7.0',
