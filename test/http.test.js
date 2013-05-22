@@ -135,6 +135,60 @@ var servers = [ {
             last_modified: '2012-12-19T05:26:05.000Z'
         }
     }
+}, {
+    uuid: '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+    ram: 1024,
+    setup: true,
+    reserved: false,
+    status: 'running',
+    memory_total_bytes: 1073741824,
+    memory_available_bytes: 536870912,
+    overprovision_ratios: { disk: 2.0 },
+    reservation_ratio: 0.15,
+    rack_identifier: 'ams-2',
+    'Zpool Size in GiB': 1024,
+    sysinfo: {
+        'SDC Version': '7.0',
+        'Live Image': '20130122T122401Z',
+        'Network Interfaces': {
+            e1000g0: {
+                'Link Status': 'up',
+                'NIC Names': [ 'external' ]
+            },
+            e1000g1: {
+               'Link Status': 'up',
+               'NIC Names': [ 'admin' ]
+            }
+        }
+    },
+    vms: {}
+}, {
+    uuid: 'bc415a07-4af3-4ce5-b493-4b4d0c93082a',
+    ram: 1024,
+    setup: true,
+    reserved: false,
+    status: 'running',
+    memory_total_bytes: 1073741824,
+    memory_available_bytes: 536870912,
+    overprovision_ratios: { ram: 1.5, disk: 2.0 },
+    reservation_ratio: 0.15,
+    rack_identifier: 'ams-2',
+    'Zpool Size in GiB': 1024,
+    sysinfo: {
+        'SDC Version': '7.0',
+        'Live Image': '20130122T122401Z',
+        'Network Interfaces': {
+            e1000g0: {
+                'Link Status': 'up',
+                'NIC Names': [ 'external' ]
+            },
+            e1000g1: {
+               'Link Status': 'up',
+               'NIC Names': [ 'admin' ]
+            }
+        }
+    },
+    vms: {}
 } ];
 
 
@@ -290,7 +344,7 @@ exports.allocation_with_traits = function (t) {
 
 
 
-exports.allocation_overprovisioning = function (t) {
+exports.allocation_overprovisioning_ram = function (t) {
     var path = '/allocation';
 
     var data = {
@@ -309,6 +363,61 @@ exports.allocation_overprovisioning = function (t) {
         common.checkHeaders(t, res.headers);
         t.ok(body);
         t.equal(body.uuid, servers[2].uuid);
+
+        t.done();
+    });
+};
+
+
+
+exports.allocation_overprovisioning_disk = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            quota: 2,
+            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
+            overprovision_disk: 2.0
+        },
+        image: {}
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.equal(body.uuid, servers[3].uuid);
+
+        t.done();
+    });
+};
+
+
+
+exports.allocation_overprovisioning_all = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            quota: 2,
+            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
+            overprovision_ram: 1.5,
+            overprovision_disk: 2.0
+        },
+        image: {}
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.equal(body.uuid, servers[4].uuid);
 
         t.done();
     });

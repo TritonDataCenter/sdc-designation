@@ -12,16 +12,40 @@ var log = { trace: function () { return true; },
 exports.filterMinDisk =
 function (t) {
     var givenServers = [
-        { unreserved_disk: 2560 },
-        { unreserved_disk: 5110 },
-        { unreserved_disk: 5120 },
-        { unreserved_disk: 7680 }
+        { unreserved_disk: 2560, overprovision_ratios: {}            },
+        { unreserved_disk: 5110, overprovision_ratios: {}            },
+        { unreserved_disk: 5120, overprovision_ratios: { disk: 1.0 } },
+        { unreserved_disk: 7680, overprovision_ratios: { disk: 1.0 } }
+    ];
+
+    var expectedServers = givenServers.slice(0, 2);
+    var vm = { quota: 5 };
+    var state = {};
+
+    var filteredServers = filter.run(log, state, givenServers, vm);
+
+    t.deepEqual(filteredServers, expectedServers);
+    t.deepEqual(state, {});
+
+    t.done();
+};
+
+
+
+exports.filterMinDisk_with_overprovision_ratios =
+function (t) {
+    var givenServers = [
+        { unreserved_disk: 2560, overprovision_ratios: { disk: 1.0 } },
+        { unreserved_disk: 5110, overprovision_ratios: { disk: 1.0 } },
+        { unreserved_disk: 5120, overprovision_ratios: { disk: 1.0 } },
+        { unreserved_disk: 7680, overprovision_ratios: { disk: 1.0 } }
     ];
 
     var expectedServers = givenServers.slice(2, 4);
+    var vm = { quota: 7.5, overprovision_disk: 1.5 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, { disk: 5120 });
+    var filteredServers = filter.run(log, state, givenServers, vm);
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -35,7 +59,7 @@ exports.filterMinDisk_with_no_servers =
 function (t) {
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], { disk: 5120 });
+    var filteredServers = filter.run(log, state, [], { quota: 5 });
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
@@ -48,9 +72,9 @@ function (t) {
 exports.filterMinDisk_with_no_disk =
 function (t) {
     var givenServers = [
-        { unreserved_disk: 2560 },
-        { unreserved_disk: 5110 },
-        { unreserved_disk: 5120 }
+        { unreserved_disk: 2560, overprovision_ratios: { disk: 1.0 } },
+        { unreserved_disk: 5110, overprovision_ratios: { disk: 1.0 } },
+        { unreserved_disk: 5120, overprovision_ratios: { disk: 1.0 } }
     ];
 
     var state = {};
@@ -58,6 +82,21 @@ function (t) {
     var filteredServers = filter.run(log, state, givenServers, {});
 
     t.deepEqual(filteredServers, givenServers);
+    t.deepEqual(state, {});
+
+    t.done();
+};
+
+
+
+exports.filterMinDisk_with_no_servers =
+function (t) {
+    var vm = { quota: 5, overprovision_disk: 1.0 };
+    var state = {};
+
+    var filteredServers = filter.run(log, state, [], vm);
+
+    t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
 
     t.done();
