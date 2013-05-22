@@ -18,9 +18,9 @@ var servers = [ {
     memory_available_bytes: 1073741824,
     reservation_ratio: 0.15,
     rack_identifier: 'ams-1',
-    'Zpool Size in GiB': 1024,
-    'CPU Total Cores': 16,
     sysinfo: {
+        'Zpool Size in GiB': 1024,
+        'CPU Total Cores': 16,
         'SDC Version': '7.0',
         'Live Image': '20121210T203034Z',
         'Network Interfaces': {
@@ -55,9 +55,9 @@ var servers = [ {
     memory_available_bytes: 536870912,
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
-    'Zpool Size in GiB': 1024,
-    'CPU Total Cores': 16,
     sysinfo: {
+        'Zpool Size in GiB': 1024,
+        'CPU Total Cores': 16,
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
         'Network Interfaces': {
@@ -102,9 +102,9 @@ var servers = [ {
     overprovision_ratios: { ram: 1.5 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
-    'Zpool Size in GiB': 1024,
-    'CPU Total Cores': 16,
     sysinfo: {
+        'Zpool Size in GiB': 1024,
+        'CPU Total Cores': 16,
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
         'Network Interfaces': {
@@ -149,9 +149,9 @@ var servers = [ {
     overprovision_ratios: { disk: 2.0 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
-    'Zpool Size in GiB': 1024,
-    'CPU Total Cores': 16,
     sysinfo: {
+        'Zpool Size in GiB': 1024,
+        'CPU Total Cores': 16,
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
         'Network Interfaces': {
@@ -177,9 +177,9 @@ var servers = [ {
     overprovision_ratios: { cpu: 2.0 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
-    'Zpool Size in GiB': 1024,
-    'CPU Total Cores': 16,
     sysinfo: {
+        'Zpool Size in GiB': 1024,
+        'CPU Total Cores': 16,
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
         'Network Interfaces': {
@@ -205,9 +205,9 @@ var servers = [ {
     overprovision_ratios: { ram: 1.5, disk: 2.0, cpu: 2.0 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
-    'Zpool Size in GiB': 1024,
-    'CPU Total Cores': 16,
     sysinfo: {
+        'Zpool Size in GiB': 1024,
+        'CPU Total Cores': 16,
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
         'Network Interfaces': {

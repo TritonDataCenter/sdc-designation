@@ -542,10 +542,12 @@ exports.test_massageServerData =
 function (t) {
     var serversInfo = [
         {
-            'Zpool Size in GiB': 39,
-            'CPU Total Cores': 16,
             memory_total_bytes: 2942881792,
             reservation_ratio: 0.15,
+            sysinfo: {
+                'Zpool Size in GiB': 39,
+                'CPU Total Cores': 16
+            },
             vms: {
                 '1ac434da-01aa-4663-8420-d3524ed1de0c': {
                     cpu_cap: 350,
@@ -560,10 +562,12 @@ function (t) {
             }
         },
         {
-            'Zpool Size in GiB': 52,
-            'CPU Total Cores': 24,
             memory_total_bytes: 9132881112,
             reservation_ratio: 0.25,
+            sysinfo: {
+                'Zpool Size in GiB': 52,
+                'CPU Total Cores': 24
+            },
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
                     cpu_cap: 350,
@@ -578,11 +582,13 @@ function (t) {
             }
         },
         {
-            'Zpool Size in GiB': 52,
-            'CPU Total Cores': 32,
             overprovision_ratios: { ram: 1.5 },
             memory_total_bytes: 9132881112,
             reservation_ratio: 0.15,
+            sysinfo: {
+                'Zpool Size in GiB': 52,
+                'CPU Total Cores': 32
+            },
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
                     cpu_cap: 350,
@@ -597,11 +603,13 @@ function (t) {
             }
         },
         {
-            'Zpool Size in GiB': 52,
-            'CPU Total Cores': 32,
             overprovision_ratios: { ram: 1.5, disk: 2.0, cpu: 2.0 },
             memory_total_bytes: 9132881112,
             reservation_ratio: 0.15,
+            sysinfo: {
+                'Zpool Size in GiB': 52,
+                'CPU Total Cores': 32
+            },
             vms: {
                 'd251001f-57eb-4360-a04a-96d7d20a520c': {
                     cpu_cap: 700,

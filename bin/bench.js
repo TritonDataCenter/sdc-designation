@@ -22,9 +22,10 @@ function genServers(numServers, serverRam, numVmsPerServer, vmRam) {
             status: 'running',
             memory_total_bytes: serverRam * 1024 * 1024,
             memory_available_bytes: (serverRam - 8 * 1024) * 1024 * 1024,
-            'Zpool Size in GiB': 3600,
             rack_identifier: 'ams-' + i % numRacks,
             sysinfo: {
+                'Zpool Size in GiB': 3600,
+                'CPU Total Cores': 1600,
                 'Network Interfaces': {
                     e1000g0: {
                         'Link Status': 'up',
