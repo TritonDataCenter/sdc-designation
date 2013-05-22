@@ -66,7 +66,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate(serverStubs);
+    var serverStub = allocator.allocate(serverStubs, {});
     t.equal(serverStub, 3);
     t.deepEqual(executed, [1, 2, 4, 3]);
 
@@ -109,7 +109,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1]);
+    var serverStub = allocator.allocate([1], {});
     t.equal(serverStub, 1);
     t.deepEqual(executed, [1, 2, 3]);
 
@@ -169,7 +169,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1]);
+    var serverStub = allocator.allocate([1], {});
     t.equal(serverStub, undefined);
     t.deepEqual(executed, [1, 3, 5, 6, 4, 2]);
 
@@ -215,7 +215,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1, 2, 3, 4]);
+    var serverStub = allocator.allocate([1, 2, 3, 4], {});
     t.equal(serverStub, 1);
     t.deepEqual(executed, [1, 2, 3]);
 
@@ -259,7 +259,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1, 2, 3, 4]);
+    var serverStub = allocator.allocate([1, 2, 3, 4], {});
     t.equal(serverStub, 1);
     t.deepEqual(executed, [1, 2]);
 
@@ -301,7 +301,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1, 2, 3, 4]);
+    var serverStub = allocator.allocate([1, 2, 3, 4], {});
     t.equal(serverStub, undefined);
     t.deepEqual(executed, [1]);
 
@@ -543,14 +543,17 @@ function (t) {
     var serversInfo = [
         {
             'Zpool Size in GiB': 39,
+            'CPU Total Cores': 16,
             memory_total_bytes: 2942881792,
             reservation_ratio: 0.15,
             vms: {
                 '1ac434da-01aa-4663-8420-d3524ed1de0c': {
+                    cpu_cap: 350,
                     quota: 25,
                     max_physical_memory: 2048
                 },
                 'b3d04682-536f-4f09-8170-1954e45e9e1c': {
+                    cpu_cap: 350,
                     quota: 5,
                     max_physical_memory: 128
                 }
@@ -558,14 +561,17 @@ function (t) {
         },
         {
             'Zpool Size in GiB': 52,
+            'CPU Total Cores': 24,
             memory_total_bytes: 9132881112,
             reservation_ratio: 0.25,
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
+                    cpu_cap: 350,
                     quota: 20,
                     max_physical_memory: 512
                 },
                 '335498f7-a1ed-420c-8367-7f2769ca1e84': {
+                    cpu_cap: 350,
                     quota: 10,
                     max_physical_memory: 4096
                 }
@@ -573,33 +579,63 @@ function (t) {
         },
         {
             'Zpool Size in GiB': 52,
-            overprovision_ratio: 1.5,
+            'CPU Total Cores': 32,
+            overprovision_ratios: { ram: 1.5 },
             memory_total_bytes: 9132881112,
             reservation_ratio: 0.15,
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
+                    cpu_cap: 350,
                     quota: 20,
                     max_physical_memory: 512
                 },
                 '335498f7-a1ed-420c-8367-7f2769ca1e84': {
+                    cpu_cap: 350,
+                    quota: 10,
+                    max_physical_memory: 4096
+                }
+            }
+        },
+        {
+            'Zpool Size in GiB': 52,
+            'CPU Total Cores': 32,
+            overprovision_ratios: { ram: 1.5, disk: 2.0, cpu: 2.0 },
+            memory_total_bytes: 9132881112,
+            reservation_ratio: 0.15,
+            vms: {
+                'd251001f-57eb-4360-a04a-96d7d20a520c': {
+                    cpu_cap: 700,
+                    quota: 20,
+                    max_physical_memory: 512
+                },
+                '9dd471a6-4679-4201-a02d-5e824deefc3e': {
+                    cpu_cap: 200,
                     quota: 10,
                     max_physical_memory: 4096
                 }
             }
         }
+
     ];
 
     var allocator = new Allocator(logStub);
     serversInfo = allocator._massageServerData(serversInfo);
 
     t.equal(serversInfo[0].unreserved_disk, 9216);
-    t.equal(serversInfo[0].unreserved_ram, 209);
+    t.equal(serversInfo[0].unreserved_ram,  209);
+    t.equal(serversInfo[0].unreserved_cpu,  900);
 
     t.equal(serversInfo[1].unreserved_disk, 22528);
-    t.equal(serversInfo[1].unreserved_ram, 1924);
+    t.equal(serversInfo[1].unreserved_ram,  1924);
+    t.equal(serversInfo[1].unreserved_cpu,  1700);
 
     t.equal(serversInfo[2].unreserved_disk, 22528);
-    t.equal(serversInfo[2].unreserved_ram, 4331);
+    t.equal(serversInfo[2].unreserved_ram,  4331);
+    t.equal(serversInfo[2].unreserved_cpu,  2500);
+
+    t.equal(serversInfo[3].unreserved_disk, 37888);
+    t.equal(serversInfo[3].unreserved_ram,  4331);
+    t.equal(serversInfo[3].unreserved_cpu,  2750);
 
     t.done();
 };
@@ -618,7 +654,7 @@ function (t) {
         'hard-filter-large-servers',
         'hard-filter-min-disk',
         'hard-filter-min-ram',
-        'hard-filter-overprovision-ratio',
+        'hard-filter-overprovision-ratios',
         'hard-filter-owner-same-racks',
         'hard-filter-owner-same-servers',
         'hard-filter-platform-versions',

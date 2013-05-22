@@ -18,6 +18,7 @@ var servers = [ {
     memory_available_bytes: 1073741824,
     reservation_ratio: 0.15,
     rack_identifier: 'ams-1',
+    'Zpool Size in GiB': 1024,
     sysinfo: {
         'SDC Version': '7.0',
         'Live Image': '20121210T203034Z',
@@ -53,6 +54,7 @@ var servers = [ {
     memory_available_bytes: 536870912,
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
+    'Zpool Size in GiB': 1024,
     sysinfo: {
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
@@ -95,9 +97,10 @@ var servers = [ {
     status: 'running',
     memory_total_bytes: 1073741824,
     memory_available_bytes: 536870912,
-    overprovision_ratio: 1.5,
+    overprovision_ratios: { ram: 1.5 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
+    'Zpool Size in GiB': 1024,
     sysinfo: {
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
@@ -295,7 +298,7 @@ exports.allocation_overprovisioning = function (t) {
         vm: {
             ram: 256,
             owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
-            overprovision_ratio: 1.5
+            overprovision_ram: 1.5
         },
         image: {}
     };

@@ -12,16 +12,17 @@ var log = { trace: function () { return true; },
 exports.filterMinRam =
 function (t) {
     var givenServers = [
-        { unreserved_ram: 256 },
-        { unreserved_ram: 511 },
-        { unreserved_ram: 512 },
-        { unreserved_ram: 768 }
+        { unreserved_ram: 256, overprovision_ratios: {}           },
+        { unreserved_ram: 511, overprovision_ratios: {}           },
+        { unreserved_ram: 512, overprovision_ratios: { ram: 1.0 } },
+        { unreserved_ram: 768, overprovision_ratios: { ram: 1.0 } }
     ];
 
-    var expectedServers = givenServers.slice(2, 4);
+    var expectedServers = givenServers.slice(0, 2);
+    var vm = { ram: 512 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, { ram: 512 });
+    var filteredServers = filter.run(log, state, givenServers, vm);
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -31,17 +32,17 @@ function (t) {
 
 
 
-exports.filterMinRam_with_overprovision_ratio =
+exports.filterMinRam_with_overprovision_ratios =
 function (t) {
     var givenServers = [
-        { unreserved_ram: 256 },
-        { unreserved_ram: 511 },
-        { unreserved_ram: 512 },
-        { unreserved_ram: 768 }
+        { unreserved_ram: 256, overprovision_ratios: { ram: 1.0 } },
+        { unreserved_ram: 511, overprovision_ratios: { ram: 1.0 } },
+        { unreserved_ram: 512, overprovision_ratios: { ram: 1.0 } },
+        { unreserved_ram: 768, overprovision_ratios: { ram: 1.0 } }
     ];
 
     var expectedServers = givenServers.slice(2, 4);
-    var vm = { ram: 768, overprovision_ratio: 1.5 };
+    var vm = { ram: 768, overprovision_ram: 1.5 };
     var state = {};
 
     var filteredServers = filter.run(log, state, givenServers, vm);
@@ -56,9 +57,10 @@ function (t) {
 
 exports.filterMinRam_with_no_servers =
 function (t) {
+    var vm = { ram: 512, overprovision_ram: 1.0 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], { ram: 512 });
+    var filteredServers = filter.run(log, state, [], vm);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

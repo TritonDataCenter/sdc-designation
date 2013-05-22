@@ -2,7 +2,8 @@
  * Copyright (c) 2013, Joyent, Inc. All rights reserved.
  */
 
-var filter = require('../../lib/algorithms/hard-filter-overprovision-ratio.js');
+var filter = require('../../lib/algorithms/' +
+                     'hard-filter-overprovision-ratios.js');
 var uuid   = require('node-uuid');
 
 var log = { trace: function () { return true; },
@@ -10,24 +11,24 @@ var log = { trace: function () { return true; },
 
 
 
-exports.filterOverprovisionRatio =
+exports.filterOverprovisionRatios =
 function (t) {
     var givenServers = [
-        { uuid: uuid(), overprovision_ratio: 1.0   },
-        { uuid: uuid(), overprovision_ratio: 1.01  },
-        { uuid: uuid(), overprovision_ratio: 1.001 },
-        { uuid: uuid(), overprovision_ratio: 2.0   },
-        { uuid: uuid(), overprovision_ratio: 1.5   },
-        { uuid: uuid(), overprovision_ratio: 10.0  },
-        { uuid: uuid(), overprovision_ratio: 1.0   },
-        { uuid: uuid(), overprovision_ratio: 0.999 },
-        { uuid: uuid(), overprovision_ratio: 0.99  },
-        { uuid: uuid()                             }
+        { uuid: uuid(), overprovision_ratios: { ram: 1.0   } },
+        { uuid: uuid(), overprovision_ratios: { ram: 1.01  } },
+        { uuid: uuid(), overprovision_ratios: { ram: 1.001 } },
+        { uuid: uuid(), overprovision_ratios: { ram: 2.0   } },
+        { uuid: uuid(), overprovision_ratios: { ram: 1.5   } },
+        { uuid: uuid(), overprovision_ratios: { ram: 10.0  } },
+        { uuid: uuid(), overprovision_ratios: { ram: 1.0   } },
+        { uuid: uuid(), overprovision_ratios: { ram: 0.999 } },
+        { uuid: uuid(), overprovision_ratios: { ram: 0.99  } },
+        { uuid: uuid(), overprovision_ratios: { ram: 1.0   } }
     ];
 
     var state = {};
 
-    var vm = {};
+    var vm = { overprovision_ram: 1.0 };
     var expectedServers = [ givenServers[0], givenServers[2],
                             givenServers[6], givenServers[7],
                             givenServers[9] ];
@@ -35,12 +36,7 @@ function (t) {
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
-    vm = { overprovision_ratio: 1.0 };
-    filteredServers = filter.run(log, state, givenServers, vm);
-    t.deepEqual(filteredServers, expectedServers);
-    t.deepEqual(state, {});
-
-    vm = { overprovision_ratio: 1.5 };
+    vm = { overprovision_ram: 1.5 };
     expectedServers = givenServers.slice(4, 5);
     filteredServers = filter.run(log, state, givenServers, vm);
     t.deepEqual(filteredServers, expectedServers);
@@ -51,9 +47,9 @@ function (t) {
 
 
 
-exports.filterOverprovisionRatio_with_no_servers =
+exports.filterOverprovisionRatios_with_no_servers =
 function (t) {
-    var vm = { overprovision_ratio: 1.0 };
+    var vm = { overprovision_ram: 1.0 };
     var state = {};
 
     var filteredServers = filter.run(log, state, [], vm);
