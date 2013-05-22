@@ -19,6 +19,7 @@ var servers = [ {
     reservation_ratio: 0.15,
     rack_identifier: 'ams-1',
     'Zpool Size in GiB': 1024,
+    'CPU Total Cores': 16,
     sysinfo: {
         'SDC Version': '7.0',
         'Live Image': '20121210T203034Z',
@@ -55,6 +56,7 @@ var servers = [ {
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
     'Zpool Size in GiB': 1024,
+    'CPU Total Cores': 16,
     sysinfo: {
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
@@ -101,6 +103,7 @@ var servers = [ {
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
     'Zpool Size in GiB': 1024,
+    'CPU Total Cores': 16,
     sysinfo: {
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
@@ -147,6 +150,35 @@ var servers = [ {
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
     'Zpool Size in GiB': 1024,
+    'CPU Total Cores': 16,
+    sysinfo: {
+        'SDC Version': '7.0',
+        'Live Image': '20130122T122401Z',
+        'Network Interfaces': {
+            e1000g0: {
+                'Link Status': 'up',
+                'NIC Names': [ 'external' ]
+            },
+            e1000g1: {
+               'Link Status': 'up',
+               'NIC Names': [ 'admin' ]
+            }
+        }
+    },
+    vms: {}
+}, {
+    uuid: '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+    ram: 1024,
+    setup: true,
+    reserved: false,
+    status: 'running',
+    memory_total_bytes: 1073741824,
+    memory_available_bytes: 536870912,
+    overprovision_ratios: { cpu: 2.0 },
+    reservation_ratio: 0.15,
+    rack_identifier: 'ams-2',
+    'Zpool Size in GiB': 1024,
+    'CPU Total Cores': 16,
     sysinfo: {
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
@@ -170,10 +202,11 @@ var servers = [ {
     status: 'running',
     memory_total_bytes: 1073741824,
     memory_available_bytes: 536870912,
-    overprovision_ratios: { ram: 1.5, disk: 2.0 },
+    overprovision_ratios: { ram: 1.5, disk: 2.0, cpu: 2.0 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
     'Zpool Size in GiB': 1024,
+    'CPU Total Cores': 16,
     sysinfo: {
         'SDC Version': '7.0',
         'Live Image': '20130122T122401Z',
@@ -397,17 +430,16 @@ exports.allocation_overprovisioning_disk = function (t) {
 
 
 
-exports.allocation_overprovisioning_all = function (t) {
+exports.allocation_overprovisioning_cpu = function (t) {
     var path = '/allocation';
 
     var data = {
         servers: servers,
         vm: {
             ram: 256,
-            quota: 2,
+            cpu_cap: 700,
             owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
-            overprovision_ram: 1.5,
-            overprovision_disk: 2.0
+            overprovision_cpu: 2.0
         },
         image: {}
     };
@@ -418,6 +450,36 @@ exports.allocation_overprovisioning_all = function (t) {
         common.checkHeaders(t, res.headers);
         t.ok(body);
         t.equal(body.uuid, servers[4].uuid);
+
+        t.done();
+    });
+};
+
+
+
+exports.allocation_overprovisioning_all = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            quota: 2,
+            cpu_cap: 700,
+            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
+            overprovision_ram:  1.5,
+            overprovision_disk: 2.0,
+            overprovision_cpu:  2.0
+        },
+        image: {}
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.equal(body.uuid, servers[5].uuid);
 
         t.done();
     });

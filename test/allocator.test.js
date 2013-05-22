@@ -652,6 +652,7 @@ function (t) {
     var expectedNames = [
         'hard-filter-headnode',
         'hard-filter-large-servers',
+        'hard-filter-min-cpu',
         'hard-filter-min-disk',
         'hard-filter-min-ram',
         'hard-filter-overprovision-ratios',
