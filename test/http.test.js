@@ -344,7 +344,7 @@ exports.allocation_with_traits = function (t) {
     var path = '/allocation';
 
     // make sure to undo this change at end of this function
-    var originalServerTraits = servers[0].traits;
+    var originalServerTraits = servers[1].traits;
 
     servers[1].traits = { ssd: true, users: ['john'] };
 
@@ -377,15 +377,56 @@ exports.allocation_with_traits = function (t) {
 
 
 
-exports.allocation_overprovisioning_ram = function (t) {
+exports.allocation_with_package_traits = function (t) {
+    var path = '/allocation';
+
+    // make sure to undo this change at end of this function
+    var originalServerTraits = servers[1].traits;
+
+    servers[1].traits = { ssd: true, users: ['john'] };
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        },
+        image: {
+            traits: { users: 'john' }
+        },
+        package: {
+            traits: { ssd: true }
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.equal(body.uuid, servers[1].uuid);
+
+        // undo change to server traits
+        servers[1].traits = originalServerTraits;
+
+        t.done();
+    });
+};
+
+
+
+exports.allocation_overprovisioning_memory = function (t) {
     var path = '/allocation';
 
     var data = {
         servers: servers,
         vm: {
             ram: 256,
-            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
-            overprovision_ram: 1.5
+            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f'
+        },
+        package: {
+            overprovision_memory: 1.5
         },
         image: {}
     };
@@ -403,7 +444,7 @@ exports.allocation_overprovisioning_ram = function (t) {
 
 
 
-exports.allocation_overprovisioning_disk = function (t) {
+exports.allocation_overprovisioning_storage = function (t) {
     var path = '/allocation';
 
     var data = {
@@ -411,8 +452,10 @@ exports.allocation_overprovisioning_disk = function (t) {
         vm: {
             ram: 256,
             quota: 2,
-            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
-            overprovision_disk: 2.0
+            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f'
+        },
+        package: {
+            overprovision_storage: 2.0
         },
         image: {}
     };
@@ -438,7 +481,9 @@ exports.allocation_overprovisioning_cpu = function (t) {
         vm: {
             ram: 256,
             cpu_cap: 700,
-            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
+            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f'
+        },
+        package: {
             overprovision_cpu: 2.0
         },
         image: {}
@@ -466,10 +511,12 @@ exports.allocation_overprovisioning_all = function (t) {
             ram: 256,
             quota: 2,
             cpu_cap: 700,
-            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f',
-            overprovision_ram:  1.5,
-            overprovision_disk: 2.0,
-            overprovision_cpu:  2.0
+            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f'
+        },
+        package: {
+            overprovision_memory:  1.5,
+            overprovision_storage: 2.0,
+            overprovision_cpu:     2.0
         },
         image: {}
     };
@@ -622,6 +669,28 @@ exports.vm_ram_larger_than_image_requirement = function (t) {
 
 
 
+exports.malformed_vm = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 'not-a-number',
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, 'VM "ram" is not a number');
+        t.done();
+    });
+};
+
+
+
 exports.vm_with_malformed_traits = function (t) {
     var path = '/allocation';
 
@@ -639,28 +708,6 @@ exports.vm_with_malformed_traits = function (t) {
         common.checkHeaders(t, res.headers);
         t.equal(body.code, 'InvalidArgument');
         t.equal(body.message, 'VM Trait "true" is an invalid type');
-        t.done();
-    });
-};
-
-
-
-exports.malformed_vm = function (t) {
-    var path = '/allocation';
-
-    var data = {
-        servers: servers,
-        vm: {
-            ram: 'not-a-number',
-            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
-        }
-    };
-
-    client.post(path, data, function (err, req, res, body) {
-        t.equal(res.statusCode, 409);
-        common.checkHeaders(t, res.headers);
-        t.equal(body.code, 'InvalidArgument');
-        t.equal(body.message, 'VM "ram" is not a number');
         t.done();
     });
 };
