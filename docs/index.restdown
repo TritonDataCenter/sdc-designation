@@ -49,7 +49,8 @@ SmartOS machine for testing purposes without a full SDC install.
 # Allocation
 
 Currently, there are three parameters required for allocating a VM to a
-server: VM payload, image manifest, and the servers list.
+server: VM payload, image manifest, and the servers list. Optionally, a package
+payload may be provided as well.
 
 
 
@@ -62,6 +63,7 @@ VM, but the current version only considers the following characteristics:
 || **Attribute** || **Type** || **Description**                                      ||
 || ram           || integer  || RAM required, in MiB                                 ||
 || quota         || integer  || Disk required, in MiB                                ||
+|| cpu_cap       || integer  || Max CPU allowed, in percent                          ||
 || traits        || hash     || Traits that a compute node must match                ||
 || nic_tags      || array    || If VLAN filtering is enabled, nic_tags needed for VM ||
 || owner_uuid    || string   || UUID of the new zone's owner                         ||
@@ -106,7 +108,7 @@ restrictions on VMs and CNs required by the dataset which will be used to create
 a VM.
 
 In contrast to VMs, image manifests are more strictly validated. Currently DAPI
-the following characteristics:
+understands the following characteristics:
 
 || **Attribute** || **Type** || **Description**                          ||
 || traits        || hash     || Traits that a compute node must match    ||
@@ -172,6 +174,7 @@ The ***vms*** attribute is a hash. Each key is a VM UUID, and each value is a
 hash with the following format:
 
 || **Attribute**       || **Type** || **Description**                         ||
+|| cpu_cap             || integer  || Max CPU allowed, in percent             ||
 || max_physical_memory || integer  || RAM promised to this VM, in MiB         ||
 || quota               || integer  || Disk promised to this VM, in MiB        ||
 || owner_uuid          || string   || UUID of VM's owner                      ||
@@ -191,6 +194,7 @@ As an example of a valid servers payload:
           "fbbbdc6d-011c-4931-9420-c702f53e4154": {
             "max_physical_memory": 1024,
             "quota": 10240,
+            "cpu_cap": 350,
             "owner_uuid": "9b81f9e7-55e1-4e00-a8f7-917bd054b320"
           }
         }
@@ -205,6 +209,46 @@ As an example of a valid servers payload:
         "vms": {}
       }
     ]
+
+
+## Package Payload
+
+The package payload is optional, and can be used to fill in details that the VM
+payload does not provide, like certain defaults. Right now packages are used by
+DAPI for two things: traits and overprovision ratios.
+
+|| **Attribute**         || **Type** || **Description**                                  ||
+|| traits                || hash     || Traits that a compute node must match            ||
+|| overprovision_cpu     || float    || Ratio for maximum overprovisioning on CPU        ||
+|| overprovision_memory  || float    || Ratio for maximum overprovisioning on RAM        ||
+|| overprovision_storage || float    || Ratio for maximum overprovisioning on disk space ||
+|| overprovision_io      || float    || Currently ignored                                ||
+|| overprovision_network || float    || Currently ignored                                ||
+
+Traits that the package provides can be overridden by traits in the VM payload.
+
+Each overprovision ratio is optional. If a ratio is provided, DAPI will attempt
+to ensure that the ratio (or better) is kept. If a ratio is not provided, DAPI
+will assume that overprovisioning on that resource does not matter, and will
+completely disregard maintaining any ratio.
+
+E.g. if you want to guarantee that CPU is not overprovisioned, provide an
+overprovision_cpu of 1.0. If you'd like to overprovision CPU by two, use
+overprovision_cpu of 2.0. If you really don't care whether it's overprovisioned
+or not, do not provide an overprovision_cpu.
+
+By default, if a package does not provide any overprovision ratios at all,
+DAPI will default to using a single ratio: an overprivison_memory of 1.0.
+
+An example of a valid package payload:
+
+    {
+      "overprovision_memory": 1.5,
+      "overprovision_storage": 1.0,
+      "traits": {
+        "ssd": true
+      }
+    }
 
 
 
@@ -278,10 +322,12 @@ By default -- if DAPI's configuration file doesn't specify an
 `allocationDescription` -- the following chain of algorithms will be used (see
 below for description of what each one does):
 
-    ['pipe', 'hard-filter-overprovision-ratio',
+    ['pipe', 'hard-filter-setup',
+             'hard-filter-overprovision-ratios',
              'hard-filter-min-ram',
+             'hard-filter-min-disk',
+             'hard-filter-min-cpu',
              'hard-filter-running',
-             'hard-filter-setup',
              'hard-filter-reserved',
              'hard-filter-headnode',
              'hard-filter-platform-versions',
@@ -336,9 +382,10 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 || **Name**                        || **Action**                                                  ||
 || hard-filter-headnode            || Removes any headnodes                                       ||
 || hard-filter-large-servers       || Removes the top 15% servers with the most available RAM     ||
+|| hard-filter-min-cpu             || Removes CNs with insufficient CPU                           ||
 || hard-filter-min-disk            || Removes CNs with insufficient disk                          ||
 || hard-filter-min-ram             || Removes CNs with insufficient RAM                           ||
-|| hard-filter-overprovision-ratio || Removes CNs with a different overprovision ratio than the request    ||
+|| hard-filter-overprovision-ratios || Removes CNs with different overprovision ratios than the request    ||
 || hard-filter-owner-same-racks    || Removes racks already containing an owner's VM(s)           ||
 || hard-filter-owner-same-servers  || Removes servers already containing an owner's VM(s)         ||
 || hard-filter-platform-versions   || Removes servers that don't pass image manifest platform requirements ||
@@ -520,3 +567,7 @@ the resulting traits union is used to match against CN traits.
 ## 2013-03-22
 
   * Add minor details about overprovision plugin
+
+## 2013-05-30
+
+  * Add information about overprovision ratio, packages, and minor corrections
