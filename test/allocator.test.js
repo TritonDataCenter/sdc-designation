@@ -66,7 +66,8 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate(serverStubs, {});
+    var results = allocator.allocate(serverStubs, {});
+    var serverStub = results[0];
     t.equal(serverStub, 3);
     t.deepEqual(executed, [1, 2, 4, 3]);
 
@@ -78,6 +79,7 @@ function (t) {
 // assumes state from algorithms_pipeline() test
 exports.algorithms_state_retained =
 function (t) {
+    var serverStub = { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' };
     var executed = [];
 
     var plugins = [
@@ -87,21 +89,21 @@ function (t) {
             run: function (log, state, servers) {
                 t.deepEqual(state, {});
                 executed.push(1);
-                return [1];
+                return [serverStub];
             }
         }, {
             name: 'bar',
             run: function (log, state, servers) {
                 t.deepEqual(state, { bar: [42, 24] });
                 executed.push(2);
-                return [1];
+                return [serverStub];
             }
         }, {
             name: 'baz',
             run: function (log, state, servers) {
                 t.deepEqual(state, { bar: 'hi', baz: {} });
                 executed.push(3);
-                return [1];
+                return [serverStub];
             }
         }
     ];
@@ -109,9 +111,15 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1], {});
-    t.equal(serverStub, 1);
+    var results = allocator.allocate([serverStub], {});
     t.deepEqual(executed, [1, 2, 3]);
+    t.deepEqual(results[0], serverStub);
+
+    t.deepEqual(results[1],
+        [ { 'Received by DAPI': [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { foo: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { bar: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { baz: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] } ]);
 
     t.done();
 };
@@ -120,6 +128,7 @@ function (t) {
 
 exports.algorithms_shortcuts_with_no_servers =
 function (t) {
+    var serverStub = { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' };
     var executed = [];
 
     var plugins = [
@@ -128,7 +137,7 @@ function (t) {
             name: 'foo',
             run: function () {
                 executed.push(1);
-                return [1];
+                return [serverStub];
             },
             post: function (log, state, server) {
                 t.equal(server, undefined);
@@ -138,7 +147,7 @@ function (t) {
             name: 'bar',
             run: function () {
                 executed.push(3);
-                return [1];
+                return [serverStub];
             },
             post: function (log, state, server) {
                 t.equal(server, undefined);
@@ -169,9 +178,15 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1], {});
-    t.equal(serverStub, undefined);
+    var results = allocator.allocate([serverStub], {});
     t.deepEqual(executed, [1, 3, 5, 6, 4, 2]);
+    t.equal(results[0], undefined);
+
+    t.deepEqual(results[1],
+        [ { 'Received by DAPI': [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { foo: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { bar: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { baz: [] } ]);
 
     t.done();
 };
@@ -180,6 +195,10 @@ function (t) {
 
 exports.test_dispatch_1 =
 function (t) {
+    var serverStubs = [ { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
+                        { uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
+                        { uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
+                        { uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }];
     var executed = [];
 
     var plugins = [
@@ -187,9 +206,9 @@ function (t) {
         {
             name: 'foo',
             run: function (log, state, servers) {
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return [1, 3, 4];
+                return [serverStubs[0], serverStubs[2], serverStubs[3]];
             }
         },
         [
@@ -197,16 +216,20 @@ function (t) {
             {
                 name: 'bar',
                 run: function (log, state, servers) {
-                    t.deepEqual(servers, [1, 3, 4]);
+                    t.deepEqual(servers, [serverStubs[0],
+                                          serverStubs[2],
+                                          serverStubs[3]]);
                     executed.push(2);
                     return [];
                 }
             }, {
                 name: 'baz',
                 run: function (log, state, servers) {
-                    t.deepEqual(servers, [1, 3, 4]);
+                    t.deepEqual(servers, [serverStubs[0],
+                                          serverStubs[2],
+                                          serverStubs[3]]);
                     executed.push(3);
-                    return [1];
+                    return serverStubs.slice(0, 1);
                 }
             }
         ]
@@ -215,9 +238,22 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1, 2, 3, 4], {});
-    t.equal(serverStub, 1);
+    var results = allocator.allocate(serverStubs, {});
     t.deepEqual(executed, [1, 2, 3]);
+    t.deepEqual(results[0], serverStubs[0]);
+
+    t.deepEqual(results[1],
+        [ { 'Received by DAPI':
+             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+               '94d987a9-968e-47ce-a959-4f14324bef7f',
+               '1727e98c-50b0-46de-96dd-3b360f522ce7',
+               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { foo:
+             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+               '1727e98c-50b0-46de-96dd-3b360f522ce7',
+               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { bar: [] },
+          { baz: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] } ]);
 
     t.done();
 };
@@ -226,6 +262,10 @@ function (t) {
 
 exports.test_dispatch_2 =
 function (t) {
+    var serverStubs = [ { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
+                        { uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
+                        { uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
+                        { uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }];
     var executed = [];
 
     var plugins = [
@@ -233,9 +273,9 @@ function (t) {
         {
             name: 'foo',
             run: function (log, state, servers) {
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return [1, 3, 4];
+                return [serverStubs[0], serverStubs[2], serverStubs[3]];
             }
         },
         [
@@ -243,9 +283,11 @@ function (t) {
             {
                 name: 'bar',
                 run: function (log, state, servers) {
-                    t.deepEqual(servers, [1, 3, 4]);
+                    t.deepEqual(servers, [serverStubs[0],
+                                          serverStubs[2],
+                                          serverStubs[3]]);
                     executed.push(2);
-                    return [1];
+                    return serverStubs.slice(0, 1);
                 }
             }, {
                 name: 'baz',
@@ -259,9 +301,21 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1, 2, 3, 4], {});
-    t.equal(serverStub, 1);
+    var results = allocator.allocate(serverStubs, {});
     t.deepEqual(executed, [1, 2]);
+    t.deepEqual(results[0], serverStubs[0]);
+
+    t.deepEqual(results[1],
+        [ { 'Received by DAPI':
+             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+               '94d987a9-968e-47ce-a959-4f14324bef7f',
+               '1727e98c-50b0-46de-96dd-3b360f522ce7',
+               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { foo:
+             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+               '1727e98c-50b0-46de-96dd-3b360f522ce7',
+               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { bar: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] } ]);
 
     t.done();
 };
@@ -270,6 +324,10 @@ function (t) {
 
 exports.test_dispatch_3 =
 function (t) {
+    var serverStubs = [ { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
+                        { uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
+                        { uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
+                        { uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }];
     var executed = [];
 
     var plugins = [
@@ -277,7 +335,7 @@ function (t) {
         {
             name: 'foo',
             run: function (log, state, servers) {
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(1);
                 return [];
             }
@@ -301,9 +359,17 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var serverStub = allocator.allocate([1, 2, 3, 4], {});
-    t.equal(serverStub, undefined);
+    var results = allocator.allocate(serverStubs, {});
     t.deepEqual(executed, [1]);
+    t.equal(results[0], undefined);
+
+    t.deepEqual(results[1],
+        [ { 'Received by DAPI':
+             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+               '94d987a9-968e-47ce-a959-4f14324bef7f',
+               '1727e98c-50b0-46de-96dd-3b360f522ce7',
+               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { foo: [] } ]);
 
     t.done();
 };
@@ -312,6 +378,10 @@ function (t) {
 
 exports.test_pipe_1 =
 function (t) {
+    var serverStubs = [ { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
+                        { uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
+                        { uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
+                        { uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }];
     var executed = [];
 
     var plugins = [
@@ -319,38 +389,46 @@ function (t) {
             name: 'foo',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return [1, 2, 3];
+                return serverStubs.slice(0, 3);
             }
         }, {
             name: 'bar',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [1, 2, 3]);
+                t.deepEqual(servers, serverStubs.slice(0, 3));
                 executed.push(2);
-                return [2, 3];
+                return serverStubs.slice(1, 3);
             }
         }, {
             name: 'baz',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [2, 3]);
+                t.deepEqual(servers, serverStubs.slice(1, 3));
                 executed.push(3);
-                return [2];
+                return serverStubs.slice(2, 3);
             }
         }
     ];
 
     var allocator = new Allocator(logStub);
 
-    var results = allocator._pipe(plugins, [1, 2, 3, 4], { foo: 1 });
+    var results = allocator._pipe(plugins, serverStubs, { foo: 1 });
     var serverStub        = results[0];
     var visitedAlgorithms = results[1];
+    var remainingServers  = results[2];
 
-    t.deepEqual(serverStub, [2]);
+    t.deepEqual(serverStub, serverStubs.slice(2, 3));
     t.deepEqual(executed, [1, 2, 3]);
     t.deepEqual(visitedAlgorithms, plugins);
+    t.deepEqual(remainingServers,
+        [ [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+            '94d987a9-968e-47ce-a959-4f14324bef7f',
+            '1727e98c-50b0-46de-96dd-3b360f522ce7' ],
+          [ '94d987a9-968e-47ce-a959-4f14324bef7f',
+            '1727e98c-50b0-46de-96dd-3b360f522ce7' ],
+          [ '1727e98c-50b0-46de-96dd-3b360f522ce7' ] ]);
 
     t.done();
 };
@@ -359,6 +437,10 @@ function (t) {
 
 exports.test_pipe_2 =
 function (t) {
+    var serverStubs = [ { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
+                        { uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
+                        { uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
+                        { uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }];
     var executed = [];
 
     var plugins = [
@@ -366,15 +448,15 @@ function (t) {
             name: 'foo',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return [1, 2, 3];
+                return serverStubs.slice(0, 3);
             }
         }, {
             name: 'bar',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [1, 2, 3]);
+                t.deepEqual(servers, serverStubs.slice(0, 3));
                 executed.push(2);
                 return [];
             }
@@ -388,13 +470,19 @@ function (t) {
 
     var allocator = new Allocator(logStub);
 
-    var results = allocator._pipe(plugins, [1, 2, 3, 4], { foo: 1 });
+    var results = allocator._pipe(plugins, serverStubs, { foo: 1 });
     var serverStub        = results[0];
     var visitedAlgorithms = results[1];
+    var remainingServers  = results[2];
 
     t.deepEqual(serverStub, []);
     t.deepEqual(executed, [1, 2]);
     t.deepEqual(visitedAlgorithms, plugins.slice(0, 2));
+    t.deepEqual(remainingServers,
+        [ [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+            '94d987a9-968e-47ce-a959-4f14324bef7f',
+            '1727e98c-50b0-46de-96dd-3b360f522ce7' ],
+          [] ]);
 
     t.done();
 };
@@ -403,6 +491,10 @@ function (t) {
 
 exports.test_or_1 =
 function (t) {
+    var serverStubs = [ { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
+                        { uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
+                        { uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
+                        { uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }];
     var executed = [];
 
     var plugins = [
@@ -410,7 +502,7 @@ function (t) {
             name: 'foo',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(1);
                 return [];
             }
@@ -418,7 +510,7 @@ function (t) {
             name: 'bar',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(2);
                 return [];
             }
@@ -426,7 +518,7 @@ function (t) {
             name: 'baz',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(3);
                 return [];
             }
@@ -435,13 +527,15 @@ function (t) {
 
     var allocator = new Allocator(logStub);
 
-    var results = allocator._or(plugins, [1, 2, 3, 4], { foo: 1 });
+    var results = allocator._or(plugins, serverStubs, { foo: 1 });
     var serverStub        = results[0];
     var visitedAlgorithms = results[1];
+    var remainingServers  = results[2];
 
     t.deepEqual(serverStub, []);
     t.deepEqual(executed, [1, 2, 3]);
     t.deepEqual(visitedAlgorithms, plugins);
+    t.deepEqual(remainingServers, [ [], [], [] ]);
 
     t.done();
 };
@@ -450,6 +544,10 @@ function (t) {
 
 exports.test_or_2 =
 function (t) {
+    var serverStubs = [ { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
+                        { uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
+                        { uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
+                        { uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }];
     var executed = [];
 
     var plugins = [
@@ -457,7 +555,7 @@ function (t) {
             name: 'foo',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(1);
                 return [];
             }
@@ -465,9 +563,9 @@ function (t) {
             name: 'bar',
             run: function (log, state, servers, vmDetails) {
                 t.deepEqual(vmDetails, { foo: 1 });
-                t.deepEqual(servers, [1, 2, 3, 4]);
+                t.deepEqual(servers, serverStubs);
                 executed.push(2);
-                return [1, 2];
+                return serverStubs.slice(0, 2);
             }
         }, {
             name: 'baz',
@@ -479,13 +577,18 @@ function (t) {
 
     var allocator = new Allocator(logStub);
 
-    var results = allocator._or(plugins, [1, 2, 3, 4], { foo: 1 });
+    var results = allocator._or(plugins, serverStubs, { foo: 1 });
     var serverStub        = results[0];
     var visitedAlgorithms = results[1];
+    var remainingServers  = results[2];
 
-    t.deepEqual(serverStub, [1, 2]);
+    t.deepEqual(serverStub, serverStubs.slice(0, 2));
     t.deepEqual(executed, [1, 2]);
     t.deepEqual(visitedAlgorithms, plugins.slice(0, 2));
+    t.deepEqual(remainingServers,
+        [ [],
+          [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+            '94d987a9-968e-47ce-a959-4f14324bef7f' ] ]);
 
     t.done();
 };
@@ -532,6 +635,49 @@ function (t) {
     allocator._cleanup(plugins, [1, 2, 3, 4], { foo: 1 });
 
     t.deepEqual(executed, [3, 1, 2]);
+
+    t.done();
+};
+
+
+
+exports.test_createPluginSummary =
+function (t) {
+    var serverStubs = [ { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
+                        { uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
+                        { uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
+                        { uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }];
+
+    var visitedAlgorithms = [ { name: 'foo' }, { name: 'bar' },
+                              { name: 'baz' } ];
+
+    var remainingServers = [
+        [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+          '94d987a9-968e-47ce-a959-4f14324bef7f',
+          '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
+        [ '94d987a9-968e-47ce-a959-4f14324bef7f',
+          '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
+        []];
+
+    var allocator = new Allocator(logStub);
+    var summary = allocator._createPluginSummary(serverStubs,
+                                                 visitedAlgorithms,
+                                                 remainingServers);
+
+    t.deepEqual(summary,
+        [ { 'Received by DAPI':
+             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+               '94d987a9-968e-47ce-a959-4f14324bef7f',
+               '1727e98c-50b0-46de-96dd-3b360f522ce7',
+               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { foo:
+             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+               '94d987a9-968e-47ce-a959-4f14324bef7f',
+               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { bar:
+             [ '94d987a9-968e-47ce-a959-4f14324bef7f',
+               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { baz: [] } ]);
 
     t.done();
 };
