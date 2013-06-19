@@ -40,15 +40,15 @@ function (t) {
     var tooOldServerUuid = givenServers[10].uuid;
 
     var state = { recent_servers: {} };
-    state.recent_servers[oldServerUuid   ] = now - 4000;
-    state.recent_servers[tooOldServerUuid] = now - 6000;
+    state.recent_servers[oldServerUuid   ] = now - 4 * 60 * 1000;
+    state.recent_servers[tooOldServerUuid] = now - 6 * 60 * 6000;
 
     var filteredServers = filter.run(log, state, givenServers);
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(Object.keys(state), ['recent_servers']);
     t.deepEqual(Object.keys(state.recent_servers), [oldServerUuid]);
-    t.equal(state.recent_servers[oldServerUuid], now - 4000);
+    t.equal(state.recent_servers[oldServerUuid], now - 4 * 60 * 1000);
 
     t.done();
 };
@@ -63,7 +63,7 @@ function (t) {
     var state = { recent_servers: {} };
     for (var i = 0; i !== givenServers.length - 1; i++) {
         var serverUuid = givenServers[i].uuid;
-        var timestamp  = now - (i + 0.5) * 1000;
+        var timestamp  = now - (i + 0.5) * 60 * 1000;
         state.recent_servers[serverUuid] = timestamp;
     }
 
@@ -75,7 +75,7 @@ function (t) {
     t.equal(Object.keys(state.recent_servers).length, 5);
     for (i = 0; i < 5; i++) {
         serverUuid = givenServers[i].uuid;
-        timestamp  = now - (i + 0.5) * 1000;
+        timestamp  = now - (i + 0.5) * 60 * 1000;
         t.deepEqual(state.recent_servers[serverUuid], timestamp);
     }
 
