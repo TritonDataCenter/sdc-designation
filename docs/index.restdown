@@ -400,7 +400,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 || soft-filter-large-servers       || Tries to reserve some servers for large VMs                 ||
 || soft-filter-recent-servers      || Tries to ignore recently allocated-to CNs, to prevent races ||
 || sort-2adic                      || Order CNs by 2adic ordering of available RAM                ||
-|| sort-min-ram                    || Order CNs by how little available RAM is left
+|| sort-min-ram                    || Order CNs by how little available RAM is left               ||
 || sort-ram                        || Order CNs by available RAM                                  ||
 
 The allocation pipeline typically starts with the hard filters, then soft
