@@ -70,6 +70,7 @@ release: all deps docs $(SMF_MANIFESTS)
     $(ROOT)/bin \
     $(ROOT)/smf \
     $(ROOT)/tools \
+    $(ROOT)/sapi_manifests \
     $(TMPDIR)/root/opt/smartdc/dapi/
 	(cd $(TMPDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
 	@rm -rf $(TMPDIR)
