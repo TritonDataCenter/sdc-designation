@@ -2,5 +2,26 @@
 	"logLevel": "info",
 	"api": {
 		"port": 80
-	}
+	},
+  "allocationDescription": [
+    "pipe", "hard-filter-setup",
+            "override-overprovisioning",
+            "calculate-server-unreserved",
+            "hard-filter-overprovision-ratios",
+            "hard-filter-min-ram",
+            "hard-filter-min-disk",
+            "hard-filter-min-cpu",
+            "hard-filter-running",
+            "hard-filter-reserved",
+            "hard-filter-headnode",
+            "hard-filter-platform-versions",
+            "hard-filter-traits",
+            "soft-filter-recent-servers",
+            ["or", "hard-filter-large-servers",
+                   "identity"],
+            ["or", "hard-filter-owner-same-racks",
+                   "hard-filter-owner-same-servers",
+                   "soft-filter-owner-many-zones"],
+            "sort-min-ram",
+            "pick-weighted-random"]
 }

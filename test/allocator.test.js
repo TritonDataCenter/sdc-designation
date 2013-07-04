@@ -708,6 +708,7 @@ function (t) {
         'hard-filter-traits',
         'hard-filter-vlans',
         'identity',
+        'override-overprovisioning',
         'pick-random',
         'pick-weighted-random',
         'soft-filter-large-servers',
