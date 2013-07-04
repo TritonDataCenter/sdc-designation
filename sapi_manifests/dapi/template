@@ -1,8 +1,8 @@
 {
-	"logLevel": "info",
-	"api": {
-		"port": 80
-	},
+  "logLevel": "info",
+  "api": {
+    "port": 80
+  },
   "allocationDescription": [
     "pipe", "hard-filter-setup",
             "override-overprovisioning",
