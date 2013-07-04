@@ -323,6 +323,7 @@ By default -- if DAPI's configuration file doesn't specify an
 below for description of what each one does):
 
     ['pipe', 'hard-filter-setup',
+             'calculate-server-unreserved',
              'hard-filter-overprovision-ratios',
              'hard-filter-min-ram',
              'hard-filter-min-disk',
@@ -380,6 +381,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 ## Provided Algorithms
 
 || **Name**                        || **Action**                                                  ||
+|| calculate-server-unreserved     || Does some free-resource calculations that are used by other plugins  ||
 || hard-filter-headnode            || Removes any headnodes                                       ||
 || hard-filter-large-servers       || Removes the top 15% servers with the most available RAM     ||
 || hard-filter-min-cpu             || Removes CNs with insufficient CPU                           ||
@@ -395,6 +397,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 || hard-filter-traits              || Removes CNs with traits that cannot fulfill VM traits       ||
 || hard-filter-vlans               || Removes CNs which do not have required nic tags             ||
 || identity                        || Returns the same servers it received                        ||
+|| override-overprovisioning       || Substitutes package and server overprovision data for own defaults   ||
 || pick-random                     || Pick a random CN from a list                                ||
 || pick-weighted-random            || Pick one of top 20% of CNs so far                           ||
 || soft-filter-large-servers       || Tries to reserve some servers for large VMs                 ||
