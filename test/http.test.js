@@ -564,6 +564,13 @@ exports.allocation_not_enough_server_ram = function (t) {
                '2555c9f0-d2b4-40b3-9346-81205e45a10e',
                '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
                'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { 'Calculate unreserved resources on each server':
+             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+               '85526a01-9310-44fd-9637-ed1501cc69a1',
+               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
           { 'Servers with same overprovision ratios as requested VM':
              [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
                '85526a01-9310-44fd-9637-ed1501cc69a1' ] },
