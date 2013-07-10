@@ -19,10 +19,10 @@ function (t) {
     ];
 
     var expectedServers = [
-        { unreserved_cpu: 1, overprovision_ratios: { cpu: 4, ram: 1, disk: 2} },
-        { unreserved_cpu: 2, overprovision_ratios: { cpu: 4, ram: 1, disk: 2} },
-        { unreserved_cpu: 3, overprovision_ratios: { cpu: 4, ram: 1, disk: 2} },
-        { unreserved_cpu: 4, overprovision_ratios: { cpu: 4, ram: 1, disk: 2} }
+        { unreserved_cpu: 1, overprovision_ratios: { cpu: 4, ram: 1, disk: 1} },
+        { unreserved_cpu: 2, overprovision_ratios: { cpu: 4, ram: 1, disk: 1} },
+        { unreserved_cpu: 3, overprovision_ratios: { cpu: 4, ram: 1, disk: 1} },
+        { unreserved_cpu: 4, overprovision_ratios: { cpu: 4, ram: 1, disk: 1} }
     ];
 
     var vm = {};
@@ -32,7 +32,7 @@ function (t) {
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(vm, { overprovision_cpu: 4, overprovision_ram: 1,
-                      overprovision_disk: 2 });
+                      overprovision_disk: 1 });
 
     vm = { overprovision_cpu: 1, overprovision_ram: 2, overprovision_disk: 1,
            overprovision_io: 1, overprovision_net: 1 };
@@ -40,7 +40,7 @@ function (t) {
     filter.run(log, state, givenServers, vm);
 
     t.deepEqual(vm, { overprovision_cpu: 4, overprovision_ram: 1,
-                      overprovision_disk: 2 });
+                      overprovision_disk: 1 });
 
     t.done();
 };
