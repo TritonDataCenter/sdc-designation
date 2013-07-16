@@ -475,7 +475,7 @@ exports.allocation_overprovisioning_storage = function (t) {
         servers: servers,
         vm: {
             ram: 256,
-            quota: 2,
+            quota: 2048,
             owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f'
         },
         package: {
@@ -533,7 +533,7 @@ exports.allocation_overprovisioning_all = function (t) {
         servers: servers,
         vm: {
             ram: 256,
-            quota: 2,
+            quota: 2048,
             cpu_cap: 700,
             owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f'
         },

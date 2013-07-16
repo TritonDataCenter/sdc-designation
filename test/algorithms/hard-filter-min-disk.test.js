@@ -19,7 +19,7 @@ function (t) {
     ];
 
     var expectedServers = givenServers.slice(0, 2);
-    var vm = { quota: 5 };
+    var vm = { quota: 5120 };
     var state = {};
 
     var filteredServers = filter.run(log, state, givenServers, vm);
@@ -42,7 +42,7 @@ function (t) {
     ];
 
     var expectedServers = givenServers.slice(2, 4);
-    var vm = { quota: 7.5, overprovision_disk: 1.5 };
+    var vm = { quota: 7680, overprovision_disk: 1.5 };
     var state = {};
 
     var filteredServers = filter.run(log, state, givenServers, vm);
@@ -59,7 +59,7 @@ exports.filterMinDisk_with_no_servers =
 function (t) {
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], { quota: 5 });
+    var filteredServers = filter.run(log, state, [], { quota: 5120 });
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
@@ -91,7 +91,7 @@ function (t) {
 
 exports.filterMinDisk_with_no_servers =
 function (t) {
-    var vm = { quota: 5, overprovision_disk: 1.0 };
+    var vm = { quota: 5120, overprovision_disk: 1.0 };
     var state = {};
 
     var filteredServers = filter.run(log, state, [], vm);
