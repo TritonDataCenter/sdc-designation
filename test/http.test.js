@@ -275,7 +275,8 @@ exports.allocation_ok_1 = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[1].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[1].uuid);
         t.done();
     });
 };
@@ -296,7 +297,8 @@ exports.allocation_ok_2 = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[0].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[0].uuid);
         t.done();
     });
 };
@@ -328,7 +330,8 @@ exports.allocation_max_platform = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[0].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[0].uuid);
         t.done();
     });
 };
@@ -357,7 +360,8 @@ exports.allocation_min_platform = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[1].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[1].uuid);
         t.done();
     });
 };
@@ -390,7 +394,8 @@ exports.allocation_with_traits = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[1].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[1].uuid);
 
         // undo change to server traits
         servers[1].traits = originalServerTraits;
@@ -429,7 +434,8 @@ exports.allocation_with_package_traits = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[1].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[1].uuid);
 
         // undo change to server traits
         servers[1].traits = originalServerTraits;
@@ -460,7 +466,8 @@ exports.allocation_overprovisioning_memory = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[2].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[2].uuid);
 
         t.done();
     });
@@ -489,7 +496,8 @@ exports.allocation_overprovisioning_storage = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[3].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[3].uuid);
 
         t.done();
     });
@@ -518,7 +526,8 @@ exports.allocation_overprovisioning_cpu = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[4].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[4].uuid);
 
         t.done();
     });
@@ -550,7 +559,8 @@ exports.allocation_overprovisioning_all = function (t) {
         t.equal(res.statusCode, 200);
         common.checkHeaders(t, res.headers);
         t.ok(body);
-        t.equal(body.uuid, servers[5].uuid);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[5].uuid);
 
         t.done();
     });
