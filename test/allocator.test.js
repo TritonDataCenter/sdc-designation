@@ -66,7 +66,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var results = allocator.allocate(serverStubs, {});
+    var results = allocator.allocate(serverStubs, {}, {}, {});
     var serverStub = results[0];
     t.equal(serverStub, 3);
     t.deepEqual(executed, [1, 2, 4, 3]);
@@ -111,7 +111,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var results = allocator.allocate([serverStub], {});
+    var results = allocator.allocate([serverStub], {}, {}, {});
     t.deepEqual(executed, [1, 2, 3]);
     t.deepEqual(results[0], serverStub);
 
@@ -178,7 +178,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var results = allocator.allocate([serverStub], {});
+    var results = allocator.allocate([serverStub], {}, {}, {});
     t.deepEqual(executed, [1, 3, 5, 6, 4, 2]);
     t.equal(results[0], undefined);
 
@@ -238,7 +238,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var results = allocator.allocate(serverStubs, {});
+    var results = allocator.allocate(serverStubs, {}, {}, {});
     t.deepEqual(executed, [1, 2, 3]);
     t.deepEqual(results[0], serverStubs[0]);
 
@@ -301,7 +301,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var results = allocator.allocate(serverStubs, {});
+    var results = allocator.allocate(serverStubs, {}, {}, {});
     t.deepEqual(executed, [1, 2]);
     t.deepEqual(results[0], serverStubs[0]);
 
@@ -359,7 +359,7 @@ function (t) {
     var allocator = new Allocator(logStub);
     allocator.expression = plugins;
 
-    var results = allocator.allocate(serverStubs, {});
+    var results = allocator.allocate(serverStubs, {}, {}, {});
     t.deepEqual(executed, [1]);
     t.equal(results[0], undefined);
 

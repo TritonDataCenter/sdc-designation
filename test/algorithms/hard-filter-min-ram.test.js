@@ -22,7 +22,7 @@ function (t) {
     var vm = { ram: 512 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, vm);
+    var filteredServers = filter.run(log, state, givenServers, vm, {}, {});
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -42,10 +42,11 @@ function (t) {
     ];
 
     var expectedServers = givenServers.slice(2, 4);
-    var vm = { ram: 768, overprovision_ram: 1.5 };
+    var vm = { ram: 768 };
+    var pkg = { overprovision_ram: 1.5 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, vm);
+    var filteredServers = filter.run(log, state, givenServers, vm, {}, pkg);
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -57,10 +58,11 @@ function (t) {
 
 exports.filterMinRam_with_no_servers =
 function (t) {
-    var vm = { ram: 512, overprovision_ram: 1.0 };
+    var vm = { ram: 512 };
+    var pkg = { overprovision_ram: 1.0 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], vm);
+    var filteredServers = filter.run(log, state, [], vm, {}, pkg);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

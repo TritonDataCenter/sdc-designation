@@ -28,17 +28,17 @@ function (t) {
 
     var state = {};
 
-    var vm = { overprovision_ram: 1.0 };
+    var pkg = { overprovision_ram: 1.0 };
     var expectedServers = [ givenServers[0], givenServers[2],
                             givenServers[6], givenServers[7],
                             givenServers[9] ];
-    var filteredServers = filter.run(log, state, givenServers, vm);
+    var filteredServers = filter.run(log, state, givenServers, {}, {}, pkg);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
-    vm = { overprovision_ram: 1.5 };
+    pkg = { overprovision_ram: 1.5 };
     expectedServers = givenServers.slice(4, 5);
-    filteredServers = filter.run(log, state, givenServers, vm);
+    filteredServers = filter.run(log, state, givenServers, {}, {}, pkg);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -49,10 +49,10 @@ function (t) {
 
 exports.filterOverprovisionRatios_with_no_servers =
 function (t) {
-    var vm = { overprovision_ram: 1.0 };
+    var pkg = { overprovision_ram: 1.0 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], vm);
+    var filteredServers = filter.run(log, state, [], {}, {}, pkg);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
