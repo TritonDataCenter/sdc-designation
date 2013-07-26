@@ -20,6 +20,7 @@ var servers = [ {
     disk_installed_images_used_bytes: 1073741824,
     disk_zone_quota_bytes: 53687091200,
     disk_kvm_quota_bytes: 0,
+    disk_kvm_zvol_volsize_bytes: 0,
     reservation_ratio: 0.15,
     rack_identifier: 'ams-1',
     sysinfo: {
@@ -42,6 +43,7 @@ var servers = [ {
         '564d9386-8c67-b674-587f-101f1db2eda7': {
             uuid: '564d9386-8c67-b674-587f-101f1db2eda7',
             owner_uuid: '8edf8cdc-a96f-4dee-8566-687f2ea75f84',
+            brand: 'joyent',
             quota: 50,
             max_physical_memory: 512,
             zone_state: 'running',
@@ -61,6 +63,7 @@ var servers = [ {
     disk_installed_images_used_bytes: 1073741824,
     disk_zone_quota_bytes: 0,
     disk_kvm_quota_bytes: 107374182400,
+    disk_kvm_zvol_volsize_bytes: 85899345920,
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
     sysinfo: {
@@ -83,6 +86,7 @@ var servers = [ {
         'f954f487-0e70-4e76-b87b-38182a6e3b4d': {
             uuid: 'f954f487-0e70-4e76-b87b-38182a6e3b4d',
             owner_uuid: '5ae17d0f-652a-4cbe-9b35-3c058793aee1',
+            brand: 'kvm',
             quota: 50,
             max_physical_memory: 128,
             zone_state: 'running',
@@ -92,6 +96,7 @@ var servers = [ {
         '0e07ab09-d725-436f-884a-759fa3ed7183': {
             uuid: '0e07ab09-d725-436f-884a-759fa3ed7183',
             owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+            brand: 'kvm',
             quota: 50,
             max_physical_memory: 128,
             zone_state: 'running',
@@ -111,6 +116,7 @@ var servers = [ {
     disk_installed_images_used_bytes: 2147483648,
     disk_zone_quota_bytes: 53687091200,
     disk_kvm_quota_bytes: 53687091200,
+    disk_kvm_zvol_volsize_bytes: 42949672960,
     overprovision_ratios: { ram: 1.5 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
@@ -134,6 +140,7 @@ var servers = [ {
         '813b0c77-8e8d-4fbb-83e2-0dc0a3ba388a': {
             uuid: '813b0c77-8e8d-4fbb-83e2-0dc0a3ba388a',
             owner_uuid: 'ba09128c-ddf2-4bc4-9a16-a556afdc55b5',
+            brand: 'kvm',
             quota: 50,
             max_physical_memory: 512,
             zone_state: 'running',
@@ -143,6 +150,7 @@ var servers = [ {
         '4ab04a6b-f045-41fe-a61a-8eb91604d0a1': {
             uuid: '4ab04a6b-f045-41fe-a61a-8eb91604d0a1',
             owner_uuid: '2f100ea6-74c4-4c4f-9751-499e1aaad769',
+            brand: 'joyent',
             quota: 50,
             max_physical_memory: 512,
             zone_state: 'running',
@@ -160,8 +168,9 @@ var servers = [ {
     memory_available_bytes: 536870912,
     disk_pool_size_bytes: 1099511627776,
     disk_installed_images_used_bytes: 2147483648,
-    disk_zone_quota_bytes: 0,
-    disk_kvm_quota_bytes: 0,
+    disk_zone_quota_bytes: 128849018880,
+    disk_kvm_quota_bytes: 64424509440,
+    disk_kvm_zvol_volsize_bytes: 53687091200,
     overprovision_ratios: { disk: 2.0 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
@@ -181,7 +190,28 @@ var servers = [ {
             }
         }
     },
-    vms: {}
+    vms: {
+        'ae47a2a5-3523-4f10-a972-8eb5563dcb91': {
+            uuid: 'ae47a2a5-3523-4f10-a972-8eb5563dcb91',
+            owner_uuid: 'ba09128c-ddf2-4bc4-9a16-a556afdc55b5',
+            brand: 'kvm',
+            quota: 50,
+            max_physical_memory: 256,
+            zone_state: 'running',
+            state: 'running',
+            last_modified: '2012-12-19T05:26:05.000Z'
+        },
+        '6d119198-69e3-45dc-921f-8e51e976c8d5': {
+            uuid: '6d119198-69e3-45dc-921f-8e51e976c8d5',
+            owner_uuid: '2f100ea6-74c4-4c4f-9751-499e1aaad769',
+            brand: 'joyent',
+            quota: 120,
+            max_physical_memory: 768,
+            zone_state: 'running',
+            state: 'running',
+            last_modified: '2012-12-19T05:26:05.000Z'
+        }
+    }
 }, {
     uuid: '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
     ram: 1024,
@@ -194,6 +224,7 @@ var servers = [ {
     disk_installed_images_used_bytes: 3221225472,
     disk_zone_quota_bytes: 0,
     disk_kvm_quota_bytes: 0,
+    disk_kvm_zvol_volsize_bytes: 0,
     overprovision_ratios: { cpu: 2.0 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
@@ -226,6 +257,7 @@ var servers = [ {
     disk_installed_images_used_bytes: 3221225472,
     disk_zone_quota_bytes: 0,
     disk_kvm_quota_bytes: 0,
+    disk_kvm_zvol_volsize_bytes: 0,
     overprovision_ratios: { ram: 1.5, disk: 2.0, cpu: 2.0 },
     reservation_ratio: 0.15,
     rack_identifier: 'ams-2',
@@ -291,6 +323,29 @@ exports.allocation_ok_2 = function (t) {
                        nic_tags: [ 'external' ],
                        owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb' },
                  image: {} };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[0].uuid);
+        t.done();
+    });
+};
+
+
+
+exports.allocation_ok_3 = function (t) {
+    var path = '/allocation';
+
+    var data = { servers: servers,
+                 vm: { ram: 256,
+                       brand: 'kvm',
+                       nic_tags: [ 'external' ],
+                       owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb' },
+                 image: { image_size: 51200 } };
 
     client.post(path, data, function (err, req, res, body) {
         t.ifError(err);
@@ -478,11 +533,14 @@ exports.allocation_overprovisioning_memory = function (t) {
 exports.allocation_overprovisioning_storage = function (t) {
     var path = '/allocation';
 
+    // there should be 932GB calculated free on disk. We're adding another zone
+    // which is overprovisioned by 2. We're checking the lower bound here (and
+    // see next test)
     var data = {
         servers: servers,
         vm: {
             ram: 256,
-            quota: 2048,
+            quota: 930 * 2 * 1024,
             owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f'
         },
         package: {
@@ -498,6 +556,37 @@ exports.allocation_overprovisioning_storage = function (t) {
         t.ok(body);
         t.ok(body.steps);
         t.equal(body.server.uuid, servers[3].uuid);
+
+        t.done();
+    });
+};
+
+
+
+exports.allocation_overprovisioning_storage_insufficient = function (t) {
+    var path = '/allocation';
+
+    // there should be 932GB calculated free on disk. We're adding another zone
+    // which is overprovisioned by 2. We're checking the upper bound here (and
+    // see previous test)
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            quota: 940 * 2 * 1024,
+            owner_uuid: '91b332e7-b0ab-4c40-bfe3-b2674ec5253f'
+        },
+        package: {
+            overprovision_storage: 2.0
+        },
+        image: {}
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.ok(body.steps);
 
         t.done();
     });
