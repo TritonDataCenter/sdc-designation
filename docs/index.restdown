@@ -113,6 +113,7 @@ understands the following characteristics:
 || **Attribute** || **Type** || **Description**                          ||
 || traits        || hash     || Traits that a compute node must match    ||
 || requirements  || hash     || Various restrictions that a CN must meet ||
+|| image_size    || integer  || Size in MiB of KVM root filesystem       ||
 
 Currently, DAPI considers the following attributes in ***requirements***, all
 attributes being optional:
@@ -132,6 +133,7 @@ being too old, or no longer supporting a removed feature).
 An example of a valid manifest:
 
     {
+      "image_size": 10240,
       "traits": {
         "ssd": true
       },

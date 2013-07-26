@@ -676,11 +676,38 @@ exports.allocation_malformed_image_2 = function (t) {
 
 
 
+exports.allocation_malformed_image_3 = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        },
+        image: {
+            image_size: 'foobar'
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, '"image.image_size" has invalid type');
+        t.done();
+    });
+};
+
+
+
 exports.vm_ram_smaller_than_image_requirement = function (t) {
     var path = '/allocation';
 
     var data = {
         servers: servers,
+        image: {},
         vm: {
             ram: 256,
             nic_tags: [ 'external' ],
@@ -710,6 +737,7 @@ exports.vm_ram_larger_than_image_requirement = function (t) {
 
     var data = {
         servers: servers,
+        image: {},
         vm: {
             ram: 768,
             nic_tags: [ 'external' ],
@@ -739,6 +767,7 @@ exports.malformed_vm = function (t) {
 
     var data = {
         servers: servers,
+        image: {},
         vm: {
             ram: 'not-a-number',
             owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
@@ -761,6 +790,7 @@ exports.vm_with_malformed_traits = function (t) {
 
     var data = {
         servers: servers,
+        image: {},
         vm: {
             ram: 768,
             owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
