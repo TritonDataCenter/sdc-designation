@@ -220,6 +220,7 @@ DAPI for two things: traits and overprovision ratios.
 
 || **Attribute**         || **Type** || **Description**                                  ||
 || traits                || hash     || Traits that a compute node must match            ||
+|| min_platform          || hash     || Minimum platform on a CN for an SDC version      ||
 || overprovision_cpu     || float    || Ratio for maximum overprovisioning on CPU        ||
 || overprovision_memory  || float    || Ratio for maximum overprovisioning on RAM        ||
 || overprovision_storage || float    || Ratio for maximum overprovisioning on disk space ||
@@ -227,6 +228,9 @@ DAPI for two things: traits and overprovision ratios.
 || overprovision_network || float    || Currently ignored                                ||
 
 Traits that the package provides can be overridden by traits in the VM payload.
+
+min_platform follows the same rules as min_platform in an image. Please see the
+Image Manifest section above.
 
 Each overprovision ratio is optional. If a ratio is provided, DAPI will attempt
 to ensure that the ratio (or better) is kept. If a ratio is not provided, DAPI

@@ -24,10 +24,11 @@ function (t) {
     var state = {};
     var expectedServers = testServers;
     var vmDetails = {};
+    var pkgDetails = {};
     var imgDetails = {};
 
     var filteredServers = filter.run(log, state, testServers, vmDetails,
-                                     imgDetails);
+                                     imgDetails, pkgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -36,13 +37,14 @@ function (t) {
 
 
 
-exports.filterPlatformVersions_min_platform_requirements =
+exports.filterPlatformVersions_min_platform_requirements_for_images =
 function (t) {
     var expectedServers = testServers.slice(5, 9);
     expectedServers.unshift(testServers[3]);
 
     var state = {};
     var vmDetails = {};
+    var pkgDetails = {};
     var imgDetails = {
         requirements: {
             min_platform: {'7.0': '20121211T203034Z'}
@@ -50,7 +52,27 @@ function (t) {
     };
 
     var filteredServers = filter.run(log, state, testServers, vmDetails,
-                                     imgDetails);
+                                     imgDetails, pkgDetails);
+    t.deepEqual(filteredServers, expectedServers);
+    t.deepEqual(state, {});
+
+    t.done();
+};
+
+
+
+exports.filterPlatformVersions_min_platform_requirements_for_packages =
+function (t) {
+    var expectedServers = testServers.slice(5, 9);
+    expectedServers.unshift(testServers[3]);
+
+    var state = {};
+    var vmDetails = {};
+    var pkgDetails = { min_platform: {'7.0': '20121211T203034Z'} };
+    var imgDetails = {};
+
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
+                                     imgDetails, pkgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -66,6 +88,7 @@ function (t) {
 
     var state = {};
     var vmDetails = {};
+    var pkgDetails = {};
     var imgDetails = {
         requirements: {
             max_platform: {'7.0': '20121211T203034Z'}
@@ -73,7 +96,7 @@ function (t) {
     };
 
     var filteredServers = filter.run(log, state, testServers, vmDetails,
-                                     imgDetails);
+                                     imgDetails, pkgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -87,6 +110,7 @@ function (t) {
     var state = {};
     var expectedServers = testServers.slice(0, 1);
     var vmDetails = {};
+    var pkgDetails = {};
     var imgDetails = {
         requirements: {
             min_platform: {'6.5': '20121211T203034Z'},
@@ -95,7 +119,7 @@ function (t) {
     };
 
     var filteredServers = filter.run(log, state, testServers, vmDetails,
-                                     imgDetails);
+                                     imgDetails, pkgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -112,6 +136,7 @@ function (t) {
 
     var state = {};
     var vmDetails = {};
+    var pkgDetails = {};
     var imgDetails = {
         requirements: {
             min_platform: {'6.5': '20121211T203034Z'},
@@ -120,7 +145,7 @@ function (t) {
     };
 
     var filteredServers = filter.run(log, state, testServers, vmDetails,
-                                     imgDetails);
+                                     imgDetails, pkgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -137,6 +162,7 @@ function (t) {
 
     var state = {};
     var vmDetails = {};
+    var pkgDetails = {};
     var imgDetails = {
         requirements: {
             min_platform: {'6.5': '20121211T203034Z'},
@@ -146,7 +172,7 @@ function (t) {
     };
 
     var filteredServers = filter.run(log, state, testServers, vmDetails,
-                                     imgDetails);
+                                     imgDetails, pkgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -162,6 +188,7 @@ function (t) {
 
     var state = {};
     var vmDetails = {};
+    var pkgDetails = {};
     var imgDetails = {
         requirements: {
             min_platform: {'6.5': '20121211T203034Z',
@@ -171,7 +198,33 @@ function (t) {
     };
 
     var filteredServers = filter.run(log, state, testServers, vmDetails,
-                                     imgDetails);
+                                     imgDetails, pkgDetails);
+    t.deepEqual(filteredServers, expectedServers);
+    t.deepEqual(state, {});
+
+    t.done();
+};
+
+
+
+exports.filterPlatformVersions_minmax_platform_requirements_5 =
+function (t) {
+    var expectedServers = testServers.slice(2, 6);
+    expectedServers.unshift(testServers[0]);
+    expectedServers[expectedServers.length] = testServers[7];
+
+    var state = {};
+    var vmDetails = {};
+    var pkgDetails = { min_platform: {'6.5': '20121210T203034Z'} };
+    var imgDetails = {
+        requirements: {
+            min_platform: {'6.5': '20121218T203452Z'},
+            max_platform: {'7.1': '20121217T203452Z'}
+        }
+    };
+
+    var filteredServers = filter.run(log, state, testServers, vmDetails,
+                                     imgDetails, pkgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -188,6 +241,7 @@ function (t) {
 
     var state = {};
     var vmDetails = {};
+    var pkgDetails = {};
     var imgDetails = {
         requirements: {
             min_platform: {'6.5': '20121211T203034Z',
@@ -198,7 +252,7 @@ function (t) {
     };
 
     var filteredServers = filter.run(log, state, testServers, vmDetails,
-                                     imgDetails);
+                                     imgDetails, pkgDetails);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -210,12 +264,13 @@ function (t) {
 exports.filterPlatformVersions_with_no_servers =
 function (t) {
     var givenServers = [];
-    var imgDetails = {};
     var vmDetails = {};
+    var pkgDetails = {};
+    var imgDetails = {};
     var state = {};
 
     var filteredServers = filter.run(log, state, givenServers, vmDetails,
-                                     imgDetails);
+                                     imgDetails, pkgDetails);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
