@@ -895,3 +895,13 @@ exports.vm_with_malformed_traits = function (t) {
         t.done();
     });
 };
+
+
+
+exports.ping = function (t) {
+    client.get('/ping', function (err, req, res, body) {
+        t.equal(res.statusCode, 200);
+        t.equal(body.status, 'running');
+        t.done();
+    });
+};
