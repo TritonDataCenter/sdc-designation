@@ -360,7 +360,7 @@ exports.allocation_ok_3 = function (t) {
 
 
 
-exports.allocation_max_platform = function (t) {
+exports.allocation_image_max_platform = function (t) {
     var path = '/allocation';
 
     var data = {
@@ -393,7 +393,7 @@ exports.allocation_max_platform = function (t) {
 
 
 
-exports.allocation_min_platform = function (t) {
+exports.allocation_image_min_platform = function (t) {
     var path = '/allocation';
 
     var data = {
@@ -407,6 +407,66 @@ exports.allocation_min_platform = function (t) {
             requirements: {
                 min_platform: { '7.0': '20130122T122401Z' }
             }
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[1].uuid);
+        t.done();
+    });
+};
+
+
+
+exports.allocation_package_max_platform = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        },
+        image: {},
+        package: {
+           // can be hash, but must support JSON too
+           max_platform: '{"6.5":"20121218T203452Z", "7.0":"20121218T203452Z"}'
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[0].uuid);
+        t.done();
+    });
+};
+
+
+
+exports.allocation_package_min_platform = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            ram: 256,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        },
+        image: {},
+        package: {
+           // can be hash, but must support JSON too
+            min_platform: '{"7.0": "20130122T122401Z"}'
         }
     };
 
