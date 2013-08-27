@@ -765,3 +765,63 @@ function (t) {
 
     t.done();
 };
+
+
+
+exports.test_deepCopy =
+function (t) {
+    var allocator = new Allocator(logStub);
+    var original, clone;
+
+    original = null;
+    clone = allocator._deepCopy(original);
+    t.equal(original, null);
+    t.equal(clone, null);
+
+    original = 1;
+    clone = allocator._deepCopy(original);
+    t.equal(original, 1);
+    t.equal(clone, 1);
+
+    original = 'foo';
+    clone = allocator._deepCopy(original);
+    t.equal(original, 'foo');
+    t.equal(clone, 'foo');
+
+    original = [1];
+    clone = allocator._deepCopy(original);
+    t.deepEqual(original, [1]);
+    t.deepEqual(clone, [1]);
+    clone.push(2);
+    t.deepEqual(original, [1]);
+
+    original = { a: 1 };
+    clone = allocator._deepCopy(original);
+    t.deepEqual(original, { a: 1 });
+    t.deepEqual(clone, { a: 1 });
+    clone.a = 2;
+    t.deepEqual(original, { a: 1 });
+
+    var frozen = new Buffer('lolcats');
+
+    original = new Buffer('lolcats');
+    clone = allocator._deepCopy(original);
+    t.deepEqual(original, frozen);
+    t.deepEqual(clone, frozen);
+    clone.writeUInt8(67, 0);
+    t.deepEqual(original, frozen);
+
+    original = { a: [1, { b: 2 }, frozen, 'foo'] };
+    clone = allocator._deepCopy(original);
+    t.deepEqual(original, { a: [1, { b: 2 }, frozen, 'foo'] });
+    t.deepEqual(clone, { a: [1, { b: 2 }, frozen, 'foo'] });
+    clone.a[3] = 'bar';
+    clone.a[2].writeUInt8(67, 0);
+    clone.a[1].b = 3;
+    clone.a[1].c = 3;
+    clone.a[0] = 2;
+    clone.a.push(null);
+    t.deepEqual(original, { a: [1, { b: 2 }, frozen, 'foo'] });
+
+    t.done();
+};
