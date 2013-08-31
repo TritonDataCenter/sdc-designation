@@ -72,11 +72,9 @@ release: all deps docs $(SMF_MANIFESTS)
     $(ROOT)/tools \
     $(ROOT)/sapi_manifests \
     $(TMPDIR)/root/opt/smartdc/dapi/
-	@mkdir -p $(TMPDIR)/root/opt/smartdc/sdc-boot/scripts
-	cp $(ROOT)/sdc-boot/*.sh \
-	    $(TMPDIR)/root/opt/smartdc/sdc-boot/
-	cp $(ROOT)/deps/sdc-scripts/*.sh \
-	    $(TMPDIR)/root/opt/smartdc/sdc-boot/scripts/
+	mkdir -p $(TMPDIR)/root/opt/smartdc/sdc-boot
+	cp -R $(ROOT)/deps/sdc-scripts/* $(TMPDIR)/root/opt/smartdc/sdc-boot/
+	cp -R $(ROOT)/sdc-boot/* $(TMPDIR)/root/opt/smartdc/sdc-boot/
 	(cd $(TMPDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
 	@rm -rf $(TMPDIR)
 
@@ -101,3 +99,5 @@ include tools/mk/Makefile.node_prebuilt.targ
 include ./tools/mk/Makefile.node_deps.targ
 include ./tools/mk/Makefile.smf.targ
 include ./tools/mk/Makefile.targ
+
+sdc-scripts: deps/sdc-scripts/.git
