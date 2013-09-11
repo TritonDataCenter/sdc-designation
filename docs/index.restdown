@@ -67,6 +67,7 @@ VM, but the current version only considers the following characteristics:
 || traits        || hash     || Traits that a compute node must match                ||
 || nic_tags      || array    || If VLAN filtering is enabled, nic_tags needed for VM ||
 || owner_uuid    || string   || UUID of the new zone's owner                         ||
+|| locality      || hash     || Hints for VM placement                               ||
 
 The following are a couple of valid VM payload examples. As long as the
 ***ram*** attribute is present, the object will pass validation. 
@@ -555,6 +556,38 @@ a VM payload. A union is made between traits between the VM payload and image
 manifest, attributes from the image manifest's traits taking priority when both
 the VM payload and image manifest share some attributes in their traits, and
 the resulting traits union is used to match against CN traits.
+
+
+
+## Locality Hints
+
+Under many circumstances it is desirable to have a new VM placed near or far
+from existing VMs. For example, VMs containing two replicating databases
+probably should be kept far from each other, in case a server or rack loses
+power. Or consider a webhead and a cache -- keeping a webapp in the same rack
+as memcache provides better performance.
+
+Specifying locality hints is optional. By default DAPI tries to keep a
+customer's VMs on separate racks or servers for high-availability reasons.
+However, an allocation request can specify one or more VMs for DAPI to try to
+allocate near or far from.
+
+This hint will try to allocate a server near one VM, and far from the other 
+three. Note that allocating a new VM far from other VMs take precedence over
+near VMs, since high availability is usually more important than performance:
+
+    "locality": {
+      "near": "803e6c05-7c89-464f-b8f7-37aa99ee3ead",
+      "far": ["53e93593-6c4b-4268-963f-32633f526548",
+              "a48514a8-95ec-4c2e-a874-63c332a7c8bc",
+              "1988fa44-b849-449f-abf0-ab0f198d862e"]
+    }
+
+"near" and "far" are both optional, and can either be a UUID or arrays of UUIDs.
+
+Beware that this is not a guarantee, only that DAPI will make a reasonable
+effort to fulfill it if possible. If it cannot meet those hints, it will provide
+a server anyway.
 
 
 

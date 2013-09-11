@@ -360,6 +360,61 @@ exports.allocation_ok_3 = function (t) {
 
 
 
+exports.allocation_with_locality_hints_near = function (t) {
+    var path = '/allocation';
+
+    var data = { servers: servers,
+                 vm: { ram: 256,
+                       nic_tags: [ 'external' ],
+                       owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+                       locality: {
+                         near: '0e07ab09-d725-436f-884a-759fa3ed7183'
+                       } },
+                 image: {}
+             };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.ok(body.steps);
+        // XXX: this should probably be 2 (same rack, different server), but the
+        // logic of the pipeline means that servers[2] is probably filtered out
+        // before the locality plugin. Need to fix that.
+        t.equal(body.server.uuid, servers[1].uuid);
+        t.done();
+    });
+};
+
+
+
+exports.allocation_with_locality_hints_far = function (t) {
+    var path = '/allocation';
+
+    var data = { servers: servers,
+                 vm: { ram: 256,
+                       nic_tags: [ 'external' ],
+                       owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+                       locality: {
+                         far: ['0e07ab09-d725-436f-884a-759fa3ed7183']
+                       } },
+                 image: {}
+             };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[0].uuid);
+        t.done();
+    });
+};
+
+
+
 exports.allocation_image_max_platform = function (t) {
     var path = '/allocation';
 

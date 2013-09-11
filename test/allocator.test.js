@@ -712,6 +712,7 @@ function (t) {
         'pick-random',
         'pick-weighted-random',
         'soft-filter-large-servers',
+        'soft-filter-locality-hints',
         'soft-filter-owner-many-zones',
         'soft-filter-recent-servers',
         'sort-2adic',
