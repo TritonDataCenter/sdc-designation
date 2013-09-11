@@ -69,13 +69,14 @@ VM, but the current version only considers the following characteristics:
 || owner_uuid    || string   || UUID of the new zone's owner                         ||
 || locality      || hash     || Hints for VM placement                               ||
 
-The following are a couple of valid VM payload examples. As long as the
-***ram*** attribute is present, the object will pass validation. 
+The following are a couple of valid VM payload examples. The object must contain
+at least ***ram*** and ***owner_uuid***.
 
     # Simplest example
 
     {
-      "ram": 2048
+      "ram": 2048,
+      "owner_uuid": "73fa296f-a9dc-4677-9c06-4c610fc57160"
     }
 
     # More complete VM payload, similar to `vmadm get <uuid>`
@@ -98,6 +99,9 @@ The following are a couple of valid VM payload examples. As long as the
       "internal_metadata": {},
       "tags": {},
       "traits": { "ssd": true }
+      "locality": {
+        "near": ["b91a0aaf-1a22-43b3-8462-e64ac2afb141"]
+      }
     }
 
 
@@ -215,9 +219,9 @@ As an example of a valid servers payload:
 
 ## Package Payload
 
-The package payload is optional, and can be used to fill in details that the VM
-payload does not provide, like certain defaults. Right now packages are used by
-DAPI for two things: traits and overprovision ratios.
+The package payload is optional, and contains details that the VM payload does
+not provide, like certain defaults. Right now packages are used by DAPI for two
+things: traits and overprovision ratios.
 
 || **Attribute**         || **Type** || **Description**                                  ||
 || traits                || hash     || Traits that a compute node must match            ||
@@ -262,10 +266,12 @@ An example of a valid package payload:
 
 Unique endpoint for allocating a VM to a server.
 
-Both of the following inputs are required:
+All of the following inputs are required:
 
 || **Param** || **Type** || **Description**                              ||
 || vm        || hash     || VM Payload, see "VM Payload" above           ||
+|| image     || hash     || Image Manifest, see "Image Manifest" above   ||
+|| package   || hash     || Package Payload, see "Package Payload" above ||
 || servers   || hash     || List of servers, see "Servers Payload" above ||
 
 The endpoint will either return a 409, or a 200:
@@ -283,32 +289,92 @@ payload.
 ### Programmatic Example
 
     var servers = [ {
-      uuid: 'cdc1b052-1df9-4a3d-b34d-3f0afadac883',
-      memory_total_bytes: 2147483648,
-      memory_available_bytes: 1073741824,
-      reservation_ratio: 0.15,
-      reserved: false,
-      setup: true,
-      'Zpool Size in GiB': 1024,
-      vms: {
-        'fbbbdc6d-011c-4931-9420-c702f53e4154': {
-          max_physical_memory: 1024,
-          quota: 10240,
-          owner_uuid: '9b81f9e7-55e1-4e00-a8f7-917bd054b320'
+        uuid: '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+        ram: 2048,
+        setup: true,
+        reserved: false,
+        status: 'running',
+        memory_total_bytes: 2147483648,
+        memory_available_bytes: 1073741824,
+        disk_pool_size_bytes: 1099511627776,
+        disk_installed_images_used_bytes: 1073741824,
+        disk_zone_quota_bytes: 53687091200,
+        disk_kvm_quota_bytes: 0,
+        disk_kvm_zvol_volsize_bytes: 0,
+        reservation_ratio: 0.15,
+        rack_identifier: 'ams-1',
+        sysinfo: {
+            'Zpool Size in GiB': 1024,
+            'CPU Total Cores': 16,
+            'SDC Version': '7.0',
+            'Live Image': '20121210T203034Z',
+            'Network Interfaces': {
+                e1000g0: {
+                    'Link Status': 'up',
+                    'NIC Names': [ 'external' ]
+                },
+                e1000g1: {
+                   'Link Status': 'up',
+                   'NIC Names': [ 'admin' ]
+                }
+            }
+        },
+        vms: {
+            '564d9386-8c67-b674-587f-101f1db2eda7': {
+                uuid: '564d9386-8c67-b674-587f-101f1db2eda7',
+                owner_uuid: '8edf8cdc-a96f-4dee-8566-687f2ea75f84',
+                brand: 'joyent',
+                quota: 50,
+                max_physical_memory: 512,
+                zone_state: 'running',
+                state: 'running',
+                last_modified: '2012-12-19T05:26:05.000Z'
+            }
         }
-      }
     }, {
-      uuid: '82c53a64-b19c-4266-bf16-3ee1d34318d2',
-      memory_total_bytes: 1073741824,
-      memory_available_bytes: 536870912
-      reservation_ratio: 0.25,
-      reserved: false,
-      setup: false,
-      'Zpool Size in GiB': null,
-      vms: {}
+        uuid: '85526a01-9310-44fd-9637-ed1501cc69a1',
+        ram: 1024,
+        setup: true,
+        reserved: false,
+        status: 'running',
+        memory_total_bytes: 1073741824,
+        memory_available_bytes: 536870912,
+        disk_pool_size_bytes: 1099511627776,
+        disk_installed_images_used_bytes: 1073741824,
+        disk_zone_quota_bytes: 0,
+        disk_kvm_quota_bytes: 107374182400,
+        disk_kvm_zvol_volsize_bytes: 85899345920,
+        reservation_ratio: 0.15,
+        rack_identifier: 'ams-2',
+        sysinfo: {
+            'Zpool Size in GiB': 1024,
+            'CPU Total Cores': 16,
+            'SDC Version': '7.0',
+            'Live Image': '20130122T122401Z',
+            'Network Interfaces': {
+                e1000g0: {
+                    'Link Status': 'up',
+                    'NIC Names': [ 'external' ]
+                },
+                e1000g1: {
+                   'Link Status': 'up',
+                   'NIC Names': [ 'admin' ]
+                }
+            }
+        }
     } ];
 
-    var data = { servers: servers, vm: { ram: 2048 } };
+    var vm = {
+      ram: 256,
+      owner_uuid: 'f176970e-6f1a-45d0-a1ea-2a61a76cf7e5'
+    };
+
+    var image = {
+      image_size: 51200,
+      type: 'zvol'
+    };
+
+    var data = { servers: servers, vm: vm, image: image };
 
     restify.post('/allocation', data, function (err, req, res, server) {
       assert.ok(server);
@@ -342,9 +408,7 @@ below for description of what each one does):
              'soft-filter-recent-servers'
              ['or', 'hard-filter-large-servers',
                     'identity'],
-             ['or', 'hard-filter-owner-same-racks',
-                    'hard-filter-owner-same-servers',
-                    'soft-filter-owner-many-zones'],
+             'soft-filter-locality-hints',
              'sort-min-ram',
              'pick-weighted-random']
 
@@ -407,6 +471,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 || pick-random                     || Pick a random CN from a list                                ||
 || pick-weighted-random            || Pick one of top 20% of CNs so far                           ||
 || soft-filter-large-servers       || Tries to reserve some servers for large VMs                 ||
+|| soft-filter-locality-hints      || Tries to place VM near or far from other given VMs          ||
 || soft-filter-recent-servers      || Tries to ignore recently allocated-to CNs, to prevent races ||
 || sort-2adic                      || Order CNs by 2adic ordering of available RAM                ||
 || sort-min-ram                    || Order CNs by how little available RAM is left               ||
