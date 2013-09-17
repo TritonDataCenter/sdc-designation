@@ -14,9 +14,9 @@ var fs   = require('fs');
 var path = require('path');
 
 if (process.argv.length !== 5) {
-	var basename = path.basename(process.argv[1]);
-	console.error('Usage: ' + basename + ' <ram MiB> <disk GiB> <cpu cap>');
-	process.exit(1);
+    var basename = path.basename(process.argv[1]);
+    console.error('Usage: ' + basename + ' <ram MiB> <disk GiB> <cpu cap>');
+    process.exit(1);
 }
 
 var lowRam  = process.argv[2] * 1024 * 1024;
@@ -27,62 +27,62 @@ var json = fs.readFileSync('/dev/stdin');
 var servers = JSON.parse(json);
 
 servers.forEach(function (server) {
-	if (server.headnode === true)
-		return;
+    if (server.headnode === true)
+        return;
 
-	var vms = server.vms;
-	var cpu = server.sysinfo['CPU Total Cores'] * 100;
-	var ram = server.memory_total_bytes * (1 - server.reservation_ratio);
+    var vms = server.vms;
+    var cpu = server.sysinfo['CPU Total Cores'] * 100;
+    var ram = server.memory_total_bytes * (1 - server.reservation_ratio);
 
-	var disk = server.disk_pool_size_bytes -
-	           server.disk_installed_images_used_bytes -
-		   server.disk_zone_quota_bytes -
-		   server.disk_kvm_zvol_volsize_bytes;
+    var disk = server.disk_pool_size_bytes -
+               server.disk_installed_images_used_bytes -
+               server.disk_zone_quota_bytes -
+               server.disk_kvm_zvol_volsize_bytes;
 
-	var vmNames = Object.keys(vms);
-	vmNames.forEach(function (name) {
-		var vm = vms[name];
+    var vmNames = Object.keys(vms);
+    vmNames.forEach(function (name) {
+        var vm = vms[name];
 
-		cpu -= vm.cpu_cap / 4;
-		ram -= vm.max_physical_memory * 1024 * 1024;
-		
-		if (vm.brand === 'kvm')
-			disk -= 10 * 1024 * 1024 * 1024;
+        cpu -= vm.cpu_cap / 4;
+        ram -= vm.max_physical_memory * 1024 * 1024;
 
-		if (!vm.cpu_cap)
-			console.log('Error: VM', name, 'has no cpu_cap');
+        if (vm.brand === 'kvm')
+            disk -= 10 * 1024 * 1024 * 1024;
 
-		if (!vm.quota)
-			console.log('Warning: VM', name, 'has no quota');
-	});
+        if (!vm.cpu_cap)
+            console.log('Error: VM', name, 'has no cpu_cap');
 
-	ram  = Math.floor(ram);
-	disk = Math.floor(disk);
-	cpu  = Math.floor(cpu);
+        if (!vm.quota)
+            console.log('Warning: VM', name, 'has no quota');
+    });
 
-	var msg = 'Note: CN ' + server.uuid; 
+    ram  = Math.floor(ram);
+    disk = Math.floor(disk);
+    cpu  = Math.floor(cpu);
 
-	if (ram < lowRam || isNaN(ram))
-		console.log(msg, 'has low RAM: ', ram);
+    var msg = 'Note: CN ' + server.uuid;
 
-	if (disk < lowDisk || isNaN(disk))
-		console.log(msg, 'has low disk:', disk);
+    if (ram < lowRam || isNaN(ram))
+        console.log(msg, 'has low RAM: ', ram);
 
-	// remember we're overprovisioning CPU by 4
-	if (cpu < lowCpu / 4 || isNaN(cpu))
-		console.log(msg, 'has low cpu: ', cpu);
+    if (disk < lowDisk || isNaN(disk))
+        console.log(msg, 'has low disk:', disk);
 
-        msg = '--> CN ' + server.uuid;
+    // remember we're overprovisioning CPU by 4
+    if (cpu < lowCpu / 4 || isNaN(cpu))
+        console.log(msg, 'has low cpu: ', cpu);
 
-	if (ram >= lowRam && disk >= lowDisk && cpu >= lowCpu / 4) {
-		if (server.reserved === true || server.reserved === "true") {
-			console.log(msg, 'has enough, but reserved');
-		} else {
-			console.log(msg, 'has enough');
-		}
-	} else {
-		console.log(msg, 'does not have enough');
-	}
+    msg = '--> CN ' + server.uuid;
 
-	console.log('');
+    if (ram >= lowRam && disk >= lowDisk && cpu >= lowCpu / 4) {
+        if (server.reserved === true || server.reserved === 'true') {
+            console.log(msg, 'has enough, but reserved');
+        } else {
+            console.log(msg, 'has enough');
+        }
+    } else {
+        console.log(msg, 'does not have enough');
+    }
+
+    console.log('');
 });
