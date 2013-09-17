@@ -101,7 +101,7 @@ function (t) {
             memory_total_bytes: 9132881112,
             disk_pool_size_bytes: 4096 * GB,
             disk_installed_images_used_bytes: 4 * GB,
-            disk_zone_quota_bytes: 20 * GB,
+            disk_zone_quota_bytes: (20 + 30) * GB,
             disk_kvm_quota_bytes: (10 + 30) * GB,
             disk_kvm_zvol_volsize_bytes: 30 * GB,
             reservation_ratio: 0.15,
@@ -112,12 +112,21 @@ function (t) {
             vms: {
                 'd251001f-57eb-4360-a04a-96d7d20a520c': {
                     brand: 'joyent',
+                    state: 'running',
                     cpu_cap: 700,
                     quota: 20,
                     max_physical_memory: 512
                 },
                 '9dd471a6-4679-4201-a02d-5e824deefc3e': {
                     brand: 'kvm',
+                    state: 'installed',
+                    cpu_cap: 200,
+                    quota: 30,
+                    max_physical_memory: 4096
+                },
+                '3575c7b5-e644-4357-8b89-9188a883da8d': {
+                    brand: 'joyent',
+                    state: 'failed',
                     cpu_cap: 200,
                     quota: 30,
                     max_physical_memory: 4096
@@ -142,10 +151,9 @@ function (t) {
     t.equal(servers[2].unreserved_ram,  4331);
     t.equal(servers[2].unreserved_cpu,  3200);
 
-    t.equal(servers[3].unreserved_disk, 4159488);
+    t.equal(servers[3].unreserved_disk, 4144128);
     t.equal(servers[3].unreserved_ram,  4331);
     t.equal(servers[3].unreserved_cpu,  2750);
-
 
     t.done();
 };
