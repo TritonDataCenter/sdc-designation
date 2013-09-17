@@ -396,6 +396,7 @@ below for description of what each one does):
 
     ['pipe', 'hard-filter-setup',
              'calculate-server-unreserved',
+             'calculate-locality',
              'hard-filter-overprovision-ratios',
              'hard-filter-min-ram',
              'hard-filter-min-disk',
@@ -451,6 +452,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 ## Provided Algorithms
 
 || **Name**                        || **Action**                                                  ||
+|| calculate-locality              || Early calculations needed by the soft-filter-locality-hints plugin   ||
 || calculate-server-unreserved     || Does some free-resource calculations that are used by other plugins  ||
 || hard-filter-headnode            || Removes any headnodes                                       ||
 || hard-filter-large-servers       || Removes the top 15% servers with the most available RAM     ||

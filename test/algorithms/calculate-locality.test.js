@@ -2,13 +2,14 @@
  * Copyright (c) 2013, Joyent, Inc. All rights reserved.
  *
  * Warning: if you make any alterations to the state in any of the tests
- * here, make sure to modify the associated tests in calculate-locality.test.js.
- * 'expected' in that file should match 'state' in this one.
+ * here, make sure to modify the associated tests in
+ * soft-filter-locality-hints.test.js. 'expected' in this file should match
+ * 'state' in that one.
  */
 
 
 
-var filter = require('../../lib/algorithms/soft-filter-locality-hints.js');
+var filter = require('../../lib/algorithms/calculate-locality.js');
 var genUuid = require('node-uuid');
 
 var log = { trace: function () { return true; },
@@ -30,18 +31,17 @@ function (t) {
         { uuid: genUuid(),                         vms: genVms(3, 2) }
     ];
 
-    var expected = servers.slice(2, 4);
     var vmDetails = { owner_uuid: ownerUuid };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 4]),
         nearRackUuids: {},
         farRackUuids: { r01: true }
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
 
 
@@ -58,18 +58,17 @@ function (t) {
         { uuid: genUuid(),                         vms: genVms(3, 2) }
     ];
 
-    var expected = servers.slice(1, 2);
     var vmDetails = { owner_uuid: ownerUuid };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 2, 3, 4]),
         nearRackUuids: {},
         farRackUuids: { r01: true, r02: true }
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
 
 
@@ -86,18 +85,17 @@ function (t) {
         { uuid: genUuid(),                         vms: genVms(3, 2) }
     ];
 
-    var expected = servers;
     var vmDetails = { owner_uuid: ownerUuid };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 1, 2, 3, 4]),
         nearRackUuids: {},
         farRackUuids: { r01: true, r02: true }
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
 
 
@@ -119,18 +117,17 @@ function (t) {
         return vms[uuid].owner_uuid === ownerUuid;
     });
 
-    var expected = servers.slice(0, 2);
     var vmDetails = { owner_uuid: ownerUuid, locality: { far: far } };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [2]),
         nearRackUuids: {},
         farRackUuids: { r02: true }
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
 
 
@@ -156,20 +153,19 @@ function (t) {
     });
 
     var far = [].concat.apply([], ownerVms);
-
-    var expected = [servers[1], servers[3], servers[4]];
     var vmDetails = { owner_uuid: ownerUuid, locality: { far: far } };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 2]),
         nearRackUuids: {},
         farRackUuids: { r01: true, r02: true }
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
+
 
 
 
@@ -194,19 +190,17 @@ function (t) {
     });
 
     var far = [].concat.apply([], ownerVms);
-
-    var expected = servers;
     var vmDetails = { owner_uuid: ownerUuid, locality: { far: far } };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 1, 2, 3, 4]),
         nearRackUuids: {},
         farRackUuids: { r01: true, r02: true }
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
 
 
@@ -232,19 +226,17 @@ function (t) {
     });
 
     var near = [].concat.apply([], ownerVms);
-
-    var expected = servers.slice(1, 2);
     var vmDetails = { owner_uuid: ownerUuid, locality: { near: near } };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: listServerUuids(servers, [0]),
         farServerUuids: {},
         nearRackUuids: { r01: true },
         farRackUuids: {}
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
 
 
@@ -270,19 +262,17 @@ function (t) {
     });
 
     var near = [].concat.apply([], ownerVms);
-
-    var expected = servers.slice(0, 2);
     var vmDetails = { owner_uuid: ownerUuid, locality: { near: near } };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: listServerUuids(servers, [0, 1]),
         farServerUuids: {},
         nearRackUuids: { r01: true },
         farRackUuids: {}
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
 
 
@@ -299,7 +289,7 @@ function (t) {
         { uuid: genUuid(),                         vms: genVms(3, 2) }
     ];
 
-    var ownerVms = servers.slice(0, 3).map(function (s) {
+    var nearOwnerVms = servers.slice(0, 3).map(function (s) {
         return s.vms;
     }).map(function (vms) {
         return Object.keys(vms).filter(function (uuid) {
@@ -307,9 +297,7 @@ function (t) {
         });
     });
 
-    var near = [].concat.apply([], ownerVms);
-
-    ownerVms = [servers[0], servers[2]].map(function (s) {
+    var farOwnerVms = [servers[0], servers[2]].map(function (s) {
         return s.vms;
     }).map(function (vms) {
         return Object.keys(vms).filter(function (uuid) {
@@ -317,23 +305,21 @@ function (t) {
         });
     });
 
-    var far = [].concat.apply([], ownerVms);
-
-    var expected = servers.slice(3, 4);
+    var near = [].concat.apply([], nearOwnerVms);
+    var far  = [].concat.apply([], farOwnerVms);
     var vmDetails = { owner_uuid: ownerUuid,
                       locality: { near: near, far: far } };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: listServerUuids(servers, [0, 1, 2]),
         farServerUuids:  listServerUuids(servers, [0, 2]),
         nearRackUuids: { r01: true, r02: true },
         farRackUuids:  { r01: true, r02: true }
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
-
 
 
 
@@ -354,23 +340,46 @@ function (t) {
         return vms[uuid].owner_uuid === ownerUuid;
     });
 
-    var expected = servers.slice(0, 2);
     var vmDetails = { owner_uuid: ownerUuid, locality: { far: far[0] } };
 
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
         nearServerUuids: {},
         farServerUuids:  listServerUuids(servers, [2]),
         nearRackUuids: {},
         farRackUuids:  { r02: true }
     };
 
-    filterServers(t, state, vmDetails, servers, expected);
+    testState(t, vmDetails, servers, expected);
 };
 
 
 
 exports.filter_with_no_servers =
+function (t) {
+    var expected = { locality: {} };
+    expected.locality[ownerUuid] = {
+        nearServerUuids: {},
+        farServerUuids:  {},
+        nearRackUuids: {},
+        farRackUuids:  {}
+    };
+
+    var state = {};
+    filter.run(log, state, [], { owner_uuid: ownerUuid });
+    t.deepEqual(state, expected);
+
+    state = {};
+    filter.run(log, state, [], { owner_uuid: ownerUuid,
+                                 locality: { near: genUuid() } });
+    t.deepEqual(state, expected);
+
+    t.done();
+};
+
+
+
+exports.post_deletes_state =
 function (t) {
     var state = { locality: {} };
     state.locality[ownerUuid] = {
@@ -379,17 +388,12 @@ function (t) {
         nearRackUuids: {},
         farRackUuids:  {}
     };
-    var origState = deepCopy(state);
 
-    var filteredServers = filter.run(log, state, [], { owner_uuid: ownerUuid });
-    t.equal(filteredServers.length, 0);
-    t.deepEqual(state, origState);
+    filter.post(log, state, {}, [], { owner_uuid: genUuid() });
+    t.equal(Object.keys(state.locality[ownerUuid]).length, 4);
 
-    filteredServers = filter.run(log, state, [],
-                                 { owner_uuid: ownerUuid,
-                                   locality: { near: genUuid() } });
-    t.equal(filteredServers.length, 0);
-    t.deepEqual(state, origState);
+    filter.post(log, state, {}, [], { owner_uuid: ownerUuid });
+    t.deepEqual(state, { locality: {} });
 
     t.done();
 };
@@ -424,7 +428,7 @@ function genVms(numVms, numOwnerVms) {
         vms[genUuid()] = { owner_uuid: ownerUuid };
     }
 
-    for (i = 0; i !== numVms - numOwnerVms; i++) {
+    for (; i !== numVms + numOwnerVms; i++) {
         vms[genUuid()] = { owner_uuid: genUuid() };
     }
 
@@ -433,60 +437,10 @@ function genVms(numVms, numOwnerVms) {
 
 
 
-function sortServers(servers) {
-    return servers.sort(function (a, b) {
-        return (a.uuid > b.uuid ? 1 : -1);  // assuming server UUIDs are unique
-    });
-}
-
-
-
-function filterServers(t, state, vmDetails, servers, expectedServers) {
-    var origState = deepCopy(state);
-    var filteredServers = filter.run(log, state, servers, vmDetails);
-
-    t.deepEqual(sortServers(filteredServers), sortServers(expectedServers));
-    t.deepEqual(state, origState);
+function testState(t, vmDetails, servers, expectedState) {
+    var state = {};
+    filter.run(log, state, servers, vmDetails);
+    t.deepEqual(state, expectedState);
 
     t.done();
-}
-
-
-
-/*
- * Deep copies a an object. This method assumes an acyclic graph.
- */
-
-function deepCopy(obj) {
-    var type = typeof (obj);
-
-    if (type == 'object') {
-        if (obj === null)
-            return (null);
-
-    var clone;
-    if (obj instanceof Buffer) {
-        clone = new Buffer(obj);
-
-        // for some reason obj instanceof Array doesn't work here
-        } else if (typeof (obj.length) == 'number') {
-            clone = [];
-            for (var i = obj.length - 1; i >= 0; i--) {
-                clone[i] = deepCopy(obj[i]);
-            }
-
-        } else {
-            clone = {};
-            for (i in obj) {
-                clone[i] = deepCopy(obj[i]);
-            }
-        }
-
-        return (clone);
-
-    } else if (type == 'string') {
-        return ('' + obj);
-    } else {
-        return (obj);
-    }
 }

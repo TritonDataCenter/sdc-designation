@@ -41,7 +41,7 @@ function (t) {
             },
             post: function (log, state, server, servers) {
                 t.ok(log.debug);
-                t.deepEqual(state, { bar: [42] });
+                t.deepEqual(state, { bar: [42], baz: 'hi' });
                 t.equal(server, 3);
                 t.deepEqual(servers, serverStubs);
 
@@ -52,11 +52,10 @@ function (t) {
             name: 'baz',
             run: function (log, state, servers) {
                 t.ok(log.debug);
-                t.deepEqual(state, {});
+                t.deepEqual(state, { bar: [42] });
                 t.deepEqual(servers, [2, 3]);
 
-                state.bar = 'hi';
-                state.baz = {};
+                state.baz = 'hi';
                 executed.push(4);
                 return [3];
             }
@@ -87,21 +86,21 @@ function (t) {
         {
             name: 'foo',
             run: function (log, state, servers) {
-                t.deepEqual(state, {});
+                t.deepEqual(state, { bar: [42, 24], baz: 'hi' });
                 executed.push(1);
                 return [serverStub];
             }
         }, {
             name: 'bar',
             run: function (log, state, servers) {
-                t.deepEqual(state, { bar: [42, 24] });
+                t.deepEqual(state, { bar: [42, 24], baz: 'hi' });
                 executed.push(2);
                 return [serverStub];
             }
         }, {
             name: 'baz',
             run: function (log, state, servers) {
-                t.deepEqual(state, { bar: 'hi', baz: {} });
+                t.deepEqual(state, { bar: [42, 24], baz: 'hi' });
                 executed.push(3);
                 return [serverStub];
             }
@@ -692,6 +691,7 @@ function (t) {
     var names = Object.keys(algorithms).sort();
 
     var expectedNames = [
+        'calculate-locality',
         'calculate-server-unreserved',
         'hard-filter-headnode',
         'hard-filter-large-servers',
