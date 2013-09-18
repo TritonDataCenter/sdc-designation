@@ -38,7 +38,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 4]),
         nearRackUuids: {},
-        farRackUuids: { r01: true }
+        farRackUuids: { r01: true },
+        algorithms: ['far']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -65,7 +66,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 2, 3, 4]),
         nearRackUuids: {},
-        farRackUuids: { r01: true, r02: true }
+        farRackUuids: { r01: true, r02: true },
+        algorithms: ['far']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -92,7 +94,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 1, 2, 3, 4]),
         nearRackUuids: {},
-        farRackUuids: { r01: true, r02: true }
+        farRackUuids: { r01: true, r02: true },
+        algorithms: ['far']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -124,7 +127,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [2]),
         nearRackUuids: {},
-        farRackUuids: { r02: true }
+        farRackUuids: { r02: true },
+        algorithms: ['far']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -160,7 +164,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 2]),
         nearRackUuids: {},
-        farRackUuids: { r01: true, r02: true }
+        farRackUuids: { r01: true, r02: true },
+        algorithms: ['far']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -197,7 +202,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 1, 2, 3, 4]),
         nearRackUuids: {},
-        farRackUuids: { r01: true, r02: true }
+        farRackUuids: { r01: true, r02: true },
+        algorithms: ['far']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -233,7 +239,8 @@ function (t) {
         nearServerUuids: listServerUuids(servers, [0]),
         farServerUuids: {},
         nearRackUuids: { r01: true },
-        farRackUuids: {}
+        farRackUuids: {},
+        algorithms: ['near']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -269,7 +276,8 @@ function (t) {
         nearServerUuids: listServerUuids(servers, [0, 1]),
         farServerUuids: {},
         nearRackUuids: { r01: true },
-        farRackUuids: {}
+        farRackUuids: {},
+        algorithms: ['near']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -315,7 +323,8 @@ function (t) {
         nearServerUuids: listServerUuids(servers, [0, 1, 2]),
         farServerUuids:  listServerUuids(servers, [0, 2]),
         nearRackUuids: { r01: true, r02: true },
-        farRackUuids:  { r01: true, r02: true }
+        farRackUuids:  { r01: true, r02: true },
+        algorithms: ['far', 'near']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -347,7 +356,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids:  listServerUuids(servers, [2]),
         nearRackUuids: {},
-        farRackUuids:  { r02: true }
+        farRackUuids:  { r02: true },
+        algorithms: ['far']
     };
 
     testState(t, vmDetails, servers, expected);
@@ -362,7 +372,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids:  {},
         nearRackUuids: {},
-        farRackUuids:  {}
+        farRackUuids:  {},
+        algorithms: []
     };
 
     var state = {};
@@ -386,11 +397,12 @@ function (t) {
         nearServerUuids: {},
         farServerUuids:  {},
         nearRackUuids: {},
-        farRackUuids:  {}
+        farRackUuids:  {},
+        algorithms: []
     };
 
     filter.post(log, state, {}, [], { owner_uuid: genUuid() });
-    t.equal(Object.keys(state.locality[ownerUuid]).length, 4);
+    t.equal(Object.keys(state.locality[ownerUuid]).length, 5);
 
     filter.post(log, state, {}, [], { owner_uuid: ownerUuid });
     t.deepEqual(state, { locality: {} });

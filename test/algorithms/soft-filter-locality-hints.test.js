@@ -18,90 +18,6 @@ var ownerUuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 
 
 
-exports.filter_default_locality_with_rack_free =
-function (t) {
-    var servers = [
-        { uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
-        { uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
-
-        { uuid: genUuid(), rack_identifier: 'r02', vms: genVms(3, 0) },
-        { uuid: genUuid(), rack_identifier: 'r02', vms: genVms(3, 0) },
-
-        { uuid: genUuid(),                         vms: genVms(3, 2) }
-    ];
-
-    var expected = servers.slice(2, 4);
-    var vmDetails = { owner_uuid: ownerUuid };
-
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
-        nearServerUuids: {},
-        farServerUuids: listServerUuids(servers, [0, 4]),
-        nearRackUuids: {},
-        farRackUuids: { r01: true }
-    };
-
-    filterServers(t, state, vmDetails, servers, expected);
-};
-
-
-
-exports.filter_default_locality_with_no_rack_free =
-function (t) {
-    var servers = [
-        { uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
-        { uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
-
-        { uuid: genUuid(), rack_identifier: 'r02', vms: genVms(3, 3) },
-        { uuid: genUuid(), rack_identifier: 'r02', vms: genVms(3, 2) },
-
-        { uuid: genUuid(),                         vms: genVms(3, 2) }
-    ];
-
-    var expected = servers.slice(1, 2);
-    var vmDetails = { owner_uuid: ownerUuid };
-
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
-        nearServerUuids: {},
-        farServerUuids: listServerUuids(servers, [0, 2, 3, 4]),
-        nearRackUuids: {},
-        farRackUuids: { r01: true, r02: true }
-    };
-
-    filterServers(t, state, vmDetails, servers, expected);
-};
-
-
-
-exports.filter_default_locality_with_no_rack_or_server_free =
-function (t) {
-    var servers = [
-        { uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
-        { uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
-
-        { uuid: genUuid(), rack_identifier: 'r02', vms: genVms(3, 3) },
-        { uuid: genUuid(), rack_identifier: 'r02', vms: genVms(3, 2) },
-
-        { uuid: genUuid(),                         vms: genVms(3, 2) }
-    ];
-
-    var expected = servers;
-    var vmDetails = { owner_uuid: ownerUuid };
-
-    var state = { locality: {} };
-    state.locality[ownerUuid] = {
-        nearServerUuids: {},
-        farServerUuids: listServerUuids(servers, [0, 1, 2, 3, 4]),
-        nearRackUuids: {},
-        farRackUuids: { r01: true, r02: true }
-    };
-
-    filterServers(t, state, vmDetails, servers, expected);
-};
-
-
-
 exports.filter_far_locality_with_rack_free =
 function (t) {
     var servers = [
@@ -127,7 +43,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [2]),
         nearRackUuids: {},
-        farRackUuids: { r02: true }
+        farRackUuids: { r02: true },
+        algorithms: ['far']
     };
 
     filterServers(t, state, vmDetails, servers, expected);
@@ -165,7 +82,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 2]),
         nearRackUuids: {},
-        farRackUuids: { r01: true, r02: true }
+        farRackUuids: { r01: true, r02: true },
+        algorithms: ['far']
     };
 
     filterServers(t, state, vmDetails, servers, expected);
@@ -203,7 +121,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids: listServerUuids(servers, [0, 1, 2, 3, 4]),
         nearRackUuids: {},
-        farRackUuids: { r01: true, r02: true }
+        farRackUuids: { r01: true, r02: true },
+        algorithms: ['far']
     };
 
     filterServers(t, state, vmDetails, servers, expected);
@@ -241,7 +160,8 @@ function (t) {
         nearServerUuids: listServerUuids(servers, [0]),
         farServerUuids: {},
         nearRackUuids: { r01: true },
-        farRackUuids: {}
+        farRackUuids: {},
+        algorithms: ['near']
     };
 
     filterServers(t, state, vmDetails, servers, expected);
@@ -279,7 +199,8 @@ function (t) {
         nearServerUuids: listServerUuids(servers, [0, 1]),
         farServerUuids: {},
         nearRackUuids: { r01: true },
-        farRackUuids: {}
+        farRackUuids: {},
+        algorithms: ['near']
     };
 
     filterServers(t, state, vmDetails, servers, expected);
@@ -328,7 +249,8 @@ function (t) {
         nearServerUuids: listServerUuids(servers, [0, 1, 2]),
         farServerUuids:  listServerUuids(servers, [0, 2]),
         nearRackUuids: { r01: true, r02: true },
-        farRackUuids:  { r01: true, r02: true }
+        farRackUuids:  { r01: true, r02: true },
+        algorithms: ['far', 'near']
     };
 
     filterServers(t, state, vmDetails, servers, expected);
@@ -362,7 +284,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids:  listServerUuids(servers, [2]),
         nearRackUuids: {},
-        farRackUuids:  { r02: true }
+        farRackUuids:  { r02: true },
+        algorithms: ['far']
     };
 
     filterServers(t, state, vmDetails, servers, expected);
@@ -377,7 +300,8 @@ function (t) {
         nearServerUuids: {},
         farServerUuids:  {},
         nearRackUuids: {},
-        farRackUuids:  {}
+        farRackUuids:  {},
+        algorithms: []
     };
     var origState = deepCopy(state);
 
