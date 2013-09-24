@@ -703,6 +703,7 @@ function (t) {
         'hard-filter-owner-same-servers',
         'hard-filter-platform-versions',
         'hard-filter-reserved',
+        'hard-filter-reservoir',
         'hard-filter-running',
         'hard-filter-setup',
         'hard-filter-traits',

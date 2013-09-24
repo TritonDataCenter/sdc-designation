@@ -403,10 +403,14 @@ below for description of what each one does):
              'hard-filter-platform-versions',
              'hard-filter-traits',
              'hard-filter-overprovision-ratios',
-             'hard-filter-min-ram',
-             'hard-filter-min-disk',
-             'hard-filter-min-cpu',
-             'soft-filter-recent-servers'
+             ['or', ['pipe', 'hard-filter-reservoir',
+                             'hard-filter-min-ram',
+                             'hard-filter-min-disk',
+                             'hard-filter-min-cpu'],
+                    ['pipe', 'hard-filter-min-ram',
+                             'hard-filter-min-disk',
+                             'hard-filter-min-cpu']],
+             'soft-filter-recent-servers',
              ['or', 'hard-filter-large-servers',
                     'identity'],
              'soft-filter-locality-hints',
@@ -464,6 +468,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 || hard-filter-owner-same-servers  || Removes servers already containing an owner's VM(s)         ||
 || hard-filter-platform-versions   || Removes servers that don't pass image manifest platform requirements ||
 || hard-filter-reserved            || Removes reserved CNs                                        ||
+|| hard-filter-reservoir           || Removes reservoir CNs                                       ||
 || hard-filter-running             || Removes CNs which are not running                           ||
 || hard-filter-setup               || Removes CNs which are not setup                             ||
 || hard-filter-traits              || Removes CNs with traits that cannot fulfill VM traits       ||

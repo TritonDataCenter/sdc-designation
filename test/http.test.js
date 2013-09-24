@@ -772,7 +772,7 @@ exports.allocation_overprovisioning_all = function (t) {
 
 
 
-exports.allocation_not_enough_server_ram = function (t) {
+exports.allocation_steps = function (t) {
     var path = '/allocation';
 
     var data = { servers: servers,
@@ -854,12 +854,209 @@ exports.allocation_not_enough_server_ram = function (t) {
           { 'Servers with same overprovision ratios as requested VM':
              [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
                '85526a01-9310-44fd-9637-ed1501cc69a1' ] },
+          { 'Servers which are not in the reservoir':
+             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+               '85526a01-9310-44fd-9637-ed1501cc69a1' ] },
+          { 'Servers with enough unreserved RAM': [] },
           { 'Servers with enough unreserved RAM': [] }
         ];
 
         t.deepEqual(body.steps, expected);
 
         t.done();
+    });
+};
+
+
+
+exports.allocation_using_reservoirs = function (t) {
+    var path = '/allocation';
+
+    var testServers = [ {
+        uuid: 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+        ram: 2048,
+        setup: true,
+        reserved: false,
+        status: 'running',
+        memory_total_bytes: 2147483648,
+        memory_available_bytes: 1073741824,
+        disk_pool_size_bytes: 1099511627776,
+        disk_installed_images_used_bytes: 1073741824,
+        disk_zone_quota_bytes: 0,
+        disk_kvm_quota_bytes: 0,
+        disk_kvm_zvol_volsize_bytes: 0,
+        reservation_ratio: 0.15,
+        rack_identifier: 'ams-1',
+        sysinfo: {
+            'Zpool Size in GiB': 1024,
+            'CPU Total Cores': 16,
+            'SDC Version': '7.0',
+            'Live Image': '20121210T203034Z',
+            'Network Interfaces': {
+                e1000g0: {
+                    'Link Status': 'up',
+                    'NIC Names': [ 'external' ]
+                },
+                e1000g1: {
+                   'Link Status': 'up',
+                   'NIC Names': [ 'admin' ]
+                }
+            }
+        },
+        vms: {}
+    }, {
+        uuid: '1c78b1f6-f93e-4bd3-8265-f53b727be549',
+        ram: 2048,
+        setup: true,
+        reserved: false,
+        reservoir: true,
+        status: 'running',
+        memory_total_bytes: 2147483648,
+        memory_available_bytes: 536870912,
+        disk_pool_size_bytes: 1099511627776,
+        disk_installed_images_used_bytes: 1073741824,
+        disk_zone_quota_bytes: 0,
+        disk_kvm_quota_bytes: 0,
+        disk_kvm_zvol_volsize_bytes: 0,
+        reservation_ratio: 0.15,
+        rack_identifier: 'ams-1',
+        sysinfo: {
+            'Zpool Size in GiB': 2048,
+            'CPU Total Cores': 16,
+            'SDC Version': '7.0',
+            'Live Image': '20130122T122401Z',
+            'Network Interfaces': {
+                e1000g0: {
+                    'Link Status': 'up',
+                    'NIC Names': [ 'external' ]
+                },
+                e1000g1: {
+                   'Link Status': 'up',
+                   'NIC Names': [ 'admin' ]
+                }
+            }
+        },
+        vms: {}
+    } ];
+
+    var expectedStepsWithoutReservoir = [
+        { 'Received by DAPI':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which have been setup':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Calculate unreserved resources on each server':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Calculate localities of owner\'s VMs':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which are not reserved':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which are not headnodes':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which are currently running':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which meet image manifest platform requirements':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers with correct traits':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers with same overprovision ratios as requested VM':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which are not in the reservoir':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { 'Servers with enough unreserved RAM':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { 'Servers with enough unreserved disk':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { 'Servers with enough unreserved CPU':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { 'Servers which have not been allocated to recently':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { 'Filter out the largest and most empty servers':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { 'Servers with requested locality considered':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { 'Sort servers by minimum unreserved RAM':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { 'Random weighted server':
+           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] }
+    ];
+
+    var expectedStepsUsingReservoir = [
+        { 'Received by DAPI':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which have been setup':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Calculate unreserved resources on each server':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Calculate localities of owner\'s VMs':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which are not reserved':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which are not headnodes':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which are currently running':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which meet image manifest platform requirements':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers with correct traits':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers with same overprovision ratios as requested VM':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which are not in the reservoir':
+           [] },
+        { 'Servers with enough unreserved RAM':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers with enough unreserved disk':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers with enough unreserved CPU':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers which have not been allocated to recently':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Filter out the largest and most empty servers':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Servers with requested locality considered':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Sort servers by minimum unreserved RAM':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { 'Random weighted server':
+           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] }
+    ];
+
+    var data = { servers: testServers,
+                 vm: { ram: 256,
+                       nic_tags: [ 'external' ],
+                       owner_uuid: 'f176970e-6f1a-45d0-a1ea-2a61a76cf7e5' },
+                 image: {} };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.equal(body.server.uuid, testServers[0].uuid);
+        t.deepEqual(body.steps, expectedStepsWithoutReservoir);
+
+        // we remove the non-reservoir server, and see whether it'll now
+        // resort to the reservoir server
+        testServers.shift();
+
+        client.post(path, data, function (err2, req2, res2, body2) {
+            t.ifError(err2);
+            t.equal(res2.statusCode, 200);
+            common.checkHeaders(t, res2.headers);
+            t.equal(body2.server.uuid, testServers[0].uuid);
+            t.deepEqual(body2.steps, expectedStepsUsingReservoir);
+
+            t.done();
+        });
     });
 };
 
