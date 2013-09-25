@@ -33,7 +33,7 @@ function calculateCapacity(servers) {
     };
 
     servers.forEach(function (server) {
-        if (server.headnode)
+        if (server.headnode || !server.setup)
             return;
 
         var free, total;
