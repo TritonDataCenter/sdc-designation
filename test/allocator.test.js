@@ -115,10 +115,14 @@ function (t) {
     t.deepEqual(results[0], serverStub);
 
     t.deepEqual(results[1],
-        [ { 'Received by DAPI': [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
-          { foo: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
-          { bar: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
-          { baz: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] } ]);
+        [ { step: 'Received by DAPI',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { step: 'foo',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { step: 'bar',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { step: 'baz',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] } ]);
 
     t.done();
 };
@@ -182,10 +186,14 @@ function (t) {
     t.equal(results[0], undefined);
 
     t.deepEqual(results[1],
-        [ { 'Received by DAPI': [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
-          { foo: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
-          { bar: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
-          { baz: [] } ]);
+        [ { step: 'Received by DAPI',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { step: 'foo',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { step: 'bar',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] },
+          { step: 'baz',
+            remaining: [] } ]);
 
     t.done();
 };
@@ -242,17 +250,19 @@ function (t) {
     t.deepEqual(results[0], serverStubs[0]);
 
     t.deepEqual(results[1],
-        [ { 'Received by DAPI':
-             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-               '94d987a9-968e-47ce-a959-4f14324bef7f',
-               '1727e98c-50b0-46de-96dd-3b360f522ce7',
-               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
-          { foo:
-             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-               '1727e98c-50b0-46de-96dd-3b360f522ce7',
-               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
-          { bar: [] },
-          { baz: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] } ]);
+        [ { step: 'Received by DAPI',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+                         '94d987a9-968e-47ce-a959-4f14324bef7f',
+                         '1727e98c-50b0-46de-96dd-3b360f522ce7',
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { step: 'foo',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+                         '1727e98c-50b0-46de-96dd-3b360f522ce7',
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { step: 'bar',
+            remaining: [] },
+          { step: 'baz',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] } ]);
 
     t.done();
 };
@@ -305,16 +315,17 @@ function (t) {
     t.deepEqual(results[0], serverStubs[0]);
 
     t.deepEqual(results[1],
-        [ { 'Received by DAPI':
-             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-               '94d987a9-968e-47ce-a959-4f14324bef7f',
-               '1727e98c-50b0-46de-96dd-3b360f522ce7',
-               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
-          { foo:
-             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-               '1727e98c-50b0-46de-96dd-3b360f522ce7',
-               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
-          { bar: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] } ]);
+        [ { step: 'Received by DAPI',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+                         '94d987a9-968e-47ce-a959-4f14324bef7f',
+                         '1727e98c-50b0-46de-96dd-3b360f522ce7',
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { step: 'foo',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+                         '1727e98c-50b0-46de-96dd-3b360f522ce7',
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { step: 'bar',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ] } ]);
 
     t.done();
 };
@@ -363,12 +374,13 @@ function (t) {
     t.equal(results[0], undefined);
 
     t.deepEqual(results[1],
-        [ { 'Received by DAPI':
-             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-               '94d987a9-968e-47ce-a959-4f14324bef7f',
-               '1727e98c-50b0-46de-96dd-3b360f522ce7',
-               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
-          { foo: [] } ]);
+        [ { step: 'Received by DAPI',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+                         '94d987a9-968e-47ce-a959-4f14324bef7f',
+                         '1727e98c-50b0-46de-96dd-3b360f522ce7',
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { step: 'foo',
+            remaining: [] } ]);
 
     t.done();
 };
@@ -664,19 +676,20 @@ function (t) {
                                                  remainingServers);
 
     t.deepEqual(summary,
-        [ { 'Received by DAPI':
-             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-               '94d987a9-968e-47ce-a959-4f14324bef7f',
-               '1727e98c-50b0-46de-96dd-3b360f522ce7',
-               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
-          { foo:
-             [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-               '94d987a9-968e-47ce-a959-4f14324bef7f',
-               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
-          { bar:
-             [ '94d987a9-968e-47ce-a959-4f14324bef7f',
-               '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
-          { baz: [] } ]);
+        [ { step: 'Received by DAPI',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+                         '94d987a9-968e-47ce-a959-4f14324bef7f',
+                         '1727e98c-50b0-46de-96dd-3b360f522ce7',
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { step: 'foo',
+            remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+                         '94d987a9-968e-47ce-a959-4f14324bef7f',
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { step: 'bar',
+            remaining: [ '94d987a9-968e-47ce-a959-4f14324bef7f',
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+          { step: 'baz',
+            remaining: [] } ]);
 
     t.done();
 };

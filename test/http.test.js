@@ -788,84 +788,86 @@ exports.allocation_steps = function (t) {
         t.equal(body.message, 'No allocatable servers found');
 
         var expected = [
-          { 'Received by DAPI':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Servers objects which are valid':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Servers which have been setup':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Calculate unreserved resources on each server':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Calculate localities of owner\'s VMs':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Servers which are not reserved':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Servers which are not headnodes':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Servers which are currently running':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Servers which meet image manifest platform requirements':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Servers with correct traits':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1',
-               'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
-               '2555c9f0-d2b4-40b3-9346-81205e45a10e',
-               '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
-               'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
-          { 'Servers with same overprovision ratios as requested VM':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1' ] },
-          { 'Servers which are not in the reservoir':
-             [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-               '85526a01-9310-44fd-9637-ed1501cc69a1' ] },
-          { 'Servers with enough unreserved RAM': [] },
-          { 'Servers with enough unreserved RAM': [] }
+          { step: 'Received by DAPI',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Servers objects which are valid',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Servers which have been setup',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Calculate unreserved resources on each server',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Calculate localities of owner\'s VMs',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Servers which are not reserved',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Servers which are not headnodes',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Servers which are currently running',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Servers which meet image manifest platform requirements',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Servers with correct traits',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Servers with same overprovision ratios as requested VM',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1' ] },
+          { step: 'Servers which are not in the reservoir',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1' ] },
+          { step: 'Servers with enough unreserved RAM',
+            remaining: [] },
+          { step: 'Servers with enough unreserved RAM',
+            remaining: [] }
         ];
 
         t.deepEqual(body.steps, expected);
@@ -947,100 +949,100 @@ exports.allocation_using_reservoirs = function (t) {
     } ];
 
     var expectedStepsWithoutReservoir = [
-        { 'Received by DAPI':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers objects which are valid':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which have been setup':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Calculate unreserved resources on each server':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Calculate localities of owner\'s VMs':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which are not reserved':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which are not headnodes':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which are currently running':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which meet image manifest platform requirements':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers with correct traits':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers with same overprovision ratios as requested VM':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
-             '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which are not in the reservoir':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
-        { 'Servers with enough unreserved RAM':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
-        { 'Servers with enough unreserved disk':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
-        { 'Servers with enough unreserved CPU':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
-        { 'Servers which have not been allocated to recently':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
-        { 'Filter out the largest and most empty servers':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
-        { 'Servers with requested locality considered':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
-        { 'Sort servers by minimum unreserved RAM':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
-        { 'Random weighted server':
-           [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] }
+        { step: 'Received by DAPI',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers objects which are valid',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which have been setup',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Calculate unreserved resources on each server',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Calculate localities of owner\'s VMs',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which are not reserved',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which are not headnodes',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which are currently running',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which meet image manifest platform requirements',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers with correct traits',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers with same overprovision ratios as requested VM',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which are not in the reservoir',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { step: 'Servers with enough unreserved RAM',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { step: 'Servers with enough unreserved disk',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { step: 'Servers with enough unreserved CPU',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { step: 'Servers which have not been allocated to recently',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { step: 'Filter out the largest and most empty servers',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { step: 'Servers with requested locality considered',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { step: 'Sort servers by minimum unreserved RAM',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] },
+        { step: 'Random weighted server',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d' ] }
     ];
 
     var expectedStepsUsingReservoir = [
-        { 'Received by DAPI':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers objects which are valid':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which have been setup':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Calculate unreserved resources on each server':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Calculate localities of owner\'s VMs':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which are not reserved':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which are not headnodes':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which are currently running':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which meet image manifest platform requirements':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers with correct traits':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers with same overprovision ratios as requested VM':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which are not in the reservoir':
-           [] },
-        { 'Servers with enough unreserved RAM':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers with enough unreserved disk':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers with enough unreserved CPU':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers which have not been allocated to recently':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Filter out the largest and most empty servers':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Servers with requested locality considered':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Sort servers by minimum unreserved RAM':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
-        { 'Random weighted server':
-           [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] }
+        { step: 'Received by DAPI',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers objects which are valid',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which have been setup',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Calculate unreserved resources on each server',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Calculate localities of owner\'s VMs',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which are not reserved',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which are not headnodes',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which are currently running',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which meet image manifest platform requirements',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers with correct traits',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers with same overprovision ratios as requested VM',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which are not in the reservoir',
+          remaining: [] },
+        { step: 'Servers with enough unreserved RAM',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers with enough unreserved disk',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers with enough unreserved CPU',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which have not been allocated to recently',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Filter out the largest and most empty servers',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers with requested locality considered',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Sort servers by minimum unreserved RAM',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Random weighted server',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] }
     ];
 
     var data = { servers: testServers,
