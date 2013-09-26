@@ -140,3 +140,19 @@ putprobe $account "{
     }
 }"
 
+# raise an alarm if server objects are being filtered out of requests
+# because they are malformed
+putprobe $account "{
+    \"skipauthz\": true,
+    \"group\": \"$group_uuid\",
+    \"name\": \"dapi assumed filled server due to missing cpu_cap\",
+    \"type\": \"log-scan\",
+    \"agent\": \"$zonename\",
+    \"config\": {
+        \"path\": \"/var/svc/log/smartdc-site-dapi:default.log\",
+        \"match\": {
+            \"pattern\": \"Server .{36} VM .{36} has no cpu_cap\",
+            \"type\": \"regex\"
+        }
+    }
+}"
