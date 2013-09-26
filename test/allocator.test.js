@@ -694,6 +694,7 @@ function (t) {
         'calculate-locality',
         'calculate-server-unreserved',
         'hard-filter-headnode',
+        'hard-filter-invalid-servers',
         'hard-filter-large-servers',
         'hard-filter-min-cpu',
         'hard-filter-min-disk',

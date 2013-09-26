@@ -4,7 +4,8 @@
     "port": 80
   },
   "allocationDescription": [
-    "pipe", "hard-filter-setup",
+    "pipe", "hard-filter-invalid-servers",
+            "hard-filter-setup",
             "override-overprovisioning",
             "calculate-server-unreserved",
             "calculate-locality",
