@@ -10,7 +10,7 @@
  * Usage:
  *
  * sdc-cnapi --no-headers /servers?extras=vms,disk,memory,sysinfo > cnapi.json
- * node capacity.js < cnapi.json
+ * node capacity.js --all < cnapi.json
  */
 
 var fs = require('fs');
@@ -24,7 +24,7 @@ var KVM_QUOTA = 10 * GiB;
 
 
 
-function calculateCapacity(servers) {
+function calculateCapacity(servers, processServerCap) {
     var dc = {
         unreservedFree:  { cpu: 0, ram: 0, disk: 0 },
         unreservedTotal: { cpu: 0, ram: 0, disk: 0 },
@@ -36,13 +36,13 @@ function calculateCapacity(servers) {
         if (server.headnode || !server.setup)
             return;
 
-        var free, total;
+        var dcFree, dcTotal;
         if (server.reserved) {
-            free  = dc.reservedFree;
-            total = dc.reservedTotal;
+            dcFree  = dc.reservedFree;
+            dcTotal = dc.reservedTotal;
         } else {
-            free  = dc.unreservedFree;
-            total = dc.unreservedTotal;
+            dcFree  = dc.unreservedFree;
+            dcTotal = dc.unreservedTotal;
         }
 
         var vms  = server.vms;
@@ -50,9 +50,11 @@ function calculateCapacity(servers) {
         var ram  = server.memory_total_bytes * (1 - server.reservation_ratio);
         var disk = server.disk_pool_size_bytes;
 
-        total.cpu  += cpu;
-        total.ram  += ram;
-        total.disk += disk;
+        dcTotal.cpu  += cpu;
+        dcTotal.ram  += ram;
+        dcTotal.disk += disk;
+
+        var serverTotal = { cpu: cpu, ram: ram, disk: disk };
 
         var vmNames = Object.keys(vms);
         vmNames.forEach(function (name) {
@@ -74,9 +76,17 @@ function calculateCapacity(servers) {
                 server.disk_zone_quota_bytes +
                 server.disk_kvm_zvol_volsize_bytes;
 
-        free.cpu  += Math.floor(cpu);
-        free.ram  += Math.floor(ram);
-        free.disk += Math.floor(disk);
+        dcFree.cpu  += Math.floor(cpu);
+        dcFree.ram  += Math.floor(ram);
+        dcFree.disk += Math.floor(disk);
+
+        var serverFree = { cpu: cpu, ram: ram, disk: disk };
+
+        if (server.status !== 'running')
+            console.error('Warning:', server.uuid, 'has status', server.status);
+
+        if (processServerCap)
+            processServerCap(server.uuid, serverFree, serverTotal);
     });
 
     return dc;
@@ -107,6 +117,7 @@ function printCap(title, free, total) {
                 Math.ceil((total.disk - free.disk) / GiB),
                 Math.ceil((1 - free.disk / total.disk) * 100),
                 Math.floor(total.disk / GiB));
+    console.log();
 }
 
 
@@ -114,10 +125,16 @@ function printCap(title, free, total) {
 function main() {
     var json = fs.readFileSync('/dev/stdin');
     var servers = JSON.parse(json);
-    var dc = calculateCapacity(servers);
+
+    if (process.argv[2] === '--all')
+        var printServerCap = printCap;
+
+    var dc = calculateCapacity(servers, printServerCap);
+
+    if (process.argv[2] === '--all')
+        console.log('\n------------------------------------------------\n\n');
 
     printCap('Unreserved capacity', dc.unreservedFree, dc.unreservedTotal);
-    console.log();
     printCap('Reserved capacity', dc.reservedFree, dc.reservedTotal);
 }
 
