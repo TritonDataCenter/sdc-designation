@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2013, Joyent, Inc. All rights reserved.
+ *
+ * This program fetches data over IP from PAPI, imgapi, and cnapi, and feeds it
+ * to DAPI's package capacity simulation, then prints the results DAPI returns.
+ *
+ * Example to produce a CSV report:
+ *
+ * $ node package-capacity.js 10.0.108.70 10.0.108.60 10.0.108.61 -c | sort
+ *
+ * This program is similar to package-capacity-files.js, except it provides
+ * image data to DAPI as well, and requires direct IP routes the the above
+ * services. Generates (img num) x (pkg num) reports, which is much more
+ * expensive that package-capacity-files.js's (pkg num) alone.
+ *
+ * Expect the results to take a while to generate -- potentially days. DAPI
+ * needs to run through several million simulated allocations for a typical JPC
+ * DC to produce this report.
+ */
+
+
+
 var http = require('http');
 var fs   = require('fs');
 
@@ -23,6 +45,11 @@ function getCnapiData(ip, callback) {
 }
 
 
+
+/*
+ * Send data to a DAPI HTTP endpoint to start the package capacity calculations,
+ * then accept the result and return to the callback.
+ */
 
 function getCapacity(ip, port, papiData, imgapiData, cnapiData, callback) {
     var reqData = '{"packages": ' + papiData + ', "images": ' + imgapiData +
@@ -66,6 +93,10 @@ function getCapacity(ip, port, papiData, imgapiData, cnapiData, callback) {
 
 
 
+/*
+ * Fetch JSON data from an HTTP endpoint, and return the data to callback.
+ */
+
 function getData(url, apiName, callback) {
     http.get(url, function (res) {
         var code = res.statusCode;
@@ -92,6 +123,11 @@ function getData(url, apiName, callback) {
 
 
 
+/*
+ * Silly helper function which prints errors and terminates the program if there
+ * was an error, then passes the remaining args to callback.
+ */
+
 function catchErr(callback) {
     return function (err, data) {
         if (err) {
@@ -103,6 +139,11 @@ function catchErr(callback) {
 }
 
 
+
+/*
+ * Fetch the necessary data from HTTP APIs, send the data to DAPI, accept the
+ * results, print the report out.
+ */
 
 function main() {
     var papiIp   = process.argv[2];
