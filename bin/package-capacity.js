@@ -130,9 +130,12 @@ function main() {
                             catchErr(function (capacityErr, capacityData) {
                     if (csv === '-c') {
                         var capacity = JSON.parse(capacityData).capacities;
-                        capacity.forEach(function (pair) {
-                            console.log(pair.package_uuid + ',' +
-                                        pair.image_uuid + ',' + pair.slots);
+
+                        capacity.forEach(function (cap) {
+                            console.log([cap.package_name, cap.package_version,
+                                         cap.package_uuid, cap.image_name,
+                                         cap.image_version, cap.image_uuid,
+                                         cap.slots].join(','));
                         });
                     } else {
                         console.log(capacityData);

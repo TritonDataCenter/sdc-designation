@@ -670,32 +670,56 @@ var images = [{
 var expected = {
     capacities: [{
         package_uuid: '1ee2a2ab-2138-8542-b563-a67bb03792f7',
+        package_name: 'sdc_768',
+        package_version: '1.0.0',
         image_uuid: '8663eda9-247e-465f-8657-92a4c289b61a',
+        image_name: 'adminui',
+        image_version: 'master-20130521T200112Z-g2d51b90',
         slots: 104
       },
       {
         package_uuid: '1ee2a2ab-2138-8542-b563-a67bb03792f7',
+        package_name: 'sdc_768',
+        package_version: '1.0.0',
         image_uuid: '30e9e4c8-bbf2-11e2-ac3b-3b598ee13393',
+        image_name: 'centos-6',
+        image_version: '2.4.2',
         slots: 59
       },
       {
         package_uuid: '73a1ca34-1e30-48c7-8681-70314a9c67d3',
+        package_name: 'sdc_128',
+        package_version: '1.0.0',
         image_uuid: '8663eda9-247e-465f-8657-92a4c289b61a',
+        image_name: 'adminui',
+        image_version: 'master-20130521T200112Z-g2d51b90',
         slots: 133
       },
       {
         package_uuid: '73a1ca34-1e30-48c7-8681-70314a9c67d3',
+        package_name: 'sdc_128',
+        package_version: '1.0.0',
         image_uuid: '30e9e4c8-bbf2-11e2-ac3b-3b598ee13393',
+        image_name: 'centos-6',
+        image_version: '2.4.2',
         slots: 64
       },
       {
         package_uuid: '5dfe2cc2-cea2-0841-8e01-6cafbe5b7dbc',
+        package_name: 'sdc_imgapi',
+        package_version: '1.0.0',
         image_uuid: '8663eda9-247e-465f-8657-92a4c289b61a',
+        image_name: 'adminui',
+        image_version: 'master-20130521T200112Z-g2d51b90',
         slots: 6
       },
       {
         package_uuid: '5dfe2cc2-cea2-0841-8e01-6cafbe5b7dbc',
+        package_name: 'sdc_imgapi',
+        package_version: '1.0.0',
         image_uuid: '30e9e4c8-bbf2-11e2-ac3b-3b598ee13393',
+        image_name: 'centos-6',
+        image_version: '2.4.2',
         slots: 5
       }
     ]
