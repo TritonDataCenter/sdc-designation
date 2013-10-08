@@ -75,8 +75,14 @@ servers.forEach(function (server) {
     msg = '--> CN ' + server.uuid;
 
     if (ram >= lowRam && disk >= lowDisk && cpu >= lowCpu / 4) {
-        if (server.reserved === true || server.reserved === 'true') {
+        if (server.reserved) {
             console.log(msg, 'has enough, but reserved');
+        } else if (server.status !== 'running') {
+            console.log(msg, 'has enough, but status not running');
+        } else if (server.headnode) {
+            console.log(msg, 'has enough, but headnode');
+        } else if (server.traits && Object.keys(server.traits).length > 0) {
+            console.log(msg, 'has enough, but traits');
         } else {
             console.log(msg, 'has enough');
         }
