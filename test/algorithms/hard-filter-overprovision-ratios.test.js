@@ -26,19 +26,21 @@ function (t) {
         { uuid: uuid(), overprovision_ratios: { ram: 1.0   } }
     ];
 
+    var constraints;
+    var filteredServers;
     var state = {};
 
-    var pkg = { overprovision_ram: 1.0 };
     var expectedServers = [ givenServers[0], givenServers[2],
                             givenServers[6], givenServers[7],
                             givenServers[9] ];
-    var filteredServers = filter.run(log, state, givenServers, {}, {}, pkg);
+    constraints = { pkg: { overprovision_ram: 1.0 } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
-    pkg = { overprovision_ram: 1.5 };
+    constraints = { pkg: { overprovision_ram: 1.5 } };
     expectedServers = givenServers.slice(4, 5);
-    filteredServers = filter.run(log, state, givenServers, {}, {}, pkg);
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
 
@@ -49,10 +51,10 @@ function (t) {
 
 exports.filterOverprovisionRatios_with_no_servers =
 function (t) {
-    var pkg = { overprovision_ram: 1.0 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], {}, {}, pkg);
+    var constraints = { pkg: { overprovision_ram: 1.0 } };
+    var filteredServers = filter.run(log, state, [], constraints);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

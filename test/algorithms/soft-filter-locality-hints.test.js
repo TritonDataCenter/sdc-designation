@@ -305,13 +305,15 @@ function (t) {
     };
     var origState = deepCopy(state);
 
-    var filteredServers = filter.run(log, state, [], { owner_uuid: ownerUuid });
+    var constraints = { vm: { owner_uuid: ownerUuid } };
+    var filteredServers = filter.run(log, state, [], constraints);
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, origState);
 
-    filteredServers = filter.run(log, state, [],
-                                 { owner_uuid: ownerUuid,
-                                   locality: { near: genUuid() } });
+    constraints = { vm: { owner_uuid: ownerUuid,
+                          locality: { near: genUuid() } } };
+    filteredServers = filter.run(log, state, [], constraints);
+
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, origState);
 
@@ -367,7 +369,7 @@ function sortServers(servers) {
 
 function filterServers(t, state, vmDetails, servers, expectedServers) {
     var origState = deepCopy(state);
-    var filteredServers = filter.run(log, state, servers, vmDetails);
+    var filteredServers = filter.run(log, state, servers, { vm: vmDetails });
 
     t.deepEqual(sortServers(filteredServers), sortServers(expectedServers));
     t.deepEqual(state, origState);

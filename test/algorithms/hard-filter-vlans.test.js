@@ -59,7 +59,8 @@ var servers = [
 
 function test(t, vlans, expectedUuids) {
     var state = {};
-    var filteredServers = filter.run(log, state, servers, { nic_tags: vlans });
+    var constraints = { vm: { nic_tags: vlans } };
+    var filteredServers = filter.run(log, state, servers, constraints);
 
     var serverUuids = filteredServers.map(function (s) { return s.uuid; });
 
@@ -115,8 +116,8 @@ function (t) {
 exports.filterVlans_with_no_servers =
 function (t) {
     var state = {};
-
-    var filteredServers = filter.run(log, state, [], { nic_tags: ['admin'] });
+    var constraints = { vm: { nic_tags: ['admin'] } };
+    var filteredServers = filter.run(log, state, [], constraints);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

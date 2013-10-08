@@ -42,8 +42,8 @@ function (t) {
                             givenServers[16] ];
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers,
-                                     { owner_uuid: ownerUuid });
+    var constraints = { vm: { owner_uuid: ownerUuid } };
+    var filteredServers = filter.run(log, state, givenServers, constraints);
 
     t.deepEqual(sortServers(filteredServers), sortServers(expectedServers));
     t.deepEqual(state, {});
@@ -103,8 +103,8 @@ function (t) {
     var expectedServers = [ givenServers[1] ];
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers,
-                                     { owner_uuid: ownerUuid });
+    var constraints = { vm: { owner_uuid: ownerUuid } };
+    var filteredServers = filter.run(log, state, givenServers, constraints);
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -119,8 +119,8 @@ function (t) {
     var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
     var state = {};
 
-    var filteredServers = filter.run(log, state, [],
-                                     { owner_uuid: owner_uuid });
+    var constraints = { vm: { owner_uuid: owner_uuid } };
+    var filteredServers = filter.run(log, state, [], constraints);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

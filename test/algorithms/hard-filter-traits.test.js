@@ -20,49 +20,42 @@ function (t) {
         { traits: { users: 'john' } }
     ];
 
+    var constraints;
     var filteredServers;
-    var imgDetails = {};
     var state = {};
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: true } },
-                                 imgDetails);
+    constraints = { vm: { traits: { ssd: true } }, img: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: false } },
-                                 imgDetails);
+    constraints = { vm: { traits: { ssd: false } }, img: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(3, 4));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { users: 'john' } },
-                                 imgDetails);
+    constraints = { vm: { traits: { users: 'john' } }, img: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(5, 6));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { users: 'jack' } },
-                                 imgDetails);
+    constraints = { vm: { traits: { users: 'jack' } }, img: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(4, 5));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: true, users: 'jane' } },
-                                 imgDetails);
+    constraints = { vm: { traits: { ssd: true, users: 'jane' } }, img: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(1, 2));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: false, users: 'jane' } },
-                                 imgDetails);
+    constraints = { vm: { traits: { ssd: false, users: 'jane' } }, img: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, []);
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { users: ['john', 'jane' ] } },
-                                 imgDetails);
+    constraints = { vm: { traits: { users: ['john', 'jane' ] } }, img: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(4, 6));
     t.deepEqual(state, {});
 
@@ -82,46 +75,45 @@ function (t) {
         { traits: { users: 'john' } }
     ];
 
+    var constraints;
     var filteredServers;
-    var vmDetails = {};
-    var pkgDetails = {};
     var state = {};
 
-    filteredServers = filter.run(log, state, givenServers, vmDetails,
-                                 { traits: { ssd: true } }, pkgDetails);
+    constraints = { vm: {}, pkg: {}, img: { traits: { ssd: true } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers, vmDetails,
-                                 { traits: { ssd: false } }, pkgDetails);
+    constraints = { vm: {}, pkg: {}, img: { traits: { ssd: false } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(3, 4));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers, vmDetails,
-                                 { traits: { users: 'john' } }, pkgDetails);
+    constraints = { vm: {}, pkg: {}, img: { traits: { users: 'john' } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(5, 6));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers, vmDetails,
-                                 { traits: { users: 'jack' } }, pkgDetails);
+    constraints = { vm: {}, pkg: {}, img: { traits: { users: 'jack' } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(4, 5));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers, vmDetails,
-                                 { traits: { ssd: true, users: 'jane' } },
-                                 pkgDetails);
+    constraints = { vm: {}, pkg: {},
+                    img: { traits: { ssd: true, users: 'jane' } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(1, 2));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers, vmDetails,
-                                 { traits: { ssd: false, users: 'jane' } },
-                                 pkgDetails);
+    constraints = { vm: {}, pkg: {},
+                    img: { traits: { ssd: false, users: 'jane' } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, []);
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers, vmDetails,
-                                 { traits: { users: ['john', 'jane' ] } },
-                                 pkgDetails);
+    constraints = { vm: {}, pkg: {},
+                    img: { traits: { users: ['john', 'jane'] } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(4, 6));
     t.deepEqual(state, {});
 
@@ -141,34 +133,30 @@ function (t) {
         { traits: { users: 'john' } }
     ];
 
+    var constraints;
     var filteredServers;
-    var pkgDetails = {};
     var state = {};
 
     // image manifest overrides VM package
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: false } },
-                                 { traits: { ssd: true } },
-                                 pkgDetails);
+    constraints = { vm:  { traits: { ssd: false } },
+                    img: { traits: { ssd: true } },
+                    pkg: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
 
     // should merge values between the two
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: true } },
-                                 { traits: { users: 'john' } },
-                                 pkgDetails);
+    constraints = { vm:  { traits: { ssd: true } },
+                    img: { traits: { users: 'john' } },
+                    pkg: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(0, 2));
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: true } },
-                                 {},
-                                 pkgDetails);
+    constraints = { vm: { traits: { ssd: true } }, img: {}, pkg: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 {},
-                                 { traits: { ssd: true } },
-                                 pkgDetails);
+    constraints = { vm: {}, img: { traits: { ssd: true } }, pkg: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
 
     t.deepEqual(state, {});
@@ -189,41 +177,38 @@ function (t) {
         { traits: { users: 'john' } }
     ];
 
+    var constraints;
     var filteredServers;
-    var vmDetails = {};
     var state = {};
 
     // image manifest overrides package
-    filteredServers = filter.run(log, state, givenServers,
-                                 vmDetails,
-                                 { traits: { ssd: true } },
-                                 { traits: { ssd: false } });
+    constraints = { vm:  {},
+                    img: { traits: { ssd: true  } },
+                    pkg: { traits: { ssd: false } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
 
     // VM overrides package
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: true } },
-                                 {},
-                                 { traits: { ssd: false } });
+    constraints = { vm:  { traits: { ssd: true  } },
+                    img: {},
+                    pkg: { traits: { ssd: false } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
 
     // should merge values between the two
-    filteredServers = filter.run(log, state, givenServers,
-                                 vmDetails,
-                                 { traits: { users: 'john' } },
-                                 { traits: { ssd: true } });
+    constraints = { vm:  {},
+                    img: { traits: { users: 'john' } },
+                    pkg: { traits: { ssd: true     } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(0, 2));
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 vmDetails,
-                                 {},
-                                 { traits: { ssd: true } });
+
+    constraints = { vm:  {}, img: {}, pkg: { traits: { ssd: true } } };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 vmDetails,
-                                 { traits: { ssd: true } },
-                                 {});
+    constraints = { vm:  {}, img: { traits: { ssd: true } }, pkg: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(2, 3));
 
     t.deepEqual(state, {});
@@ -237,18 +222,18 @@ exports.filterTraits_with_no_traits_on_server =
 function (t) {
     var givenServers = [ { requested_ram: 256 } ];
     var state = {};
-    var imgDetails = { traits: {} };
-    var pkgDetails = {};
+    var constraints;
     var filteredServers;
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: {} }, imgDetails, pkgDetails);
+    constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers);
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: { ssd: false } },
-                                 imgDetails, pkgDetails);
+    constraints = { vm:  { traits: { ssd: false } },
+                    img: { traits: {} },
+                    pkg: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
 
@@ -262,17 +247,17 @@ function (t) {
     var givenServers = [ { traits: { ssd: true } },
                          { traits: {} },
                          {} ];
-    var state = {};
-    var pkgDetails = {};
+    var constraints;
     var filteredServers;
+    var state = {};
 
-    filteredServers = filter.run(log, state, givenServers,
-                                 { traits: {} }, { traits: {} },
-                                 pkgDetails);
+    constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(1, 3));
     t.deepEqual(state, {});
 
-    filteredServers = filter.run(log, state, givenServers, {}, {}, pkgDetails);
+    constraints = { vm: {}, img: {}, pkg: {} };
+    filteredServers = filter.run(log, state, givenServers, constraints);
     t.deepEqual(filteredServers, givenServers.slice(1, 3));
     t.deepEqual(state, {});
 
@@ -285,7 +270,8 @@ exports.filterTraits_with_no_servers =
 function (t) {
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], { ram: 512 }, {}, {});
+    var constraints = { vm: { ram: 512 }, pkg: {}, img: {} };
+    var filteredServers = filter.run(log, state, [], constraints);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

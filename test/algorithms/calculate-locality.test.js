@@ -377,12 +377,12 @@ function (t) {
     };
 
     var state = {};
-    filter.run(log, state, [], { owner_uuid: ownerUuid });
+    filter.run(log, state, [], { vm: { owner_uuid: ownerUuid } });
     t.deepEqual(state, expected);
 
     state = {};
-    filter.run(log, state, [], { owner_uuid: ownerUuid,
-                                 locality: { near: genUuid() } });
+    filter.run(log, state, [], { vm: { owner_uuid: ownerUuid,
+                                       locality: { near: genUuid() } } });
     t.deepEqual(state, expected);
 
     t.done();
@@ -401,10 +401,10 @@ function (t) {
         algorithms: []
     };
 
-    filter.post(log, state, {}, [], { owner_uuid: genUuid() });
+    filter.post(log, state, {}, [], { vm: { owner_uuid: genUuid() } });
     t.equal(Object.keys(state.locality[ownerUuid]).length, 5);
 
-    filter.post(log, state, {}, [], { owner_uuid: ownerUuid });
+    filter.post(log, state, {}, [], { vm: { owner_uuid: ownerUuid } });
     t.deepEqual(state, { locality: {} });
 
     t.done();
@@ -451,7 +451,7 @@ function genVms(numVms, numOwnerVms) {
 
 function testState(t, vmDetails, servers, expectedState) {
     var state = {};
-    filter.run(log, state, servers, vmDetails);
+    filter.run(log, state, servers, { vm: vmDetails });
     t.deepEqual(state, expectedState);
 
     t.done();

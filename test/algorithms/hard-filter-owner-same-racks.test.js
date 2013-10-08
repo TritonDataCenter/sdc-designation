@@ -162,7 +162,7 @@ function (t) {
     var state = {};
 
     var filteredServers = filter.run(log, state, givenServers,
-                                     { owner_uuid: owner_uuid });
+                                     { vm: { owner_uuid: owner_uuid } });
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -184,7 +184,7 @@ function (t) {
     ];
 
     var filteredServers = filter.run(log, state, givenServers,
-                                     { owner_uuid: owner_uuid });
+                                     { vm: { owner_uuid: owner_uuid } });
 
     t.equal(filteredServers.length, 1);
     t.deepEqual(state, {});
@@ -200,7 +200,7 @@ function (t) {
     var state = {};
 
     var filteredServers = filter.run(log, state, [],
-                                     { owner_uuid: owner_uuid });
+                                     { vm: { owner_uuid: owner_uuid } });
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

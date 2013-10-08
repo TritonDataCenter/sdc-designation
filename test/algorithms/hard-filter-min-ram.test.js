@@ -19,10 +19,10 @@ function (t) {
     ];
 
     var expectedServers = givenServers.slice(0, 2);
-    var vm = { ram: 512 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, vm, {}, {});
+    var constraints = { vm: { ram: 512 }, pkg: {} };
+    var filteredServers = filter.run(log, state, givenServers, constraints);
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -42,11 +42,10 @@ function (t) {
     ];
 
     var expectedServers = givenServers.slice(2, 4);
-    var vm = { ram: 768 };
-    var pkg = { overprovision_ram: 1.5 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, vm, {}, pkg);
+    var constraints = { vm: { ram: 768 }, pkg: { overprovision_ram: 1.5 } };
+    var filteredServers = filter.run(log, state, givenServers, constraints);
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -58,11 +57,10 @@ function (t) {
 
 exports.filterMinRam_with_no_servers =
 function (t) {
-    var vm = { ram: 512 };
-    var pkg = { overprovision_ram: 1.0 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], vm, {}, pkg);
+    var constraints = { vm: { ram: 512 }, pkg: { overprovision_ram: 1.0 } };
+    var filteredServers = filter.run(log, state, [], constraints);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

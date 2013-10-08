@@ -85,21 +85,21 @@ function (t) {
         'pipe',
         {
             name: 'foo',
-            run: function (log, state, servers) {
+            run: function (log, state) {
                 t.deepEqual(state, { bar: [42, 24], baz: 'hi' });
                 executed.push(1);
                 return [serverStub];
             }
         }, {
             name: 'bar',
-            run: function (log, state, servers) {
+            run: function (log, state) {
                 t.deepEqual(state, { bar: [42, 24], baz: 'hi' });
                 executed.push(2);
                 return [serverStub];
             }
         }, {
             name: 'baz',
-            run: function (log, state, servers) {
+            run: function (log, state) {
                 t.deepEqual(state, { bar: [42, 24], baz: 'hi' });
                 executed.push(3);
                 return [serverStub];
@@ -398,24 +398,24 @@ function (t) {
     var plugins = [
         {
             name: 'foo',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
                 return serverStubs.slice(0, 3);
             }
         }, {
             name: 'bar',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs.slice(0, 3));
                 executed.push(2);
                 return serverStubs.slice(1, 3);
             }
         }, {
             name: 'baz',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs.slice(1, 3));
                 executed.push(3);
                 return serverStubs.slice(2, 3);
@@ -425,7 +425,7 @@ function (t) {
 
     var allocator = new Allocator(logStub);
 
-    var results = allocator._pipe(plugins, serverStubs, { foo: 1 });
+    var results = allocator._pipe(plugins, serverStubs, { vm: { foo: 1 } });
     var serverStub        = results[0];
     var visitedAlgorithms = results[1];
     var remainingServers  = results[2];
@@ -457,23 +457,23 @@ function (t) {
     var plugins = [
         {
             name: 'foo',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
                 return serverStubs.slice(0, 3);
             }
         }, {
             name: 'bar',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs.slice(0, 3));
                 executed.push(2);
                 return [];
             }
         }, {
             name: 'baz',
-            run: function (log, state, servers, vmDetails) {
+            run: function (log, state, args) {
                 t.ok(false);
             }
         }
@@ -481,7 +481,7 @@ function (t) {
 
     var allocator = new Allocator(logStub);
 
-    var results = allocator._pipe(plugins, serverStubs, { foo: 1 });
+    var results = allocator._pipe(plugins, serverStubs, { vm: { foo: 1 } });
     var serverStub        = results[0];
     var visitedAlgorithms = results[1];
     var remainingServers  = results[2];
@@ -511,24 +511,24 @@ function (t) {
     var plugins = [
         {
             name: 'foo',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
                 return [];
             }
         }, {
             name: 'bar',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(2);
                 return [];
             }
         }, {
             name: 'baz',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(3);
                 return [];
@@ -538,7 +538,7 @@ function (t) {
 
     var allocator = new Allocator(logStub);
 
-    var results = allocator._or(plugins, serverStubs, { foo: 1 });
+    var results = allocator._or(plugins, serverStubs, { vm: { foo: 1 } });
     var serverStub        = results[0];
     var visitedAlgorithms = results[1];
     var remainingServers  = results[2];
@@ -564,23 +564,23 @@ function (t) {
     var plugins = [
         {
             name: 'foo',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
                 return [];
             }
         }, {
             name: 'bar',
-            run: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            run: function (log, state, servers, constraints) {
+                t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(2);
                 return serverStubs.slice(0, 2);
             }
         }, {
             name: 'baz',
-            run: function (log, state, servers, vmDetails) {
+            run: function (log, state, servers, constraints) {
                 t.ok(false);
             }
         }
@@ -588,7 +588,7 @@ function (t) {
 
     var allocator = new Allocator(logStub);
 
-    var results = allocator._or(plugins, serverStubs, { foo: 1 });
+    var results = allocator._or(plugins, serverStubs, { vm: { foo: 1 } });
     var serverStub        = results[0];
     var visitedAlgorithms = results[1];
     var remainingServers  = results[2];
@@ -612,8 +612,9 @@ function (t) {
 
     var dup = {
         name: 'dup',
-        post: function (log, state, servers, vmDetails) {
-            t.deepEqual(vmDetails, { foo: 1 });
+        post: function (log, state, server, servers, constraints) {
+            t.deepEqual(constraints, { foo: 1 });
+            t.deepEqual(server, { bar: 2 });
             t.deepEqual(servers, [1, 2, 3, 4]);
             executed.push(1);
         }
@@ -623,8 +624,9 @@ function (t) {
         dup,
         {
             name: 'foo',
-            post: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            post: function (log, state, server, servers, constraints) {
+                t.deepEqual(constraints, { foo: 1 });
+                t.deepEqual(server, { bar: 2 });
                 t.deepEqual(servers, [1, 2, 3, 4]);
                 executed.push(2);
             }
@@ -634,8 +636,9 @@ function (t) {
         dup,
         {
             name: 'baz',
-            post: function (log, state, servers, vmDetails) {
-                t.deepEqual(vmDetails, { foo: 1 });
+            post: function (log, state, server, servers, constraints) {
+                t.deepEqual(constraints, { foo: 1 });
+                t.deepEqual(server, { bar: 2 });
                 t.deepEqual(servers, [1, 2, 3, 4]);
                 executed.push(3);
             }
@@ -643,7 +646,7 @@ function (t) {
     ];
 
     var allocator = new Allocator(logStub);
-    allocator._cleanup(plugins, [1, 2, 3, 4], { foo: 1 });
+    allocator._cleanup(plugins, { bar: 2 }, [1, 2, 3, 4], { foo: 1 });
 
     t.deepEqual(executed, [3, 1, 2]);
 

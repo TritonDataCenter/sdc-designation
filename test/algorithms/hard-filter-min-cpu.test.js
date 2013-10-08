@@ -19,10 +19,10 @@ function (t) {
     ];
 
     var expectedServers = givenServers.slice(0, 2);
-    var vm = { cpu_cap: 900 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, vm, {}, {});
+    var constraints = { vm: { cpu_cap: 900 }, img: {}, pkg: {} };
+    var filteredServers = filter.run(log, state, givenServers, constraints);
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -42,11 +42,12 @@ function (t) {
     ];
 
     var expectedServers = givenServers.slice(2, 4);
-    var vm = { cpu_cap: 900 };
-    var pkg = { overprovision_cpu: 1.5 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, vm, {}, pkg);
+    var constraints = { vm:  { cpu_cap: 900 },
+                        img: {},
+                        pkg: { overprovision_cpu: 1.5 } };
+    var filteredServers = filter.run(log, state, givenServers, constraints);
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
@@ -60,7 +61,8 @@ exports.filterMinCpu_with_no_servers =
 function (t) {
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], { cpu_cap: 900 }, {}, {});
+    var constraints = { vm: { cpu_cap: 900 }, img: {}, pkg: {} };
+    var filteredServers = filter.run(log, state, [], constraints);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
@@ -80,7 +82,8 @@ function (t) {
 
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, {}, {}, {});
+    var constraints = { vm: {}, img: {}, pkg: {} };
+    var filteredServers = filter.run(log, state, givenServers, constraints);
 
     t.deepEqual(filteredServers, givenServers);
     t.deepEqual(state, {});
@@ -92,11 +95,12 @@ function (t) {
 
 exports.filterMinCpu_with_no_servers =
 function (t) {
-    var vm = { cpu_cap: 900 };
-    var pkg = { overprovision_cpu: 1.0 };
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], vm, {}, pkg);
+    var constraints = { vm:  { cpu_cap: 900 },
+                        img: {},
+                        pkg: { overprovision_cpu: 1.0 } };
+    var filteredServers = filter.run(log, state, [], constraints);
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});

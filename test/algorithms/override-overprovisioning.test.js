@@ -28,7 +28,7 @@ function (t) {
     var pkg = {};
     var state = {};
 
-    var filteredServers = filter.run(log, state, givenServers, {}, {}, pkg);
+    var filteredServers = filter.run(log, state, givenServers, { pkg: pkg });
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(pkg, { overprovision_cpu: 4, overprovision_ram: 1,
@@ -37,7 +37,7 @@ function (t) {
     pkg = { overprovision_cpu: 1, overprovision_ram: 2, overprovision_disk: 1,
             overprovision_io: 1, overprovision_net: 1 };
 
-    filter.run(log, state, givenServers, {}, {}, pkg);
+    filter.run(log, state, givenServers, { pkg: pkg });
 
     t.deepEqual(pkg, { overprovision_cpu: 4, overprovision_ram: 1,
                        overprovision_disk: 1 });
@@ -51,7 +51,7 @@ exports.disableOverprovisioning_with_no_servers =
 function (t) {
     var state = {};
 
-    var filteredServers = filter.run(log, state, [], {}, {}, {});
+    var filteredServers = filter.run(log, state, [], { pkg: {} });
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
