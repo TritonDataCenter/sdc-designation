@@ -60,6 +60,12 @@ function calculateCapacity(servers, processServerCap) {
         vmNames.forEach(function (name) {
             var vm = vms[name];
 
+            if (vm.brand === 'kvm')
+                disk -= KVM_QUOTA;
+
+            if (vm.state === 'failed')
+                return;
+
             if (vm.cpu_cap) {
                 cpu -= vm.cpu_cap / CPU_OVERPROVISION;
             } else {
@@ -67,9 +73,6 @@ function calculateCapacity(servers, processServerCap) {
             }
 
             ram -= vm.max_physical_memory * MiB;
-
-            if (vm.brand === 'kvm')
-                disk -= KVM_QUOTA;
         });
 
         disk -= server.disk_installed_images_used_bytes +
