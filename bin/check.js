@@ -27,8 +27,15 @@ var json = fs.readFileSync('/dev/stdin');
 var servers = JSON.parse(json);
 
 servers.forEach(function (server) {
-    if (server.headnode === true)
+    if (server.headnode) {
+        console.log('Note: CN', server.uuid, 'is a headnode. Skipping...\n');
         return;
+    }
+
+    if (!server.setup) {
+        console.log('Note: CN', server.uuid, 'is unsetup. Skipping...\n');
+        return;
+    }
 
     var vms = server.vms;
     var cpu = server.sysinfo['CPU Total Cores'] * 100;
@@ -43,17 +50,24 @@ servers.forEach(function (server) {
     vmNames.forEach(function (name) {
         var vm = vms[name];
 
-        cpu -= vm.cpu_cap / 4;
-        ram -= vm.max_physical_memory * 1024 * 1024;
-
         if (vm.brand === 'kvm')
             disk -= 10 * 1024 * 1024 * 1024;
 
-        if (!vm.cpu_cap)
-            console.log('Error: VM', name, 'has no cpu_cap');
-
         if (!vm.quota)
             console.log('Warning: VM', name, 'has no quota');
+
+        if (vm.state === 'failed')
+            return;
+
+        ram -= vm.max_physical_memory * 1024 * 1024;
+
+        if (vm.cpu_cap) {
+            cpu -= vm.cpu_cap / 4;
+        } else {
+            console.log('Error: VM', name, 'has no cpu_cap');
+            cpu = 0;
+        }
+
     });
 
     ram  = Math.floor(ram);
@@ -78,11 +92,9 @@ servers.forEach(function (server) {
         if (server.reserved) {
             console.log(msg, 'has enough, but reserved');
         } else if (server.status !== 'running') {
-            console.log(msg, 'has enough, but status not running');
-        } else if (server.headnode) {
-            console.log(msg, 'has enough, but headnode');
+            console.log(msg, 'has enough, but has status', server.status);
         } else if (server.traits && Object.keys(server.traits).length > 0) {
-            console.log(msg, 'has enough, but traits');
+            console.log(msg, 'has enough, but traits:', server.traits);
         } else {
             console.log(msg, 'has enough');
         }
