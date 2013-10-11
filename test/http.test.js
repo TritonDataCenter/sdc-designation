@@ -785,7 +785,8 @@ exports.allocation_steps = function (t) {
         t.equal(res.statusCode, 409);
         common.checkHeaders(t, res.headers);
         t.equal(body.code, 'InvalidArgument');
-        t.equal(body.message, 'No allocatable servers found');
+        t.equal(body.message, 'No allocatable servers found. Last step was: ' +
+                              'Servers with enough unreserved RAM');
 
         var expected = [
           { step: 'Received by DAPI',
