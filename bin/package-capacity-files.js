@@ -154,12 +154,13 @@ function getCapacity(ip, port, cnapiJson, packageJson, callback) {
 function main() {
     var packagePath = process.argv[2];
     var cnapiPath   = process.argv[3];
-    var csv         = process.argv[4];
+    var csv         = process.argv[4] == '-c' || process.argv[5] == '-c';
+    var g3          = process.argv[4] == '-g3' || process.argv[5] == '-g3';
 
     if (!packagePath || !cnapiPath) {
         var script = process.argv[1].split('/').slice(-1)[0];
         console.error('Usage:',  script, '<package ldif file>',
-                      '<cnapi json file>');
+                      '<cnapi json file> [-c] [-g3]');
         process.exit(1);
     }
 
@@ -167,6 +168,14 @@ function main() {
 
     var packageLdif = fs.readFileSync(packagePath, 'utf8').split('\n');
     var packageData = convertPackageLdif(packageLdif);
+
+    // only check capacity for active g3-* packages if -g3 was specified
+    if (g3) {
+        packageData = packageData.filter(function (p) {
+            return p.active && p.name && p.name.match(/^g3/);
+        });
+    }
+
     var packageJson = JSON.stringify(packageData);
 
     var configJson = fs.readFileSync(__dirname + '/../config.json');
@@ -182,7 +191,7 @@ function main() {
             process.exit(1);
         }
 
-        if (csv === '-c') {
+        if (csv) {
             var capacity = JSON.parse(capacityData).capacities;
 
             capacity.forEach(function (cap) {
