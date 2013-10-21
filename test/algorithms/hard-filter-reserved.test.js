@@ -19,11 +19,15 @@ function (t) {
 
     var expectedServers = givenServers.slice(0, 2);
     var state = {};
+    var constraints = {};
 
-    var filteredServers = filter.run(log, state, givenServers);
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -33,11 +37,16 @@ function (t) {
 exports.filterReserved_with_no_servers =
 function (t) {
     var state = {};
+    var servers = [];
+    var constraints = {};
 
-    var filteredServers = filter.run(log, state, []);
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };

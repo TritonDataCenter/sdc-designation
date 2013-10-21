@@ -25,19 +25,24 @@ function (t) {
         { unreserved_cpu: 4, overprovision_ratios: { cpu: 4, ram: 1, disk: 1} }
     ];
 
-    var pkg = {};
     var state = {};
+    var pkg = {};
+    var constraints = { pkg: pkg };
 
-    var filteredServers = filter.run(log, state, givenServers, { pkg: pkg });
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(pkg, { overprovision_cpu: 4, overprovision_ram: 1,
                        overprovision_disk: 1 });
+    t.deepEqual(reasons, undefined);
 
     pkg = { overprovision_cpu: 1, overprovision_ram: 2, overprovision_disk: 1,
             overprovision_io: 1, overprovision_net: 1 };
+    constraints = { pkg: pkg };
 
-    filter.run(log, state, givenServers, { pkg: pkg });
+    filter.run(log, state, givenServers, constraints);
 
     t.deepEqual(pkg, { overprovision_cpu: 4, overprovision_ram: 1,
                        overprovision_disk: 1 });
@@ -50,11 +55,16 @@ function (t) {
 exports.disableOverprovisioning_with_no_servers =
 function (t) {
     var state = {};
+    var servers = [];
+    var constraints = { pkg: {} };
 
-    var filteredServers = filter.run(log, state, [], { pkg: {} });
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };

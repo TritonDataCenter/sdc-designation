@@ -136,8 +136,13 @@ function (t) {
     ];
 
     var state = {};
-    var servers = filter.run(log, state, serversInfo);
+    var constraints = {};
+    var results = filter.run(log, state, serversInfo, constraints);
+    var servers = results[0];
+    var reasons = results[1];
     t.deepEqual(state, {});
+    t.deepEqual(servers, serversInfo);
+    t.deepEqual(reasons, undefined);
 
     t.equal(servers[0].unreserved_disk, 2096128);
     t.equal(servers[0].unreserved_ram,  209);
@@ -163,11 +168,16 @@ function (t) {
 exports.calculateServerUnreserved_no_servers =
 function (t) {
     var state = {};
+    var serversInfo = [];
+    var constraints = {};
 
-    var servers = filter.run(log, state, []);
+    var results = filter.run(log, state, serversInfo, constraints);
+    var servers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(servers, []);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };

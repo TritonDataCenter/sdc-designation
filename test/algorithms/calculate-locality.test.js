@@ -377,13 +377,26 @@ function (t) {
     };
 
     var state = {};
-    filter.run(log, state, [], { vm: { owner_uuid: ownerUuid } });
+    var constraints = { vm: { owner_uuid: ownerUuid } };
+    var servers = [];
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
     t.deepEqual(state, expected);
+    t.deepEqual(filteredServers, servers);
+    t.deepEqual(reasons, undefined);
 
     state = {};
-    filter.run(log, state, [], { vm: { owner_uuid: ownerUuid,
-                                       locality: { near: genUuid() } } });
+    constraints = { vm: { owner_uuid: ownerUuid,
+                          locality: { near: genUuid() } } };
+    servers = [];
+    results = filter.run(log, state, servers, constraints);
+    filteredServers = results[0];
+    reasons = results[1];
+
     t.deepEqual(state, expected);
+    t.deepEqual(filteredServers, servers);
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -451,8 +464,14 @@ function genVms(numVms, numOwnerVms) {
 
 function testState(t, vmDetails, servers, expectedState) {
     var state = {};
-    filter.run(log, state, servers, { vm: vmDetails });
+    var constraints = { vm: vmDetails };
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
+
     t.deepEqual(state, expectedState);
+    t.deepEqual(filteredServers, servers);
+    t.deepEqual(reasons, undefined);
 
     t.done();
 }

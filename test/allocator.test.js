@@ -26,7 +26,7 @@ function (t) {
                 t.deepEqual(servers, serverStubs);
 
                 executed.push(1);
-                return [5, 4, 3, 2];
+                return [[5, 4, 3, 2]];
             }
         }, {
             name: 'bar',
@@ -37,7 +37,7 @@ function (t) {
 
                 state.bar = [42];
                 executed.push(2);
-                return [2, 3];
+                return [[2, 3]];
             },
             post: function (log, state, server, servers) {
                 t.ok(log.debug);
@@ -57,7 +57,7 @@ function (t) {
 
                 state.baz = 'hi';
                 executed.push(4);
-                return [3];
+                return [[3]];
             }
         }
     ];
@@ -88,21 +88,21 @@ function (t) {
             run: function (log, state) {
                 t.deepEqual(state, { bar: [42, 24], baz: 'hi' });
                 executed.push(1);
-                return [serverStub];
+                return [[serverStub]];
             }
         }, {
             name: 'bar',
             run: function (log, state) {
                 t.deepEqual(state, { bar: [42, 24], baz: 'hi' });
                 executed.push(2);
-                return [serverStub];
+                return [[serverStub]];
             }
         }, {
             name: 'baz',
             run: function (log, state) {
                 t.deepEqual(state, { bar: [42, 24], baz: 'hi' });
                 executed.push(3);
-                return [serverStub];
+                return [[serverStub]];
             }
         }
     ];
@@ -140,7 +140,7 @@ function (t) {
             name: 'foo',
             run: function () {
                 executed.push(1);
-                return [serverStub];
+                return [[serverStub]];
             },
             post: function (log, state, server) {
                 t.equal(server, undefined);
@@ -150,7 +150,7 @@ function (t) {
             name: 'bar',
             run: function () {
                 executed.push(3);
-                return [serverStub];
+                return [[serverStub]];
             },
             post: function (log, state, server) {
                 t.equal(server, undefined);
@@ -160,7 +160,7 @@ function (t) {
             name: 'baz',
             run: function () {
                 executed.push(5);
-                return [];
+                return [[]];
             },
             post: function (log, state, server) {
                 t.equal(server, undefined);
@@ -170,7 +170,7 @@ function (t) {
             name: 'baz',
             run: function () {
                 executed.push(7);
-                return [];
+                return [[]];
             },
             post: function () {
                 executed.push(8);
@@ -215,7 +215,7 @@ function (t) {
             run: function (log, state, servers) {
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return [serverStubs[0], serverStubs[2], serverStubs[3]];
+                return [[serverStubs[0], serverStubs[2], serverStubs[3]]];
             }
         },
         [
@@ -227,7 +227,7 @@ function (t) {
                                           serverStubs[2],
                                           serverStubs[3]]);
                     executed.push(2);
-                    return [];
+                    return [[]];
                 }
             }, {
                 name: 'baz',
@@ -236,7 +236,7 @@ function (t) {
                                           serverStubs[2],
                                           serverStubs[3]]);
                     executed.push(3);
-                    return serverStubs.slice(0, 1);
+                    return [serverStubs.slice(0, 1)];
                 }
             }
         ]
@@ -284,7 +284,7 @@ function (t) {
             run: function (log, state, servers) {
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return [serverStubs[0], serverStubs[2], serverStubs[3]];
+                return [[serverStubs[0], serverStubs[2], serverStubs[3]]];
             }
         },
         [
@@ -296,7 +296,7 @@ function (t) {
                                           serverStubs[2],
                                           serverStubs[3]]);
                     executed.push(2);
-                    return serverStubs.slice(0, 1);
+                    return [serverStubs.slice(0, 1)];
                 }
             }, {
                 name: 'baz',
@@ -347,7 +347,7 @@ function (t) {
             run: function (log, state, servers) {
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return [];
+                return [[]];
             }
         },
         [
@@ -402,7 +402,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return serverStubs.slice(0, 3);
+                return [serverStubs.slice(0, 3)];
             }
         }, {
             name: 'bar',
@@ -410,7 +410,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs.slice(0, 3));
                 executed.push(2);
-                return serverStubs.slice(1, 3);
+                return [serverStubs.slice(1, 3)];
             }
         }, {
             name: 'baz',
@@ -418,7 +418,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs.slice(1, 3));
                 executed.push(3);
-                return serverStubs.slice(2, 3);
+                return [serverStubs.slice(2, 3)];
             }
         }
     ];
@@ -461,7 +461,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return serverStubs.slice(0, 3);
+                return [serverStubs.slice(0, 3)];
             }
         }, {
             name: 'bar',
@@ -469,7 +469,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs.slice(0, 3));
                 executed.push(2);
-                return [];
+                return [[]];
             }
         }, {
             name: 'baz',
@@ -515,7 +515,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return [];
+                return [[]];
             }
         }, {
             name: 'bar',
@@ -523,7 +523,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(2);
-                return [];
+                return [[]];
             }
         }, {
             name: 'baz',
@@ -531,7 +531,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(3);
-                return [];
+                return [[]];
             }
         }
     ];
@@ -568,7 +568,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(1);
-                return [];
+                return [[]];
             }
         }, {
             name: 'bar',
@@ -576,7 +576,7 @@ function (t) {
                 t.deepEqual(constraints.vm, { foo: 1 });
                 t.deepEqual(servers, serverStubs);
                 executed.push(2);
-                return serverStubs.slice(0, 2);
+                return [serverStubs.slice(0, 2)];
             }
         }, {
             name: 'baz',
@@ -671,12 +671,21 @@ function (t) {
           '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
         [ '94d987a9-968e-47ce-a959-4f14324bef7f',
           '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
-        []];
+        []
+    ];
+
+    var reasonsRemoved = [
+        { '1727e98c-50b0-46de-96dd-3b360f522ce7': 'quux' },
+        { '66e94ea4-6b6b-4b62-a886-799c227e6ae6': 'foo' },
+        { '94d987a9-968e-47ce-a959-4f14324bef7f': 'bar',
+          '32f7e58c-3be8-4530-851a-2606bb8bc53f': 'baz' }
+    ];
 
     var allocator = new Allocator(logStub);
     var summary = allocator._createPluginSummary(serverStubs,
                                                  visitedAlgorithms,
-                                                 remainingServers);
+                                                 remainingServers,
+                                                 reasonsRemoved);
 
     t.deepEqual(summary,
         [ { step: 'Received by DAPI',
@@ -687,12 +696,16 @@ function (t) {
           { step: 'foo',
             remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
                          '94d987a9-968e-47ce-a959-4f14324bef7f',
-                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
+            reasons: { '1727e98c-50b0-46de-96dd-3b360f522ce7': 'quux' } },
           { step: 'bar',
             remaining: [ '94d987a9-968e-47ce-a959-4f14324bef7f',
-                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ] },
+                         '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
+            reasons: { '66e94ea4-6b6b-4b62-a886-799c227e6ae6': 'foo' } },
           { step: 'baz',
-            remaining: [] } ]);
+            remaining: [],
+            reasons: { '94d987a9-968e-47ce-a959-4f14324bef7f': 'bar',
+                       '32f7e58c-3be8-4530-851a-2606bb8bc53f': 'baz' } } ]);
 
     t.done();
 };

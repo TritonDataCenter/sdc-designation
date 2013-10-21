@@ -861,14 +861,28 @@ exports.allocation_steps = function (t) {
                          'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
           { step: 'Servers with same overprovision ratios as requested VM',
             remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
-                         '85526a01-9310-44fd-9637-ed1501cc69a1' ] },
+                         '85526a01-9310-44fd-9637-ed1501cc69a1' ],
+            /* BEGIN JSSTYLED */
+            reasons:  { '48ad03e8-da51-4c25-ab39-0e4bb204b24a': 'Package over-provision ratio of null does not match server\'s 2.00',
+                        'bc415a07-4af3-4ce5-b493-4b4d0c93082a': 'Package over-provision ratio of null does not match server\'s 2.00',
+                        'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b': 'Package over-provision ratio of 1.00 does not match server\'s 1.50',
+                        '2555c9f0-d2b4-40b3-9346-81205e45a10e': 'Package over-provision ratio of 1.00 does not match server\'s null' } },
+            /* END JSSTYLED */
           { step: 'Servers which are not in the reservoir',
             remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
                          '85526a01-9310-44fd-9637-ed1501cc69a1' ] },
           { step: 'Servers with enough unreserved RAM',
-            remaining: [] },
+            remaining: [],
+            /* BEGIN JSSTYLED */
+            reasons: { '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd': 'VM\'s calculated 2048 RAM is less than server\'s spare 1228',
+                       '85526a01-9310-44fd-9637-ed1501cc69a1': 'VM\'s calculated 2048 RAM is less than server\'s spare 614' } },
+            /* END JSSTYLED */
           { step: 'Servers with enough unreserved RAM',
-            remaining: [] }
+            remaining: [],
+            /* BEGIN JSSTYLED */
+            reasons: { '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd': 'VM\'s calculated 2048 RAM is less than server\'s spare 1228',
+                       '85526a01-9310-44fd-9637-ed1501cc69a1': 'VM\'s calculated 2048 RAM is less than server\'s spare 614' } }
+            /* END JSSTYLED */
         ];
 
         t.deepEqual(body.steps, expected);

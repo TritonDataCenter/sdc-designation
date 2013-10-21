@@ -20,13 +20,15 @@ function (t) {
     var expectedServers = givenServers.slice(0, givenServers.length - 3).
                                        reverse();
     var state = {};
-    var ram = 30 * 1024;  // for vm, in MiB
+    var constraints = { vm: { ram: 30 * 1024 } };  // for vm, in MiB
 
-    var constraints = { vm: { ram: ram } };
-    var filteredServers = filter.run(log, state, givenServers, constraints);
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -38,13 +40,15 @@ function (t) {
     var expectedServers = givenServers.slice(givenServers.length - 3,
                                              givenServers.length).reverse();
     var state = {};
-    var ram = 34 * 1024;  // for vm, in MiB
+    var constraints = { vm: { ram: 34 * 1024 } };  // for vm, in MiB
 
-    var constraints = { vm: { ram: ram } };
-    var filteredServers = filter.run(log, state, givenServers, constraints);
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -55,12 +59,15 @@ exports.filterLargeServers_with_few_servers =
 function (t) {
     var servers = givenServers.slice(0, 3).reverse();
     var state = {};
-    var ram = 34 * 1024;  // for vm, in MiB
+    var constraints = { vm: { ram: 34 * 1024 } };  // for vm, in MiB
 
-    var filteredServers = filter.run(log, state, servers, { vm: { ram: ram } });
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, servers);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -70,12 +77,16 @@ function (t) {
 exports.filterLargeServers_with_no_servers =
 function (t) {
     var state = {};
-    var ram = 34 * 1024;  // for vm, in MiB
+    var servers = [];
+    var constraints = { vm: { ram: 34 * 1024 } };  // for vm, in MiB
 
-    var filteredServers = filter.run(log, state, [], { vm: { ram: ram } });
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, []);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };

@@ -19,11 +19,15 @@ function (t) {
     ];
 
     var state = {};
+    var constraints = {};
 
-    var servers = identity.run(log, state, givenServers);
+    var results = identity.run(log, state, givenServers, constraints);
+    var servers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(servers, givenServers);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -33,11 +37,16 @@ function (t) {
 exports.identity_with_no_servers =
 function (t) {
     var state = {};
+    var givenServers = [];
+    var constraints = {};
 
-    var servers = identity.run(log, state, []);
+    var results = identity.run(log, state, givenServers, constraints);
+    var servers = results[0];
+    var reasons = results[1];
 
     t.equal(servers.length, 0);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };

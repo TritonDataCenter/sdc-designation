@@ -57,15 +57,19 @@ var servers = [
 
 
 
-function test(t, vlans, expectedUuids) {
+function test(t, vlans, expectedUuids, expectedReasons) {
     var state = {};
     var constraints = { vm: { nic_tags: vlans } };
-    var filteredServers = filter.run(log, state, servers, constraints);
+
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     var serverUuids = filteredServers.map(function (s) { return s.uuid; });
 
     t.deepEqual(serverUuids.sort(), expectedUuids);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, expectedReasons);
 }
 
 
@@ -74,22 +78,36 @@ exports.filterVlans_on_single_vlan =
 function (t) {
     var expectedUuids = [ '564d9386-8c67-b674-587f-101f1db2eda7',
                           '97b466d7-465d-4c22-b26e-a6707a22390e' ];
-    test(t, ['external'], expectedUuids);
+    var expectedReasons = { 'f5e4e5f9-75e6-43e8-a016-a85835b377e1':
+                                'Server missing vlan external'};
+    test(t, ['external'], expectedUuids, expectedReasons);
 
     expectedUuids = [ '564d9386-8c67-b674-587f-101f1db2eda7',
                       '97b466d7-465d-4c22-b26e-a6707a22390e',
                       'f5e4e5f9-75e6-43e8-a016-a85835b377e1' ];
-    test(t, ['admin'], expectedUuids);
+    expectedReasons = {};
+    test(t, ['admin'], expectedUuids, expectedReasons);
 
     expectedUuids = [ '97b466d7-465d-4c22-b26e-a6707a22390e' ];
-    test(t, ['customer12'], expectedUuids);
+    expectedReasons = { '564d9386-8c67-b674-587f-101f1db2eda7':
+                            'Server missing vlan customer12',
+                        'f5e4e5f9-75e6-43e8-a016-a85835b377e1':
+                            'Server missing vlan customer12' };
+    test(t, ['customer12'], expectedUuids, expectedReasons);
 
     expectedUuids = [ '564d9386-8c67-b674-587f-101f1db2eda7',
                       '97b466d7-465d-4c22-b26e-a6707a22390e',
                       'f5e4e5f9-75e6-43e8-a016-a85835b377e1' ];
-    test(t, [], expectedUuids);
+    expectedReasons = {};
+    test(t, [], expectedUuids, expectedReasons);
 
-    test(t, ['doesnotexist'], []);
+    expectedReasons = { '564d9386-8c67-b674-587f-101f1db2eda7':
+                            'Server missing vlan doesnotexist',
+                        'f5e4e5f9-75e6-43e8-a016-a85835b377e1':
+                            'Server missing vlan doesnotexist',
+                        '97b466d7-465d-4c22-b26e-a6707a22390e':
+                            'Server missing vlan doesnotexist' };
+    test(t, ['doesnotexist'], [], expectedReasons);
 
     t.done();
 };
@@ -100,13 +118,26 @@ exports.filterVlans_on_multiple_vlans =
 function (t) {
     var expectedUuids = [ '564d9386-8c67-b674-587f-101f1db2eda7',
                           '97b466d7-465d-4c22-b26e-a6707a22390e' ];
-    test(t, ['external', 'admin'], expectedUuids);
-    test(t, ['admin', 'external'], expectedUuids);
+    var expectedReasons = { 'f5e4e5f9-75e6-43e8-a016-a85835b377e1':
+                                'Server missing vlan external' };
+    test(t, ['external', 'admin'], expectedUuids, expectedReasons);
+    test(t, ['admin', 'external'], expectedUuids, expectedReasons);
 
     expectedUuids = [ '97b466d7-465d-4c22-b26e-a6707a22390e' ];
-    test(t, ['customer12', 'admin', 'external'], expectedUuids);
+    expectedReasons = { '564d9386-8c67-b674-587f-101f1db2eda7':
+                            'Server missing vlan customer12',
+                        'f5e4e5f9-75e6-43e8-a016-a85835b377e1':
+                            'Server missing vlan customer12' };
+    test(t, ['customer12', 'admin', 'external'], expectedUuids,
+         expectedReasons);
 
-    test(t, ['admin', 'doesnotexist'], []);
+    expectedReasons = { '564d9386-8c67-b674-587f-101f1db2eda7':
+                            'Server missing vlan doesnotexist',
+                        'f5e4e5f9-75e6-43e8-a016-a85835b377e1':
+                            'Server missing vlan doesnotexist',
+                        '97b466d7-465d-4c22-b26e-a6707a22390e':
+                            'Server missing vlan doesnotexist' };
+    test(t, ['admin', 'doesnotexist'], [], expectedReasons);
 
     t.done();
 };
@@ -116,11 +147,16 @@ function (t) {
 exports.filterVlans_with_no_servers =
 function (t) {
     var state = {};
+    var emptyServers = [];
     var constraints = { vm: { nic_tags: ['admin'] } };
-    var filteredServers = filter.run(log, state, [], constraints);
+
+    var results = filter.run(log, state, emptyServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, {});
 
     t.done();
 };

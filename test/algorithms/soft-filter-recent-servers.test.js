@@ -21,11 +21,15 @@ exports.filterRecentServers_no_prior_servers =
 function (t) {
     var expectedServers = givenServers;
     var state = {};
+    var constraints = {};
 
-    var filteredServers = filter.run(log, state, givenServers);
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, { recent_servers: {} });
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -43,12 +47,17 @@ function (t) {
     state.recent_servers[oldServerUuid   ] = now - 4 * 60 * 1000;
     state.recent_servers[tooOldServerUuid] = now - 6 * 60 * 6000;
 
-    var filteredServers = filter.run(log, state, givenServers);
+    var constraints = {};
+
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(Object.keys(state), ['recent_servers']);
     t.deepEqual(Object.keys(state.recent_servers), [oldServerUuid]);
     t.equal(state.recent_servers[oldServerUuid], now - 4 * 60 * 1000);
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -67,10 +76,15 @@ function (t) {
         state.recent_servers[serverUuid] = timestamp;
     }
 
-    var filteredServers = filter.run(log, state, givenServers);
+    var constraints = {};
+
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(Object.keys(state), ['recent_servers']);
+    t.deepEqual(reasons, undefined);
 
     t.equal(Object.keys(state.recent_servers).length, 5);
     for (i = 0; i < 5; i++) {
@@ -87,11 +101,16 @@ function (t) {
 exports.filterRecentServers_with_no_prior_servers =
 function (t) {
     var state = {};
+    var servers = [];
+    var constraints = {};
 
-    var filteredServers = filter.run(log, state, []);
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, { recent_servers: {} });
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };

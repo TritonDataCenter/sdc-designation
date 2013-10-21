@@ -41,12 +41,15 @@ function (t) {
                             givenServers[12], givenServers[15],
                             givenServers[16] ];
     var state = {};
-
     var constraints = { vm: { owner_uuid: ownerUuid } };
-    var filteredServers = filter.run(log, state, givenServers, constraints);
+
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(sortServers(filteredServers), sortServers(expectedServers));
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -104,10 +107,13 @@ function (t) {
     var state = {};
 
     var constraints = { vm: { owner_uuid: ownerUuid } };
-    var filteredServers = filter.run(log, state, givenServers, constraints);
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -117,13 +123,17 @@ function (t) {
 exports.filterManyZones_with_no_servers =
 function (t) {
     var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
+    var servers = [];
     var state = {};
-
     var constraints = { vm: { owner_uuid: owner_uuid } };
-    var filteredServers = filter.run(log, state, [], constraints);
+
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };

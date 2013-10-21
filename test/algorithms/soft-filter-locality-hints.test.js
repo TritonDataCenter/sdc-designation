@@ -296,6 +296,7 @@ function (t) {
 exports.filter_with_no_servers =
 function (t) {
     var state = { locality: {} };
+    var servers = [];
     state.locality[ownerUuid] = {
         nearServerUuids: {},
         farServerUuids:  {},
@@ -306,16 +307,22 @@ function (t) {
     var origState = deepCopy(state);
 
     var constraints = { vm: { owner_uuid: ownerUuid } };
-    var filteredServers = filter.run(log, state, [], constraints);
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, origState);
+    t.deepEqual(reasons, undefined);
 
     constraints = { vm: { owner_uuid: ownerUuid,
                           locality: { near: genUuid() } } };
-    filteredServers = filter.run(log, state, [], constraints);
+    results = filter.run(log, state, servers, constraints);
+    filteredServers = results[0];
+    reasons = results[1];
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, origState);
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
@@ -369,10 +376,13 @@ function sortServers(servers) {
 
 function filterServers(t, state, vmDetails, servers, expectedServers) {
     var origState = deepCopy(state);
-    var filteredServers = filter.run(log, state, servers, { vm: vmDetails });
+    var results = filter.run(log, state, servers, { vm: vmDetails });
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(sortServers(filteredServers), sortServers(expectedServers));
     t.deepEqual(state, origState);
+    t.deepEqual(reasons, undefined);
 
     t.done();
 }

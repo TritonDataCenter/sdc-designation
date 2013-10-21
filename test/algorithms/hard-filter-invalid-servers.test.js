@@ -164,11 +164,25 @@ function (t) {
     ];
 
     var state = {};
-    var servers = filter.run(log, state, serversInfo);
-    t.deepEqual(state, {});
+    var constraints = {};
 
+    var results = filter.run(log, state, serversInfo, constraints);
+    var servers = results[0];
+    var reasons = results[1];
+
+    t.deepEqual(state, {});
     t.equal(servers.length, 1);
     t.deepEqual(servers[0].uuid, '6a6ffadd-e274-4089-a561-ccbdc894ae76');
+
+    var expectedReasons = {
+        /* BEGIN JSSTYLED */
+        'dd5dac66-b4be-4b75-859b-b375bc577e90': 'VM b3d04682-536f-4f09-8170-1954e45e9e1c has malformed owner_uuid: undefined',
+        '390d2a35-8b54-449a-a82d-6c0c623afc8c': 'Server 390d2a35-8b54-449a-a82d-6c0c623afc8c memory_total_bytes is not a number',
+        'd0c1bacd-77b2-409a-a629-9ada5cc0eef9': 'Server d0c1bacd-77b2-409a-a629-9ada5cc0eef9 "reserved" is not a boolean'
+        /* END JSSTYLED */
+
+    };
+    t.deepEqual(reasons, expectedReasons);
 
     t.done();
 };
@@ -178,11 +192,16 @@ function (t) {
 exports.filterInvalidServers_no_servers =
 function (t) {
     var state = {};
+    var serversInfo = [];
+    var constraints = {};
 
-    var servers = filter.run(log, state, []);
+    var results = filter.run(log, state, serversInfo, constraints);
+    var servers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(servers, []);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, {});
 
     t.done();
 };

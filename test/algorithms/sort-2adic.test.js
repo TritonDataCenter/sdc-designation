@@ -32,7 +32,10 @@ function init() {
 function check(t, requestedRam, expectedRams) {
     var state = {};
     var constraints = { vm: { ram: requestedRam } };
-    var sortedServers = sorter.run(log, state, givenServers, constraints);
+
+    var results = sorter.run(log, state, givenServers, constraints);
+    var sortedServers = results[0];
+    var reasons = results[1];
 
     var sortedRams = sortedServers.map(function (server) {
         var ram = server.unreserved_ram;
@@ -42,6 +45,8 @@ function check(t, requestedRam, expectedRams) {
 
     t.deepEqual(sortedRams, expectedRams);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
+
 
     t.done();
 }

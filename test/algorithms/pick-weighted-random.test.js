@@ -23,14 +23,18 @@ function (t) {
         givenServers[i] = { index: i };
     }
 
+    var constraints = {};
     var pickedServers = [];
 
     var iterations = numServers * weightRatio * iterPerServer;
     for (i = 0; i != iterations; i++) {
         var state = {};
-        var servers = picker.run(log, state, givenServers);
+        var results = picker.run(log, state, givenServers, constraints);
+        var servers = results[0];
+        var reasons = results[1];
         t.equal(servers.length, 1);
         t.deepEqual(state, {});
+        t.deepEqual(reasons, undefined);
 
         var index = servers[0].index;
         pickedServers[index] = true;
@@ -53,15 +57,19 @@ function (t) {
 exports.pickWeightedRandom_with_one_server =
 function (t) {
     var givenServers = [ { memory_available_bytes: 256 } ];
+    var constraints = {};
 
     for (var i = 0; i != 60; i++) {
         var state = {};
 
-        var pickedServers = picker.run(log, state, givenServers);
+        var results = picker.run(log, state, givenServers, constraints);
+        var pickedServers = results[0];
+        var reasons = results[1];
 
         t.equal(pickedServers.length, 1);
         t.deepEqual(pickedServers[0], givenServers[0]);
         t.deepEqual(state, {});
+        t.deepEqual(reasons, undefined);
     }
 
     t.done();
@@ -71,13 +79,19 @@ function (t) {
 
 exports.pickWeightedRandom_with_no_servers =
 function (t) {
+    var servers = [];
+    var constraints = {};
+
     for (var i = 0; i != 60; i++) {
         var state = {};
 
-        var pickedServers = picker.run(log, state, []);
+        var results = picker.run(log, state, servers, constraints);
+        var pickedServers = results[0];
+        var reasons = results[1];
 
         t.deepEqual(pickedServers, []);
         t.deepEqual(state, {});
+        t.deepEqual(reasons, undefined);
     }
 
     t.done();

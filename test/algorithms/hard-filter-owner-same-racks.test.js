@@ -160,12 +160,30 @@ function (t) {
 
     var expectedServers = givenServers.slice(3, 6);
     var state = {};
+    var constraints = { vm: { owner_uuid: owner_uuid } };
 
-    var filteredServers = filter.run(log, state, givenServers,
-                                     { vm: { owner_uuid: owner_uuid } });
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, {});
+
+    var expectedReasons = {
+        'e28724d2-cef0-4bcb-b549-33b479464bb9':
+            'VM\'s owner has another VM in rack foo',
+        '7f6b2cee-34a0-41fa-a2b2-bb6bdfea3031':
+            'VM\'s owner has another VM in rack foo',
+        'b1c3c15b-b42e-408c-a55d-7ef0cc20a74b':
+            'VM\'s owner has another VM in rack foo',
+        '39668421-e19a-417c-87d3-e906d85dc612':
+            'VM\'s owner has another VM in rack baz',
+        '81439554-d5f6-42f8-8f95-9db1c9b51239':
+            'VM\'s owner has another VM in rack baz',
+        '017ee385-529c-450d-b059-fb72f9433b9d':
+            'VM\'s owner has another VM in rack baz'
+    };
+    t.deepEqual(reasons, expectedReasons);
 
     t.done();
 };
@@ -182,12 +200,15 @@ function (t) {
             rack_identifier: 'bar'
         }
     ];
+    var constraints = { vm: { owner_uuid: owner_uuid } };
 
-    var filteredServers = filter.run(log, state, givenServers,
-                                     { vm: { owner_uuid: owner_uuid } });
+    var results = filter.run(log, state, givenServers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.equal(filteredServers.length, 1);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, {});
 
     t.done();
 };
@@ -198,12 +219,16 @@ exports.filterSameRacks_with_no_servers =
 function (t) {
     var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
     var state = {};
+    var servers = [];
+    var constraints = { vm: { owner_uuid: owner_uuid } };
 
-    var filteredServers = filter.run(log, state, [],
-                                     { vm: { owner_uuid: owner_uuid } });
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
 
     t.equal(filteredServers.length, 0);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, {});
 
     t.done();
 };

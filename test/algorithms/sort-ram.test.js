@@ -24,11 +24,15 @@ function (t) {
     ];
 
     var state = {};
+    var constraints = {};
 
-    var sortedServers = sorter.run(log, state, givenServers);
+    var results = sorter.run(log, state, givenServers, constraints);
+    var sortedServers = results[0];
+    var reasons = results[1];
 
     t.deepEqual(sortedServers, expectedServers);
     t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
 
     t.done();
 };
