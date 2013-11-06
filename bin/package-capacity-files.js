@@ -57,13 +57,14 @@ function convertPackageLdif(ldif) {
             var orig  = lookup[name];
 
             if (orig) {
-                if (Array.isArray(orig))
+                if (Array.isArray(orig)) {
                     orig.push(value);
-                else
+                } else {
                     lookup[name] = [orig, value];
+                }
+            } else {
+                lookup[name] = value;
             }
-
-            lookup[name] = value;
         }
     });
 
