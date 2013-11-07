@@ -23,7 +23,7 @@
     <exec_method
       type="method"
       name="start"
-      exec="@@NODE@@ --abort_on_uncaught_exception @@PREFIX@@/bin/server.js &amp;"
+      exec="@@NODE@@ @@PREFIX@@/bin/server.js &amp;"
       timeout_seconds="30">
       <method_context working_directory="/opt/smartdc/dapi">
         <method_credential user="nobody" group="nobody" privileges="basic,net_privaddr"/>
