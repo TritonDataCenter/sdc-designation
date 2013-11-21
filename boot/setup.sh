@@ -36,9 +36,6 @@ sdc_log_rotation_add registrar /var/svc/log/*registrar*.log 1g
 sdc_log_rotation_add $role /var/svc/log/*$role*.log 1g
 sdc_log_rotation_setup_end
 
-# Install Amon monitor and probes
-TRACE=1 /opt/smartdc/dapi/bin/install-amon-probes
-
 # All done, run boilerplate end-of-setup
 sdc_setup_complete
 
