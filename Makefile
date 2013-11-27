@@ -41,7 +41,7 @@ include ./tools/mk/Makefile.smf.defs
 
 ROOT            := $(shell pwd)
 RELEASE_TARBALL := dapi-pkg-$(STAMP).tar.bz2
-TMPDIR          := /tmp/$(STAMP)
+RELSTAGEDIR          := /tmp/$(STAMP)
 
 #
 # Repo-specific targets
@@ -59,10 +59,10 @@ CLEAN_FILES += $(NODEUNIT) ./node_modules/tap
 .PHONY: release
 release: all deps docs $(SMF_MANIFESTS)
 	@echo "Building $(RELEASE_TARBALL)"
-	@mkdir -p $(TMPDIR)/root/opt/smartdc/dapi/build
-	@mkdir -p $(TMPDIR)/site
-	@touch $(TMPDIR)/site/.do-not-delete-me
-	cp -PR $(NODE_INSTALL) $(TMPDIR)/root/opt/smartdc/dapi/build/node
+	@mkdir -p $(RELSTAGEDIR)/root/opt/smartdc/dapi/build
+	@mkdir -p $(RELSTAGEDIR)/site
+	@touch $(RELSTAGEDIR)/site/.do-not-delete-me
+	cp -PR $(NODE_INSTALL) $(RELSTAGEDIR)/root/opt/smartdc/dapi/build/node
 	cp -r $(ROOT)/lib \
     $(ROOT)/Makefile \
     $(ROOT)/node_modules \
@@ -71,12 +71,12 @@ release: all deps docs $(SMF_MANIFESTS)
     $(ROOT)/smf \
     $(ROOT)/tools \
     $(ROOT)/sapi_manifests \
-    $(TMPDIR)/root/opt/smartdc/dapi/
-	mkdir -p $(TMPDIR)/root/opt/smartdc/boot
-	cp -R $(ROOT)/deps/sdc-scripts/* $(TMPDIR)/root/opt/smartdc/boot/
-	cp -R $(ROOT)/boot/* $(TMPDIR)/root/opt/smartdc/boot/
-	(cd $(TMPDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
-	@rm -rf $(TMPDIR)
+    $(RELSTAGEDIR)/root/opt/smartdc/dapi/
+	mkdir -p $(RELSTAGEDIR)/root/opt/smartdc/boot
+	cp -R $(ROOT)/deps/sdc-scripts/* $(RELSTAGEDIR)/root/opt/smartdc/boot/
+	cp -R $(ROOT)/boot/* $(RELSTAGEDIR)/root/opt/smartdc/boot/
+	(cd $(RELSTAGEDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
+	@rm -rf $(RELSTAGEDIR)
 
 
 .PHONY: publish
