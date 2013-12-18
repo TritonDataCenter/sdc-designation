@@ -5,8 +5,8 @@
   "author": "Marsell Kukuljevic, Andres Rodriguez (joyent.com)",
   "private": true,
   "dependencies": {
-    "restify": "2.1.1",
-    "bunyan": "0.18.2",
+    "restify": "2.6.1",
+    "bunyan": "0.22.0",
     "node-uuid": "1.4.0"
   },
   "devDependencies": {
