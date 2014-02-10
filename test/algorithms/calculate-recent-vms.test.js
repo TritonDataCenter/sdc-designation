@@ -47,7 +47,7 @@ function (t) {
 
     t.deepEqual(filteredServers, expectedServers);
     t.deepEqual(state, { recent_vms: {} });
-    t.deepEqual(reasons, undefined);
+    t.deepEqual(reasons, {});
 
     t.done();
 };
@@ -220,7 +220,15 @@ function (t) {
                  '70671b04-0e6b-4f28-8650-c1728da4e41b',
                  'd78b6ed4-e343-4772-a313-2d85abbf6cb2',
                  'f2e725ec-86d0-434a-8642-b461e48cf059']);
-    t.deepEqual(reasons, undefined);
+
+    t.deepEqual(reasons, {
+        '449a8969-233e-4f90-b71c-45a234075403':
+            'Adding VM 36a33066-42a6-4fcf-acf5-3df11a6b558c. Adding VM ' +
+            '2f371a89-b004-400b-a249-6099e88feefc.',
+        '47e33f30-5226-4638-b376-53bc09fc72a6':
+            'Adding VM 70671b04-0e6b-4f28-8650-c1728da4e41b. Adding VM ' +
+            'f2e725ec-86d0-434a-8642-b461e48cf059.'
+    });
 
     t.done();
 };
