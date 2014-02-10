@@ -721,6 +721,7 @@ function (t) {
 
     var expectedNames = [
         'calculate-locality',
+        'calculate-recent-vms',
         'calculate-server-unreserved',
         'hard-filter-headnode',
         'hard-filter-invalid-servers',

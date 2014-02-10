@@ -61,6 +61,7 @@ needs, how much RAM, and so forth. DAPI accepts arbitrary descriptions of the
 VM, but the current version only considers the following characteristics:
 
 || **Attribute** || **Type** || **Description**                                      ||
+|| vm_uuid       || string   || The UUID of the VM we're attempting to allocate      ||
 || ram           || integer  || RAM required, in MiB                                 ||
 || quota         || integer  || Disk required, in MiB                                ||
 || cpu_cap       || integer  || Max CPU allowed, in percent                          ||
@@ -75,6 +76,7 @@ at least ***ram*** and ***owner_uuid***.
     # Simplest example
 
     {
+      "vm_uuid": "d84f8cd6-3e8f-4434-95f1-fc50cafde9e3",
       "ram": 2048,
       "owner_uuid": "73fa296f-a9dc-4677-9c06-4c610fc57160"
     }
@@ -82,7 +84,7 @@ at least ***ram*** and ***owner_uuid***.
     # More complete VM payload, similar to `vmadm get <uuid>`
 
     {
-      "uuid": "ef375f03-57ca-44a9-bc8d-63aec09fbc37",
+      "vm_uuid": "ef375f03-57ca-44a9-bc8d-63aec09fbc37",
       "brand": "joyent",
       "alias": "assets1",
       "ram": 64,
@@ -195,7 +197,9 @@ As an example of a valid servers payload:
         "reservation_ratio": 0.15,
         "reserved": false,
         "setup": true,
-        "Zpool Size in GiB": 1024,
+        "sysinfo": {
+          "Zpool Size in GiB": 1024,
+        }
         "vms": {
           "fbbbdc6d-011c-4931-9420-c702f53e4154": {
             "max_physical_memory": 1024,
@@ -211,7 +215,9 @@ As an example of a valid servers payload:
         "reservation_ratio": 0.25,
         "reserved": false,
         "setup": false,
-        "Zpool Size in GiB": null,
+        "sysinfo": {
+          "Zpool Size in GiB": null,
+        }
         "vms": {}
       }
     ]
@@ -365,6 +371,7 @@ payload.
     } ];
 
     var vm = {
+      vm_uuid: '03a677ef-4185-4a21-8f6c-d67c6ac66911',
       ram: 256,
       owner_uuid: 'f176970e-6f1a-45d0-a1ea-2a61a76cf7e5'
     };
@@ -396,6 +403,7 @@ below for description of what each one does):
 
     ['pipe', 'hard-filter-invalid-servers',
              'hard-filter-setup',
+             'calculate-recent-vms',
              'calculate-server-unreserved',
              'calculate-locality',
              'hard-filter-reserved',
@@ -411,7 +419,6 @@ below for description of what each one does):
                     ['pipe', 'hard-filter-min-ram',
                              'hard-filter-min-disk',
                              'hard-filter-min-cpu']],
-             'soft-filter-recent-servers',
              ['or', 'hard-filter-large-servers',
                     'identity'],
              'soft-filter-locality-hints',
@@ -458,6 +465,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 
 || **Name**                        || **Action**                                                  ||
 || calculate-locality              || Early calculations needed by the soft-filter-locality-hints plugin   ||
+|| calculate-recent-vms            || Adds recent VMs to pipeline if they haven't appeared yet in CNAPI    ||
 || calculate-server-unreserved     || Does some free-resource calculations that are used by other plugins  ||
 || hard-filter-headnode            || Removes any headnodes                                       ||
 || hard-filter-invalid-servers     || Removes any server objects which don't pass validation      ||
