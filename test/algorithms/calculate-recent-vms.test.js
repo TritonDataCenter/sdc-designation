@@ -63,8 +63,8 @@ function (t) {
     var constraints = {};
 
     var state = {
-        recent_vms: {
-            '36a33066-42a6-4fcf-acf5-3df11a6b558c': {
+        recent_vms: [
+            {
                 uuid: '36a33066-42a6-4fcf-acf5-3df11a6b558c',
                 owner_uuid: '561a7225-2989-46ad-b29e-8a900b8e4ba0',
                 max_physical_memory: 1024, // in MiB
@@ -75,7 +75,7 @@ function (t) {
                 server_uuid: '449a8969-233e-4f90-b71c-45a234075403',
                 created_at: now
             },
-            '2f371a89-b004-400b-a249-6099e88feefc': {
+            {
                 uuid: '2f371a89-b004-400b-a249-6099e88feefc',
                 owner_uuid: '561a7225-2989-46ad-b29e-8a900b8e4ba0',
                 max_physical_memory: 4196,
@@ -86,7 +86,7 @@ function (t) {
                 server_uuid: '449a8969-233e-4f90-b71c-45a234075403',
                 created_at: now - 60 * 1000 // 1m ago
             },
-            '70671b04-0e6b-4f28-8650-c1728da4e41b': {
+            {
                 uuid: '70671b04-0e6b-4f28-8650-c1728da4e41b',
                 owner_uuid: 'ceb36d4e-adf3-46d6-b4cb-b33788b1b4c7',
                 max_physical_memory: 2048,
@@ -97,7 +97,7 @@ function (t) {
                 server_uuid: '47e33f30-5226-4638-b376-53bc09fc72a6',
                 created_at: now - 5 * 60 * 1000 // 5m ago
             },
-            'f2e725ec-86d0-434a-8642-b461e48cf059': {
+            {
                 // has an image_size
                 uuid: 'f2e725ec-86d0-434a-8642-b461e48cf059',
                 owner_uuid: '60625acf-e68f-424f-8a73-25d90c5d9704',
@@ -110,7 +110,7 @@ function (t) {
                 server_uuid: '47e33f30-5226-4638-b376-53bc09fc72a6',
                 created_at: now - 5 * 60 * 1000 // 5m ago
             },
-            '84617ecf-3de0-4051-9007-680bd006293b': {
+            {
                 // expired
                 uuid: '84617ecf-3de0-4051-9007-680bd006293b',
                 owner_uuid: '3b405c0f-c9cc-496f-8770-04a3bc28528a',
@@ -122,7 +122,7 @@ function (t) {
                 server_uuid: '47e33f30-5226-4638-b376-53bc09fc72a6',
                 created_at: now - 11 * 60 * 1000 // 11m ago
             },
-            'd78b6ed4-e343-4772-a313-2d85abbf6cb2' : {
+            {
                 // server is no longer present
                 uuid: 'd78b6ed4-e343-4772-a313-2d85abbf6cb2',
                 owner_uuid: 'd712e46a-7db5-4561-a429-4e00f594c8e9',
@@ -134,7 +134,7 @@ function (t) {
                 server_uuid: '9455e445-a1b6-4966-ae4d-45062335d8a3',
                 created_at: now
             }
-        }
+        ]
     };
 
     var givenServers = [ {
@@ -214,7 +214,7 @@ function (t) {
 
     t.deepEqual(filteredServers, expectedServers);
     // one VM was removed since it expired
-    t.deepEqual(Object.keys(state.recent_vms).sort(),
+    t.deepEqual(state.recent_vms.map(function (v) { return v.uuid; }).sort(),
                 ['2f371a89-b004-400b-a249-6099e88feefc',
                  '36a33066-42a6-4fcf-acf5-3df11a6b558c',
                  '70671b04-0e6b-4f28-8650-c1728da4e41b',
@@ -249,11 +249,11 @@ function (t) {
         }
     };
 
-    var state  = { recent_vms: {} };
+    var state  = { recent_vms: [] };
 
     var expectedState = {
-        recent_vms: {
-            'bc2584ed-f218-4df5-a35a-416338e57734': {
+        recent_vms: [
+            {
                 uuid: vmUuid,
                 owner_uuid: '50795a63-3542-4f81-9cdd-36a19069ea49',
                 max_physical_memory: 512,
@@ -263,14 +263,14 @@ function (t) {
                 state: 'running',
                 server_uuid: server.uuid
             }
-        }
+        ]
     };
 
     filter.post(log, state, server, null, constraints);
 
-    var timestamp = state.recent_vms[vmUuid].created_at;
+    var timestamp = state.recent_vms[0].created_at;
     t.ok(now <= timestamp && timestamp <= +new Date());
-    delete state.recent_vms[vmUuid].created_at;
+    delete state.recent_vms[0].created_at;
 
     t.deepEqual(state, expectedState);
     t.done();
