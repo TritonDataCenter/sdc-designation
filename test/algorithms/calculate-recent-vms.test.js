@@ -286,6 +286,34 @@ function (t) {
 
 
 
+// this can happen when an allocation fails
+exports.post_without_server =
+function (t) {
+    var constraints = {
+        vm: {
+            vm_uuid: 'bc2584ed-f218-4df5-a35a-416338e57734',
+            owner_uuid: '50795a63-3542-4f81-9cdd-36a19069ea49'
+        },
+        pkg: {
+            max_physical_memory: 512, // in MiB
+            cpu_cap: 700,
+            quota: 10 * 1024 // in MiB
+        },
+        img: {
+            type: 'smartos'
+        }
+    };
+
+    var state  = { recent_vms: [] };
+
+    filter.post(log, state, null, null, constraints);
+
+    t.deepEqual(state, { recent_vms: [] });
+    t.done();
+};
+
+
+
 exports.name =
 function (t) {
     t.ok(typeof (filter.name) === 'string');

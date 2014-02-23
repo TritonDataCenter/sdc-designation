@@ -133,6 +133,19 @@ function (t) {
 
 
 
+// this can happen when allocations fails
+exports.post_without_server =
+function (t) {
+    var state  = { recent_servers: {} };
+
+    filter.post(log, state, null);
+
+    t.deepEqual(state, { recent_servers: {} });
+    t.done();
+};
+
+
+
 exports.name =
 function (t) {
     t.ok(typeof (filter.name) === 'string');

@@ -366,6 +366,71 @@ exports.allocation_ok_3 = function (t) {
 
 
 
+// should fail in this case because traits mismatch
+exports.allocation_fails = function (t) {
+    var server = {
+        uuid: 'd72fad32-3a2b-419a-a878-4f53bdad7352',
+        ram: 2048,
+        setup: true,
+        reserved: false,
+        status: 'running',
+        memory_total_bytes: 2147483648,
+        memory_available_bytes: 1073741824,
+        disk_pool_size_bytes: 1099511627776,
+        disk_installed_images_used_bytes: 1073741824,
+        disk_zone_quota_bytes: 53687091200,
+        disk_kvm_quota_bytes: 0,
+        disk_kvm_zvol_volsize_bytes: 0,
+        reservation_ratio: 0.15,
+        rack_identifier: 'ams-1',
+        sysinfo: {
+            'Zpool Size in GiB': 1024,
+            'CPU Total Cores': 16,
+            'SDC Version': '7.0',
+            'Live Image': '20121210T203034Z',
+            'Network Interfaces': {
+                e1000g0: {
+                    'Link Status': 'up',
+                    'NIC Names': [ 'external' ]
+                },
+                e1000g1: {
+                    'Link Status': 'up',
+                    'NIC Names': [ 'admin' ]
+                }
+            }
+        },
+        vms: {},
+        traits: { foo: 'bar' }
+    };
+
+    var path = '/allocation';
+
+    var data = { servers: [ server ],
+                 vm: { vm_uuid: 'c122b0dc-d560-479c-978b-0021da55acad',
+                       ram: 256,
+                       brand: 'kvm',
+                       nic_tags: [ 'external' ],
+                       owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+                       override_recent_vms: true },
+                 image: { image_size: 51200 } };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ok(err);
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+
+        t.ok(body);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, 'No allocatable servers found. Last step was: ' +
+                              'Servers with correct traits');
+        t.ok(body.steps);
+
+        t.done();
+    });
+};
+
+
+
 exports.allocation_with_locality_hints_near = function (t) {
     var path = '/allocation';
 
@@ -1360,7 +1425,6 @@ exports.vm_with_missing_vm_uuid = function (t) {
         t.done();
     });
 };
-
 
 
 
