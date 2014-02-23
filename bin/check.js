@@ -88,7 +88,8 @@ servers.forEach(function (server) {
 
     msg = '--> CN ' + server.uuid;
 
-    if (ram >= lowRam && disk >= lowDisk && cpu >= lowCpu / 4) {
+//    if (ram >= lowRam && disk >= lowDisk && cpu >= lowCpu / 4) {
+    if (ram >= lowRam && cpu >= lowCpu / 4) {
         if (server.reserved) {
             console.log(msg, 'has enough, but reserved');
         } else if (server.status !== 'running') {
