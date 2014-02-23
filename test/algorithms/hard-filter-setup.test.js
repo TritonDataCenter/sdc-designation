@@ -54,6 +54,44 @@ function (t) {
 
 
 
+exports.filterSetup_with_malformed_servers_1 =
+function (t) {
+    var state = {};
+    var servers = 'foo';
+    var constraints = {};
+
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
+
+    t.equal(filteredServers, 'foo');
+    t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
+
+    t.done();
+};
+
+
+
+exports.filterSetup_with_malformed_servers_2 =
+function (t) {
+    var state = {};
+    var servers = [ 'foo', { setup: true }, { setup: false } ];
+    var constraints = {};
+
+    var results = filter.run(log, state, servers, constraints);
+    var filteredServers = results[0];
+    var reasons = results[1];
+
+    t.deepEqual(filteredServers, [ { setup: true } ]);
+    t.deepEqual(state, {});
+    t.deepEqual(reasons, undefined);
+
+    t.done();
+};
+
+
+
 exports.name =
 function (t) {
     t.ok(typeof (filter.name) === 'string');
