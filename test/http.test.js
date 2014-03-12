@@ -1302,7 +1302,6 @@ exports.vm_ram_smaller_than_image_requirement = function (t) {
 
     var data = {
         servers: servers,
-        image: {},
         vm: {
             vm_uuid: '9191c8a1-737f-47f6-b4fc-d21ffb0cd2d8',
             ram: 256,
@@ -1334,7 +1333,6 @@ exports.vm_ram_larger_than_image_requirement = function (t) {
 
     var data = {
         servers: servers,
-        image: {},
         vm: {
             vm_uuid: '43165e66-3741-421d-bb71-94c9a466f863',
             ram: 768,
@@ -1355,6 +1353,38 @@ exports.vm_ram_larger_than_image_requirement = function (t) {
         t.equal(body.code, 'InvalidArgument');
         t.equal(body.message, '"vm.ram" is larger than ' +
                               '"image.requirements.max_ram"');
+        t.done();
+    });
+};
+
+
+
+exports.package_and_image_os_do_not_match = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        image: {
+            os: 'linux'
+        },
+        package: {
+            os: 'windows'
+        },
+        vm: {
+            vm_uuid: '43165e66-3741-421d-bb71-94c9a466f863',
+            ram: 768,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+            override_recent_vms: true
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, '"package.os" and "image.os" do not match');
+
         t.done();
     });
 };
