@@ -36,16 +36,20 @@ function (t) {
                 '1ac434da-01aa-4663-8420-d3524ed1de0c': {
                     owner_uuid: '00fd780e-f265-42ac-b800-60fdd3f20fb8',
                     brand: 'kvm',
+                    state: 'running',
                     cpu_cap: 350,
                     quota: 25,
-                    max_physical_memory: 2048
+                    max_physical_memory: 2048,
+                    last_modified: '2014-03-12T10:55:29.487Z'
                 },
                 'b3d04682-536f-4f09-8170-1954e45e9e1c': {
                     // missing owner_uuid
                     brand: 'kvm',
+                    state: 'running',
                     cpu_cap: 350,
                     quota: 5,
-                    max_physical_memory: 128
+                    max_physical_memory: 128,
+                    last_modified: '2014-03-12T14:37:34.598Z'
                 }
             }
         },
@@ -69,16 +73,20 @@ function (t) {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
                     owner_uuid: 'a79de91a-1b60-4d97-94bd-49d056c0a4e6',
                     brand: 'joyent',
+                    state: 'running',
                     cpu_cap: 350,
                     quota: 20,
-                    max_physical_memory: 512
+                    max_physical_memory: 512,
+                    last_modified: '2014-03-12T13:55:38.326Z'
                 },
                 '335498f7-a1ed-420c-8367-7f2769ca1e84': {
                     owner_uuid: 'fa08a498-3264-4ec0-99ef-365731a1c9cc',
                     brand: 'kvm',
+                    state: 'running',
                     cpu_cap: 350,
                     quota: 10,
-                    max_physical_memory: 4096
+                    max_physical_memory: 4096,
+                    last_modified: '2014-03-12T14:44:42.110Z'
                 }
             }
         },
@@ -103,16 +111,20 @@ function (t) {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
                     owner_uuid: 'e14b2bef-e75f-43f6-9590-ff4c3d18fad6',
                     brand: 'joyent',
+                    state: 'failed',
                     cpu_cap: 350,
                     quota: 20,
-                    max_physical_memory: 512
+                    max_physical_memory: 512,
+                    last_modified: '2014-03-12T13:10:45.293Z'
                 },
                 '335498f7-a1ed-420c-8367-7f2769ca1e84': {
                     owner_uuid: '24ccd11a-fb18-45e8-99ea-a2b561352526',
                     brand: 'joyent',
+                    state: 'running',
                     cpu_cap: 350,
                     quota: 10,
-                    max_physical_memory: 4096
+                    max_physical_memory: 4096,
+                    last_modified: '2014-03-12T12:49:49.246Z'
                 }
             }
         },
@@ -141,7 +153,8 @@ function (t) {
                     state: 'running',
                     cpu_cap: 700,
                     quota: 20,
-                    max_physical_memory: 512
+                    max_physical_memory: 512,
+                    last_modified: '2014-03-12T12:19:52.789Z'
                 },
                 '9dd471a6-4679-4201-a02d-5e824deefc3e': {
                     owner_uuid: '08c55217-b479-42af-8968-4ae52c183241',
@@ -149,7 +162,8 @@ function (t) {
                     state: 'installed',
                     cpu_cap: 200,
                     quota: 30,
-                    max_physical_memory: 4096
+                    max_physical_memory: 4096,
+                    last_modified: '2014-03-12T12:25:57.093Z'
                 },
                 '3575c7b5-e644-4357-8b89-9188a883da8d': {
                     owner_uuid: 'ffc02424-c50d-4fa8-bb63-d848ac55ea21',
@@ -157,7 +171,8 @@ function (t) {
                     state: 'failed',
                     cpu_cap: 200,
                     quota: 30,
-                    max_physical_memory: 4096
+                    max_physical_memory: 4096,
+                    last_modified: '2014-03-12T12:27:40.235Z'
                 }
             }
         }

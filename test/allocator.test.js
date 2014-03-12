@@ -737,6 +737,7 @@ function (t) {
         'hard-filter-reservoir',
         'hard-filter-running',
         'hard-filter-setup',
+        'hard-filter-sick-servers',
         'hard-filter-traits',
         'hard-filter-vlans',
         'identity',
