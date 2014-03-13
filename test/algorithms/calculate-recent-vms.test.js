@@ -73,7 +73,8 @@ function (t) {
                 brand: 'smartos',
                 state: 'running',
                 server_uuid: '449a8969-233e-4f90-b71c-45a234075403',
-                created_at: now
+                created_at: now,
+                last_modified: new Date(now).toISOString()
             },
             {
                 uuid: '2f371a89-b004-400b-a249-6099e88feefc',
@@ -84,7 +85,8 @@ function (t) {
                 brand: 'smartos',
                 state: 'running',
                 server_uuid: '449a8969-233e-4f90-b71c-45a234075403',
-                created_at: now - 60 * 1000 // 1m ago
+                created_at: now - 60 * 1000, // 1m ago
+                last_modified: new Date(now - 60 * 1000).toISOString()
             },
             {
                 uuid: '70671b04-0e6b-4f28-8650-c1728da4e41b',
@@ -95,7 +97,8 @@ function (t) {
                 brand: 'kvm',
                 state: 'running',
                 server_uuid: '47e33f30-5226-4638-b376-53bc09fc72a6',
-                created_at: now - 5 * 60 * 1000 // 5m ago
+                created_at: now - 5 * 60 * 1000, // 5m ago
+                last_modified: new Date(now - 5 * 60 * 1000).toISOString()
             },
             {
                 // has an image_size
@@ -108,7 +111,8 @@ function (t) {
                 image_size: 100 * 1024 * 1024, // in bytes
                 state: 'running',
                 server_uuid: '47e33f30-5226-4638-b376-53bc09fc72a6',
-                created_at: now - 5 * 60 * 1000 // 5m ago
+                created_at: now - 5 * 60 * 1000, // 5m ago
+                last_modified: new Date(now - 5 * 60 * 1000).toISOString()
             },
             {
                 // expired
@@ -120,7 +124,8 @@ function (t) {
                 brand: 'kvm',
                 state: 'running',
                 server_uuid: '47e33f30-5226-4638-b376-53bc09fc72a6',
-                created_at: now - 11 * 60 * 1000 // 11m ago
+                created_at: now - 11 * 60 * 1000, // 11m ago
+                last_modified: new Date(now - 11 * 60 * 1000).toISOString()
             },
             {
                 // server is no longer present
@@ -132,7 +137,8 @@ function (t) {
                 brand: 'smartos',
                 state: 'running',
                 server_uuid: '9455e445-a1b6-4966-ae4d-45062335d8a3',
-                created_at: now
+                created_at: now,
+                last_modified: new Date(now).toISOString()
             }
         ]
     };
@@ -163,7 +169,8 @@ function (t) {
                 brand: 'smartos',
                 state: 'running',
                 server_uuid: '449a8969-233e-4f90-b71c-45a234075403',
-                created_at: now
+                created_at: now,
+                last_modified: new Date(now).toISOString()
             },
             '2f371a89-b004-400b-a249-6099e88feefc' : {
                 uuid: '2f371a89-b004-400b-a249-6099e88feefc',
@@ -174,7 +181,8 @@ function (t) {
                 brand: 'smartos',
                 state: 'running',
                 server_uuid: '449a8969-233e-4f90-b71c-45a234075403',
-                created_at: now - 60 * 1000
+                created_at: now - 60 * 1000,
+                last_modified: new Date(now - 60 * 1000).toISOString()
             }
         }
     }, {
@@ -191,7 +199,8 @@ function (t) {
                 brand: 'kvm',
                 state: 'running',
                 server_uuid: '47e33f30-5226-4638-b376-53bc09fc72a6',
-                created_at: now - 5 * 60 * 1000
+                created_at: now - 5 * 60 * 1000,
+                last_modified: new Date(now - 5 * 60 * 1000).toISOString()
             },
             'f2e725ec-86d0-434a-8642-b461e48cf059': {
                 uuid: 'f2e725ec-86d0-434a-8642-b461e48cf059',
@@ -203,7 +212,8 @@ function (t) {
                 image_size: 100 * 1024 * 1024,
                 state: 'running',
                 server_uuid: '47e33f30-5226-4638-b376-53bc09fc72a6',
-                created_at: now - 5 * 60 * 1000
+                created_at: now - 5 * 60 * 1000,
+                last_modified: new Date(now - 5 * 60 * 1000).toISOString()
             }
         }
     } ];
@@ -276,9 +286,14 @@ function (t) {
 
     filter.post(log, state, server, null, constraints);
 
-    var timestamp = state.recent_vms[0].created_at;
-    t.ok(now <= timestamp && timestamp <= +new Date());
+    var created_at = state.recent_vms[0].created_at;
+    t.ok(now <= created_at && created_at <= +new Date());
+
+    var last_modified = +new Date(state.recent_vms[0].last_modified);
+    t.ok(now <= last_modified && last_modified <= +new Date());
+
     delete state.recent_vms[0].created_at;
+    delete state.recent_vms[0].last_modified;
 
     t.deepEqual(state, expectedState);
     t.done();
