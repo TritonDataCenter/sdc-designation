@@ -1,12 +1,14 @@
 /*
- * Copyright (c) 2012, Joyent, Inc. All rights reserved.
+ * Copyright (c) 2014, Joyent, Inc. All rights reserved.
  */
 
+var common = require('./common');
 var Allocator = require('../lib/allocator.js');
 
 var logStub = { trace: function () { return true; },
                 debug: function () { return true; },
                 info:  function () { return true; },
+                warn:  function () { return true; },
                 error: function (err) { console.log(err); return true; } };
 
 
@@ -63,7 +65,7 @@ function (t) {
     ];
 
     var allocator = new Allocator(logStub);
-    allocator.expression = plugins;
+    allocator.allocServerExpr = plugins;
 
     var results = allocator.allocate(serverStubs, {}, {}, {});
     var serverStub = results[0];
@@ -108,7 +110,7 @@ function (t) {
     ];
 
     var allocator = new Allocator(logStub);
-    allocator.expression = plugins;
+    allocator.allocServerExpr = plugins;
 
     var results = allocator.allocate([serverStub], {}, {}, {});
     t.deepEqual(executed, [1, 2, 3]);
@@ -179,7 +181,7 @@ function (t) {
     ];
 
     var allocator = new Allocator(logStub);
-    allocator.expression = plugins;
+    allocator.allocServerExpr = plugins;
 
     var results = allocator.allocate([serverStub], {}, {}, {});
     t.deepEqual(executed, [1, 3, 5, 6, 4, 2]);
@@ -243,7 +245,7 @@ function (t) {
     ];
 
     var allocator = new Allocator(logStub);
-    allocator.expression = plugins;
+    allocator.allocServerExpr = plugins;
 
     var results = allocator.allocate(serverStubs, {}, {}, {});
     t.deepEqual(executed, [1, 2, 3]);
@@ -308,7 +310,7 @@ function (t) {
     ];
 
     var allocator = new Allocator(logStub);
-    allocator.expression = plugins;
+    allocator.allocServerExpr = plugins;
 
     var results = allocator.allocate(serverStubs, {}, {}, {});
     t.deepEqual(executed, [1, 2]);
@@ -367,7 +369,7 @@ function (t) {
     ];
 
     var allocator = new Allocator(logStub);
-    allocator.expression = plugins;
+    allocator.allocServerExpr = plugins;
 
     var results = allocator.allocate(serverStubs, {}, {}, {});
     t.deepEqual(executed, [1]);
@@ -857,5 +859,32 @@ function (t) {
     clone.a.push(null);
     t.deepEqual(original, { a: [1, { b: 2 }, frozen, 'foo'] });
 
+    t.done();
+};
+
+
+
+exports.test_serverCapacity =
+function (t) {
+    var allocator = new Allocator(logStub);
+    var results = allocator.serverCapacity(common.exampleServers);
+
+    var expectedResults = [ {
+        '00000000-0000-0000-0000-00259094373c': {
+            cpu: 6100,
+            ram: 100627,
+            disk: 3230207
+        },
+        '00000000-0000-0000-0000-0025909437d4': {
+            cpu: 5525,
+            ram: 105619,
+            disk: 187299
+        }
+    },
+    {
+        asdsa: 'Server UUID asdsa is not a valid UUID'
+    } ];
+
+    t.deepEqual(results, expectedResults);
     t.done();
 };
