@@ -882,7 +882,7 @@ function (t) {
         }
     },
     {
-        asdsa: 'Server UUID asdsa is not a valid UUID'
+        asdsa: 'Server has status: undefined'
     } ];
 
     t.deepEqual(results, expectedResults);
