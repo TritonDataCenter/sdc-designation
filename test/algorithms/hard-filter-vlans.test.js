@@ -79,7 +79,7 @@ function (t) {
     var expectedUuids = [ '564d9386-8c67-b674-587f-101f1db2eda7',
                           '97b466d7-465d-4c22-b26e-a6707a22390e' ];
     var expectedReasons = { 'f5e4e5f9-75e6-43e8-a016-a85835b377e1':
-                                'Server missing vlan "external"'};
+                                'NIC e1000g0 for tag "external" is down'};
     test(t, ['external'], expectedUuids, expectedReasons);
 
     expectedUuids = [ '564d9386-8c67-b674-587f-101f1db2eda7',
@@ -119,7 +119,7 @@ function (t) {
     var expectedUuids = [ '564d9386-8c67-b674-587f-101f1db2eda7',
                           '97b466d7-465d-4c22-b26e-a6707a22390e' ];
     var expectedReasons = { 'f5e4e5f9-75e6-43e8-a016-a85835b377e1':
-                                'Server missing vlan "external"' };
+                                'NIC e1000g0 for tag "external" is down' };
     test(t, ['external', 'admin'], expectedUuids, expectedReasons);
     test(t, ['admin', 'external'], expectedUuids, expectedReasons);
 
