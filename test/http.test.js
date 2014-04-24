@@ -1442,6 +1442,32 @@ exports.vm_with_malformed_traits = function (t) {
 
 
 
+exports.vm_with_malformed_nic_tags = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        image: {},
+        vm: {
+            vm_uuid: '60b0681d-fff8-4aea-aeee-9a5625fd6f3b',
+            ram: 768,
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+            override_recent_vms: true,
+            nic_tags: ['foo', 1]
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, 'VM "nic_tags" contains invalid type in array');
+        t.done();
+    });
+};
+
+
+
 exports.vm_with_missing_vm_uuid = function (t) {
     var path = '/allocation';
 

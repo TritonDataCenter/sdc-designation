@@ -30,7 +30,8 @@ function (t) {
             setup: true,
             sysinfo: {
                 'Zpool Size in GiB': 2048,
-                'CPU Total Cores': 16
+                'CPU Total Cores': 16,
+                'Network Interfaces': {}
             },
             vms: {
                 '1ac434da-01aa-4663-8420-d3524ed1de0c': {
@@ -67,7 +68,8 @@ function (t) {
             setup: true,
             sysinfo: {
                 'Zpool Size in GiB': 2048,
-                'CPU Total Cores': 24
+                'CPU Total Cores': 24,
+                'Network Interfaces': {}
             },
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
@@ -105,7 +107,8 @@ function (t) {
             setup: true,
             sysinfo: {
                 'Zpool Size in GiB': 4096,
-                'CPU Total Cores': 32
+                'CPU Total Cores': 32,
+                'Network Interfaces': {}
             },
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
@@ -144,7 +147,8 @@ function (t) {
             setup: true,
             sysinfo: {
                 'Zpool Size in GiB': 4096,
-                'CPU Total Cores': 32
+                'CPU Total Cores': 32,
+                'Network Interfaces': {}
             },
             vms: {
                 'd251001f-57eb-4360-a04a-96d7d20a520c': {
@@ -175,6 +179,29 @@ function (t) {
                     last_modified: '2014-03-12T12:27:40.235Z'
                 }
             }
+        }, {
+            uuid: 'a8da02c2-a294-4f66-bb7d-8a5c6689588d',
+            memory_total_bytes: 256 * GB,
+            memory_available_bytes: 72 * GB,
+            disk_pool_size_bytes: 4096 * GB,
+            disk_installed_images_used_bytes: 4 * GB,
+            disk_zone_quota_bytes: 0,
+            disk_kvm_quota_bytes: 0,
+            disk_kvm_zvol_volsize_bytes: 0,
+            reservation_ratio: 0.15,
+            reserved: false,
+            setup: true,
+            sysinfo: {
+                'Zpool Size in GiB': 4096,
+                'CPU Total Cores': 32,
+                'Network Interfaces': {
+                    'e1000g0': {
+                        'Link Status': 'up',
+                        'NIC Names': ['foo', 1]
+                    }
+                }
+            },
+            vms: {}
         }
     ];
 
@@ -193,7 +220,8 @@ function (t) {
         /* BEGIN JSSTYLED */
         'dd5dac66-b4be-4b75-859b-b375bc577e90': 'VM b3d04682-536f-4f09-8170-1954e45e9e1c has malformed owner_uuid: undefined',
         '390d2a35-8b54-449a-a82d-6c0c623afc8c': 'Server 390d2a35-8b54-449a-a82d-6c0c623afc8c memory_total_bytes is not a number',
-        'd0c1bacd-77b2-409a-a629-9ada5cc0eef9': 'Server d0c1bacd-77b2-409a-a629-9ada5cc0eef9 "reserved" is not a boolean'
+        'd0c1bacd-77b2-409a-a629-9ada5cc0eef9': 'Server d0c1bacd-77b2-409a-a629-9ada5cc0eef9 "reserved" is not a boolean',
+        'a8da02c2-a294-4f66-bb7d-8a5c6689588d': 'Server a8da02c2-a294-4f66-bb7d-8a5c6689588d "NIC Names" contains non-string'
         /* END JSSTYLED */
 
     };
