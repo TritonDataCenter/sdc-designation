@@ -740,6 +740,7 @@ function (t) {
         'hard-filter-running',
         'hard-filter-setup',
         'hard-filter-sick-servers',
+        'hard-filter-ticketed-servers',
         'hard-filter-traits',
         'hard-filter-vlans',
         'identity',

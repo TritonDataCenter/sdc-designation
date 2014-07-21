@@ -366,6 +366,41 @@ exports.allocation_ok_3 = function (t) {
 
 
 
+exports.allocation_ok_4 = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            vm_uuid: '00f2b6e4-b305-432d-84b9-70d81df10d10',
+            ram: 256,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'f176970e-6f1a-45d0-a1ea-2a61a76cf7e5',
+            override_recent_vms: true
+        },
+        image: {},
+        tickets: [ {
+            id: 'ea83e03a-ae22-4637-8bc9-49fbf7c8d3d2',
+            scope: 'vm',
+            server_uuid: '85526a01-9310-44fd-9637-ed1501cc69a1',
+            action: 'provision',
+            status: 'queued'
+        } ]
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, 200);
+        common.checkHeaders(t, res.headers);
+        t.ok(body);
+        t.ok(body.steps);
+        t.equal(body.server.uuid, servers[0].uuid);
+        t.done();
+    });
+};
+
+
+
 // should fail in this case because traits mismatch
 exports.allocation_fails = function (t) {
     var server = {
@@ -937,6 +972,13 @@ exports.allocation_steps = function (t) {
                          '2555c9f0-d2b4-40b3-9346-81205e45a10e',
                          '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
                          'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
+          { step: 'Servers which have open provisioning tickets',
+            remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
+                         '85526a01-9310-44fd-9637-ed1501cc69a1',
+                         'f6ca7d77-f9ff-4c8a-8a1d-75f85d41158b',
+                         '2555c9f0-d2b4-40b3-9346-81205e45a10e',
+                         '48ad03e8-da51-4c25-ab39-0e4bb204b24a',
+                         'bc415a07-4af3-4ce5-b493-4b4d0c93082a' ] },
           { step: 'Servers supporting required VLANs',
             remaining: [ '19ef07c1-cbfb-4794-b16f-7fc08a38ddfd',
                           '85526a01-9310-44fd-9637-ed1501cc69a1',
@@ -1105,6 +1147,9 @@ exports.allocation_using_reservoirs = function (t) {
         { step: 'Servers which are not headnodes',
           remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
                        '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which have open provisioning tickets',
+          remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
+                       '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
         { step: 'Servers supporting required VLANs',
           remaining: [ 'd6c975eb-928d-4362-b53d-b9b5515df71d',
                        '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
@@ -1158,6 +1203,8 @@ exports.allocation_using_reservoirs = function (t) {
         { step: 'Servers which are not reserved',
           remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
         { step: 'Servers which are not headnodes',
+          remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
+        { step: 'Servers which have open provisioning tickets',
           remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
         { step: 'Servers supporting required VLANs',
           remaining: [ '1c78b1f6-f93e-4bd3-8265-f53b727be549' ] },
@@ -1375,6 +1422,39 @@ exports.vm_ram_larger_than_image_requirement = function (t) {
 
 
 
+// DAPI-225
+exports.vm_ram_larger_than_image_requirement_2 = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        vm: {
+            vm_uuid: '43165e66-3741-421d-bb71-94c9a466f863',
+            ram: 4096,
+            nic_tags: [ 'external' ],
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+            override_recent_vms: true
+        },
+        image: {
+            requirements: {
+                min_ram: 15360,
+                max_ram: 15360
+            }
+        }
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, '"vm.ram" is smaller than ' +
+                              '"image.requirements.min_ram"');
+        t.done();
+    });
+};
+
+
+
 exports.package_and_image_os_do_not_match = function (t) {
     var path = '/allocation';
 
@@ -1452,6 +1532,64 @@ exports.vm_with_malformed_traits = function (t) {
         common.checkHeaders(t, res.headers);
         t.equal(body.code, 'InvalidArgument');
         t.equal(body.message, 'VM Trait "true" is an invalid type');
+        t.done();
+    });
+};
+
+
+
+exports.vm_with_malformed_tickets_1 = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        image: {},
+        vm: {
+            vm_uuid: '60b0681d-fff8-4aea-aeee-9a5625fd6f3b',
+            ram: 768,
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+            override_recent_vms: true
+        },
+        tickets: {}
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, '"tickets" is not an array');
+        t.done();
+    });
+};
+
+
+
+exports.vm_with_malformed_tickets_2 = function (t) {
+    var path = '/allocation';
+
+    var data = {
+        servers: servers,
+        image: {},
+        vm: {
+            vm_uuid: '60b0681d-fff8-4aea-aeee-9a5625fd6f3b',
+            ram: 768,
+            owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
+            override_recent_vms: true
+        },
+        tickets: [ {
+            id: 'blah',
+            scope: 'vm',
+            server_uuid: '85526a01-9310-44fd-9637-ed1501cc69a1',
+            action: 'provision',
+            status: 'queued'
+        } ]
+    };
+
+    client.post(path, data, function (err, req, res, body) {
+        t.equal(res.statusCode, 409);
+        common.checkHeaders(t, res.headers);
+        t.equal(body.code, 'InvalidArgument');
+        t.equal(body.message, 'ticket uuid "blah" - "id" is not a valid UUID');
         t.done();
     });
 };
