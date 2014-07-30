@@ -7,12 +7,14 @@
   "dependencies": {
     "restify": "2.6.1",
     "bunyan": "0.22.0",
-    "node-uuid": "1.4.0"
+    "node-uuid": "1.4.0",
+    "joyent-schemas": "git://github.com/joyent/schemas.git#master",
+    "jsprim": "~0.5.1"
   },
   "devDependencies": {
     "nodeunit": "0.7.4"
   },
   "scripts": {
-    "start": "node bin/server.js"
+    "test": "./node_modules/.bin/nodeunit test/*.test.js test/algorithms/*.test.js"
   }
 }

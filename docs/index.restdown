@@ -9,7 +9,7 @@ markdown2extras: wiki-tables, code-friendly
 * Repository: git@git.joyent.com:dapi.git
 * Browsing: <https://mo.joyent.com/dapi>
 * Docs: <https://mo.joyent.com/docs/dapi>
-* Who: Andres Rodriguez, Marsell Kukuljevic
+* Who: Andres Rodriguez, Marsell Kukuljevic, Keith Wesolowski
 * Tickets/bugs: <https://devhub.joyent.com/jira/browse/DAPI>
 
 
@@ -27,23 +27,9 @@ to be considered for allocation.
 
 # Getting Started
 
-DAPI can run without any other SDC dependency. Since its purpose is to select a
-compute node to allocate a VM to, DAPI relies solely on the request parameters
-in order to do its job. With this in mind, a DAPI instance can run on any
-SmartOS machine for testing purposes without a full SDC install.
-
-    # Get the source and build.
-    git clone git@git.joyent.com:dapi.git
-    cd dapi/
-    make all
-
-    # Setup config.
-    cp config.coal.json config.json
-    # Edit config as needed
-    vi config.json
-
-    # node bin/server.js
-
+Unlike other SDC components, DAPI is consumed by CNAPI as a library
+rather than via an HTTP API.  See the CNAPI documentation for
+information about running a CNAPI server in standalone mode.
 
 
 # Allocation
@@ -161,67 +147,93 @@ The same way the VM payload follows the format that vmadm provides, the servers
 payload that is required by the allocation endpoint is expected to be CNAPI
 "compatible". CNAPI is the entity that manages and exposes all the information
 related to servers in an SDC install, and therefore it provides the standard
-representation for a server object.
+representation for a server object.  Each entry in the servers array
+passed to DAPI's allocator must contain a subset of the information
+provided by CNAPI, as described below.
 
-In contrast to VMs, server payloads are more strictly validated. DAPI accepts
-arbitrary descriptions of each server, but the current version only considers
-the following characteristics:
+In contrast to VMs, server payloads are more strictly validated. DAPI
+accepts arbitrary descriptions of each server, but only the attributes
+described by the [DAPI servers
+schema](https://github.com/joyent/schemas/blob/master/lib/dapi/server.js)
+are considered.  For convenience, these attributes are listed here;
+however, the schema description governs.
 
 || **Attribute**          || **Type** || **Description**                                 ||
 || uuid                   || string   || UUID of server                                  ||
 || memory_available_bytes || integer  || RAM available for allocation, in bytes          ||
 || memory_total_bytes     || integer  || Total RAM on server, in bytes                   ||
-|| reservation_ratio      || float    || Amount of memory to reserve for ZFS ARC and OS  ||
+|| disk_pool_size_bytes   || integer  || Total storage pool size, in bytes ||
+|| disk_installed_images_used_bytes || integer || Storage pool space consumed by images, bytes ||
+|| disk_zone_quota_bytes  || integer  || Storage pool quota for all zone root datasets ||
+|| disk_kvm_quota_bytes   || integer  || Storage pool quota for all KVM disk zvols ||
+|| overprovision_ratios   || object   || Deprecated ||
+|| reservation_ratio      || float    || Fraction of DRAM to reserve for ZFS ARC and OS  ||
 || reserved               || boolean  || If the server has been reserved by an operator  ||
 || setup                  || boolean  || If the server has been setup                    ||
-|| 'Zpool Size in GiB'    || integer  || Total disk space on server, in GiB              ||
+|| sysinfo                || hash     || A description of the system's hardware state provided by sysinfo(1) ||
+|| traits                 || hash     || Operator-supplied traits; these are matched to instance class traits ||
 || vms                    || hash     || Description of VMs already on server            ||
-|| traits                 || hash     || Traits on a server                              ||
 
 The ***vms*** attribute is a hash. Each key is a VM UUID, and each value is a
 hash with the following format:
 
 || **Attribute**       || **Type** || **Description**                         ||
 || cpu_cap             || integer  || Max CPU allowed, in percent             ||
+|| last_modified       || date     || Time of last instance modification      ||
 || max_physical_memory || integer  || RAM promised to this VM, in MiB         ||
-|| quota               || integer  || Disk promised to this VM, in MiB        ||
 || owner_uuid          || string   || UUID of VM's owner                      ||
+|| quota               || integer  || Disk promised to this VM, in MiB        ||
+|| state               || string   || Current instance liveness               ||
 
-As an example of a valid servers payload:
+As an example of a valid server payload:
 
-    [
-      {
-        "uuid": "cdc1b052-1df9-4a3d-b34d-3f0afadac883",
-        "memory_total_bytes": 2147483648,
-        "memory_available_bytes": 1073741824,
-        "reservation_ratio": 0.15,
-        "reserved": false,
-        "setup": true,
-        "sysinfo": {
-          "Zpool Size in GiB": 1024,
-        }
-        "vms": {
-          "fbbbdc6d-011c-4931-9420-c702f53e4154": {
-            "max_physical_memory": 1024,
-            "quota": 10240,
-            "cpu_cap": 350,
-            "owner_uuid": "9b81f9e7-55e1-4e00-a8f7-917bd054b320"
-          }
-        }
-      }, {
-        "uuid": "82c53a64-b19c-4266-bf16-3ee1d34318d2",
-        "memory_total_bytes": 1073741824,
-        "memory_available_bytes": 536870912
-        "reservation_ratio": 0.25,
-        "reserved": false,
-        "setup": false,
-        "sysinfo": {
-          "Zpool Size in GiB": null,
-        }
-        "vms": {}
-      }
-    ]
-
+```
+	{
+		uuid: '2bb4c1de-16b5-11e4-8e8e-07469af29312',
+		overprovision_ratios: { ram: 1.5 },
+		memory_total_bytes: 549755813888,
+		memory_available_bytes: 322122547200,
+		disk_pool_size_bytes: 4000000000000,
+		disk_installed_images_used_bytes: 3221225472,
+		disk_zone_quota_bytes: 32212254720,
+		disk_kvm_quota_bytes: 0,
+		disk_kvm_zvol_volsize_bytes: 0,
+		reservation_ratio: 0.15,
+		reserved: false,
+		setup: true,
+		sysinfo: {
+			'CPU Total Cores': 32,
+			'Network Interfaces': {
+				'igb0': {
+					'MAC Address': '00:25:90:95:89:50',
+					'Link Status': 'up',
+					'NIC Names': []
+				},
+			},
+			'Live Image': '20140710T010203Z'
+		},
+		vms: {
+			'62559b33-4f3a-4505-a942-87cc557fdf4e': {
+				owner_uuid: 'e14b2bef-e75f-43f6-9590-ff4c3d18fad6',
+				brand: 'joyent',
+				state: 'failed',
+				cpu_cap: 350,
+				quota: 20,
+				max_physical_memory: 512,
+				last_modified: '2014-03-12T13:10:45.293Z'
+			},
+			'335498f7-a1ed-420c-8367-7f2769ca1e84': {
+				owner_uuid: '24ccd11a-fb18-45e8-99ea-a2b561352526',
+				brand: 'joyent',
+				state: 'running',
+				cpu_cap: 350,
+				quota: 10,
+				max_physical_memory: 4096,
+				last_modified: '2014-03-12T12:49:49.246Z'
+			}
+		}
+	}
+```
 
 ## Package Payload
 
@@ -670,10 +682,3 @@ near VMs, since high availability is usually more important than performance:
 Beware that this is not a guarantee, only that DAPI will make a reasonable
 effort to fulfill it if possible. If it cannot meet those hints, it will provide
 a server anyway.
-
-
-
-# Pinging
-
-For consistency with other SDC services, DAPI responds to a GET /ping. If it
-responds with a 200, DAPI is online.

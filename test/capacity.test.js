@@ -4,8 +4,13 @@
 
 var assert = require('assert');
 var common = require('./common');
+var Allocator = require('../lib/allocator.js');
 
-
+var logStub = { trace: function () { return true; },
+                debug: function () { return true; },
+                info:  function () { return true; },
+                warn:  function () { return true; },
+                error: function (err) { console.log(err); return true; } };
 
 /* BEGIN JSSTYLED */
 var packages = [{
@@ -165,8 +170,8 @@ var images = [{
 
 
 
-var expected = {
-    capacities: [{
+var expected = [
+      {
         package_uuid: '1ee2a2ab-2138-8542-b563-a67bb03792f7',
         package_name: 'sdc_768',
         package_version: '1.0.0',
@@ -220,39 +225,14 @@ var expected = {
         image_version: '2.4.2',
         slots: 5
       }
-    ]
-};
+];
 /* END JSSTYLED */
 
-
-
-var client;
-
-
-
-exports.setUp = function (callback) {
-    common.setup(function (err, _client) {
-        assert.ifError(err);
-        assert.ok(_client);
-        client = _client;
-        callback();
-    });
-};
-
-
-
 exports.test_capacity = function (t) {
-    var path = '/capacity';
+    var allocator = new Allocator(logStub);
+    var res = allocator.packageCapacity(common.exampleServers,
+        images, packages);
 
-    var data = { servers: common.exampleServers,
-                 packages: packages,
-                 images: images };
-
-    client.post(path, data, function (err, req, res, body) {
-        t.ifError(err);
-        t.equal(res.statusCode, 200);
-        common.checkHeaders(t, res.headers);
-        t.deepEqual(body, expected);
-        t.done();
-    });
+    t.deepEqual(res, expected);
+    t.done();
 };

@@ -31,7 +31,8 @@ function (t) {
             sysinfo: {
                 'Zpool Size in GiB': 2048,
                 'CPU Total Cores': 16,
-                'Network Interfaces': {}
+                'Network Interfaces': {},
+                'Live Image': '20140710T010203Z'
             },
             vms: {
                 '1ac434da-01aa-4663-8420-d3524ed1de0c': {
@@ -69,7 +70,8 @@ function (t) {
             sysinfo: {
                 'Zpool Size in GiB': 2048,
                 'CPU Total Cores': 24,
-                'Network Interfaces': {}
+                'Network Interfaces': {},
+                'Live Image': '20140710T010203Z'
             },
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
@@ -109,6 +111,47 @@ function (t) {
                 'Zpool Size in GiB': 4096,
                 'CPU Total Cores': 32,
                 'Network Interfaces': {}
+                // missing Live Image
+            },
+            vms: {
+                '62559b33-4f3a-4505-a942-87cc557fdf4e': {
+                    owner_uuid: 'e14b2bef-e75f-43f6-9590-ff4c3d18fad6',
+                    brand: 'joyent',
+                    state: 'failed',
+                    cpu_cap: 350,
+                    quota: 20,
+                    max_physical_memory: 512,
+                    last_modified: '2014-03-12T13:10:45.293Z'
+                },
+                '335498f7-a1ed-420c-8367-7f2769ca1e84': {
+                    owner_uuid: '24ccd11a-fb18-45e8-99ea-a2b561352526',
+                    brand: 'joyent',
+                    state: 'running',
+                    cpu_cap: 350,
+                    quota: 10,
+                    max_physical_memory: 4096,
+                    last_modified: '2014-03-12T12:49:49.246Z'
+                }
+            }
+        },
+        {
+            uuid: '2bb4c1de-16b5-11e4-8e8e-07469af29312',
+            overprovision_ratios: { ram: 1.5 },
+            memory_total_bytes: 512 * GB,
+            memory_available_bytes: 300 * GB,
+            disk_pool_size_bytes: 4096 * GB,
+            disk_installed_images_used_bytes: 3 * GB,
+            disk_zone_quota_bytes: (20 + 10) * GB,
+            disk_kvm_quota_bytes: 0,
+            disk_kvm_zvol_volsize_bytes: 0,
+            reservation_ratio: 0.15,
+            reserved: false,
+            setup: true,
+            sysinfo: {
+                'Zpool Size in GiB': 4096,
+                'CPU Total Cores': 32,
+                'Network Interfaces': {},
+                'Live Image': '20140710T010203Z'
             },
             vms: {
                 '62559b33-4f3a-4505-a942-87cc557fdf4e': {
@@ -148,7 +191,8 @@ function (t) {
             sysinfo: {
                 'Zpool Size in GiB': 4096,
                 'CPU Total Cores': 32,
-                'Network Interfaces': {}
+                'Network Interfaces': {},
+                'Live Image': '20140710T010203Z'
             },
             vms: {
                 'd251001f-57eb-4360-a04a-96d7d20a520c': {
@@ -199,7 +243,8 @@ function (t) {
                         'Link Status': 'up',
                         'NIC Names': ['foo', 1]
                     }
-                }
+                },
+                'Live Image': '20140710T010203Z'
             },
             vms: {}
         }
@@ -214,14 +259,15 @@ function (t) {
 
     t.deepEqual(state, {});
     t.equal(servers.length, 1);
-    t.deepEqual(servers[0].uuid, '6a6ffadd-e274-4089-a561-ccbdc894ae76');
+    t.deepEqual(servers[0].uuid, '2bb4c1de-16b5-11e4-8e8e-07469af29312');
 
     var expectedReasons = {
         /* BEGIN JSSTYLED */
-        'dd5dac66-b4be-4b75-859b-b375bc577e90': 'VM b3d04682-536f-4f09-8170-1954e45e9e1c has malformed owner_uuid: undefined',
-        '390d2a35-8b54-449a-a82d-6c0c623afc8c': 'Server 390d2a35-8b54-449a-a82d-6c0c623afc8c memory_total_bytes is not a number',
-        'd0c1bacd-77b2-409a-a629-9ada5cc0eef9': 'Server d0c1bacd-77b2-409a-a629-9ada5cc0eef9 "reserved" is not a boolean',
-        'a8da02c2-a294-4f66-bb7d-8a5c6689588d': 'Server a8da02c2-a294-4f66-bb7d-8a5c6689588d "NIC Names" contains non-string'
+        'dd5dac66-b4be-4b75-859b-b375bc577e90': 'property "vms.b3d04682-536f-4f09-8170-1954e45e9e1c.owner_uuid": is missing and it is required',
+        '390d2a35-8b54-449a-a82d-6c0c623afc8c': 'property "memory_total_bytes": is missing and it is required',
+        'd0c1bacd-77b2-409a-a629-9ada5cc0eef9': 'property "reserved": string value found, but a boolean is required',
+        'a8da02c2-a294-4f66-bb7d-8a5c6689588d': 'property "sysinfo.Network Interfaces.e1000g0.NIC Names[1]": number value found, but a string is required',
+        '6a6ffadd-e274-4089-a561-ccbdc894ae76': 'property "sysinfo.Live Image": is missing and it is required'
         /* END JSSTYLED */
 
     };
