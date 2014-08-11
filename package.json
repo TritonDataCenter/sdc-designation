@@ -5,7 +5,6 @@
   "author": "Marsell Kukuljevic, Andres Rodriguez (joyent.com)",
   "private": true,
   "dependencies": {
-    "restify": "2.6.1",
     "bunyan": "0.22.0",
     "node-uuid": "1.4.0",
     "joyent-schemas": "git://github.com/joyent/schemas.git#master",

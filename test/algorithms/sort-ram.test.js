@@ -4,43 +4,41 @@
 
 var sorter = require('../../lib/algorithms/sort-ram.js');
 
-var log = { trace: function () { return true; },
-            debug: function () { return true; } };
-
-
+var log = {
+	trace: function () { return (true); },
+	debug: function () { return (true); }
+};
 
 exports.sortRam =
 function (t) {
-    var givenServers = [
-        { unreserved_ram: 256 },
-        { unreserved_ram: 768 },
-        { unreserved_ram: 512 }
-    ];
+	var givenServers = [
+		{ unreserved_ram: 256 },
+		{ unreserved_ram: 768 },
+		{ unreserved_ram: 512 }
+	];
 
-    var expectedServers = [
-        { unreserved_ram: 768 },
-        { unreserved_ram: 512 },
-        { unreserved_ram: 256 }
-    ];
+	var expectedServers = [
+		{ unreserved_ram: 768 },
+		{ unreserved_ram: 512 },
+		{ unreserved_ram: 256 }
+	];
 
-    var state = {};
-    var constraints = {};
+	var state = {};
+	var constraints = {};
 
-    var results = sorter.run(log, state, givenServers, constraints);
-    var sortedServers = results[0];
-    var reasons = results[1];
+	var results = sorter.run(log, state, givenServers, constraints);
+	var sortedServers = results[0];
+	var reasons = results[1];
 
-    t.deepEqual(sortedServers, expectedServers);
-    t.deepEqual(state, {});
-    t.deepEqual(reasons, undefined);
+	t.deepEqual(sortedServers, expectedServers);
+	t.deepEqual(state, {});
+	t.deepEqual(reasons, undefined);
 
-    t.done();
+	t.done();
 };
 
-
-
-exports.name =
-function (t) {
-    t.ok(typeof (sorter.name) === 'string');
-    t.done();
+exports.name = function (t)
+{
+	t.ok(typeof (sorter.name) === 'string');
+	t.done();
 };

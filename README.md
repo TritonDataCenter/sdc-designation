@@ -2,9 +2,8 @@
 
 Repository: <git@git.joyent.com:dapi.git>
 Browsing: <https://mo.joyent.com/dapi>
-Who: Marsell Kukuljevic
+Who: Marsell Kukuljevic, Keith Wesolowski
 Tickets/bugs: <https://devhub.joyent.com/jira/browse/DAPI>
-
 
 # Overview
 
@@ -15,49 +14,38 @@ manifest, and details like the owner's UUID.
 
 # Repository
 
-    bin/            Scripts for running or benching DAPI.
-    boot/           Scripts used during the setup of a DAPI zone.
-    build/          Where compiled node and generated docs go.
-    deps/           Git submodules and/or commited 3rd-party deps should go here.
+    bin/            Historical scripts for testing and development
+    build/          Generated files; e.g., documentation
+    deps/           Git submodules used during the build or prior to integration
     docs/           Project docs (restdown)
-    lib/            Source files.
-    node_modules/   Node.js deps, either populated at build time or commited.
-    smf/manifests   SMF manifests
-    smf/methods     SMF method scripts
-    test/           Test suite (using node-tap)
+    lib/            Source files
+    node_modules/   Dependencies, under the control of npm
+    test/           Test suite; uses nodeunit
     tools/          Miscellaneous dev/upgrade/deployment tools and data.
-    Makefile
-    package.json    npm module info (holds the project version)
-    README.md
-
+    GNUmakefile     GNU makefile for docs and preintegration testing
+    package.json    npm module info; see also npm-shrinkwrap.json
+    README.md       This file
 
 # Development
 
-To run the DAPI server:
+DAPI provides its API through Javascript only; there is no HTTP service.
+All allocation-related HTTP service is provided via CNAPI.  See CNAPI
+documentation for information on setting up a CNAPI server for testing.
 
-    git clone git@git.joyent.com:dapi.git
-    cd dapi
-    make all
-    node bin/server.js
+	$ git clone git@git.joyent.com:dapi.git
+	$ cd dapi
+	$ make all
 
-To update the docs, edit "docs/index.restdown".
+To update the docs, edit "docs/index.restdown".  The makefile is used to
+rebuild the documentation as well as for pre-integration testing.
 
-Before commiting/pushing run `make prepush` and, if possible, get a code
-review.
-
-
+Before integrating anything into the gate, run `make prepush` and, if
+possible, get a code review.  Do not integrate unless `make prepush`
+succeeds!
 
 # Testing
 
-In one terminal, run DAPI:
-
-    node bin/server.js
-
-In another, run the tests:
-
-    make test
-
-
+	$ gmake test
 
 # Design Ideas
 
