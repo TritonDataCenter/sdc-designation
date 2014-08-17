@@ -21,6 +21,7 @@ NODEUNIT  := ./node_modules/.bin/nodeunit
 # Files
 #
 DOC_FILES	 = index.restdown
+RESTDOWN_FLAGS   = --brand-dir=deps/restdown-brand-remora
 JS_FILES	:= $(shell find lib test bin -name '*.js')
 JSL_CONF_NODE	 = tools/jsl.node.conf
 JSL_FILES_NODE   = $(JS_FILES)
