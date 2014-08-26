@@ -1,6 +1,14 @@
 /*
- * Copyright (c) 2013, Joyent, Inc. All rights reserved.
- *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/*
+ * Copyright (c) 2014, Joyent, Inc.
+ */
+
+/*
  * Warning: if you make any alterations to the state in any of the tests
  * here, make sure to modify the associated tests in calculate-locality.test.js.
  * 'expected' in that file should match 'state' in this one.
