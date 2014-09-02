@@ -43,6 +43,8 @@ NPM		 = $(NPM_EXEC)
 include ./tools/mk/Makefile.defs
 include ./tools/mk/Makefile.node_deps.defs
 
+EXTRA_DOC_DEPS	+= deps/restdown-brand-remora/.git
+
 ROOT            := $(shell pwd)
 
 #
