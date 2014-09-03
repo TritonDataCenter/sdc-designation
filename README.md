@@ -8,50 +8,29 @@
     Copyright (c) 2014, Joyent, Inc.
 -->
 
-# Joyent DAPI - Designation API
+# sdc-designation
 
-Repository: <git@git.joyent.com:dapi.git>
-Browsing: <https://mo.joyent.com/dapi>
-Who: Marsell Kukuljevic, Keith Wesolowski
-Tickets/bugs: <https://devhub.joyent.com/jira/browse/DAPI>
+This repository is part of the Joyent SmartDataCenter project (SDC).  For
+contribution guidelines, issues, and general documentation, visit the main
+[SDC](http://github.com/joyent/sdc) project page.
 
-# Overview
-
-The Designation API's purpose is to respond with the UUID of a compute node on
-which to place a new machine or machine reservation. It needs to be passed a
-full payload of the servers in question, a package description, an image
-manifest, and details like the owner's UUID.
-
-# Repository
-
-    bin/            Historical scripts for testing and development
-    build/          Generated files; e.g., documentation
-    deps/           Git submodules used during the build or prior to integration
-    docs/           Project docs (restdown)
-    lib/            Source files
-    node_modules/   Dependencies, under the control of npm
-    test/           Test suite; uses nodeunit
-    tools/          Miscellaneous dev/upgrade/deployment tools and data.
-    GNUmakefile     GNU makefile for docs and preintegration testing
-    package.json    npm module info; see also npm-shrinkwrap.json
-    README.md       This file
+The purpose of this module is to select a compute node for provisioning
+an instance when an undirected request has been made.  The module is
+consumed by CNAPI; the code in this repository does not provide any
+externally-visible interfaces.
 
 # Development
 
-DAPI provides its API through Javascript only; there is no HTTP service.
-All allocation-related HTTP service is provided via CNAPI.  See CNAPI
-documentation for information on setting up a CNAPI server for testing.
-
-	$ git clone git@git.joyent.com:dapi.git
-	$ cd dapi
-	$ make all
+sdc-designation provides its API through Javascript only; there is no
+HTTP service.  All allocation-related HTTP service is provided via
+CNAPI.  See CNAPI documentation for information on setting up a CNAPI
+server for testing.
 
 To update the docs, edit "docs/index.restdown".  The makefile is used to
 rebuild the documentation as well as for pre-integration testing.
 
-Before integrating anything into the gate, run `make prepush` and, if
-possible, get a code review.  Do not integrate unless `make prepush`
-succeeds!
+Before integrating anything into the gate, run `make prepush` and get a
+code review.  Do not integrate unless `make prepush` succeeds!
 
 # Testing
 
