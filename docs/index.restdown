@@ -13,19 +13,9 @@ markdown2extras: wiki-tables, code-friendly
     Copyright (c) 2014, Joyent, Inc.
 -->
 
-# DAPI
+# sdc-designation (formerly known as DAPI)
 
-* Repository: git@git.joyent.com:dapi.git
-* Browsing: <https://mo.joyent.com/dapi>
-* Docs: <https://mo.joyent.com/docs/dapi>
-* Who: Andres Rodriguez, Marsell Kukuljevic, Keith Wesolowski
-* Tickets/bugs: <https://devhub.joyent.com/jira/browse/DAPI>
-
-
-
-# Introduction to Designation API
-
-## What is DAPI?
+# Introduction to Designation
 
 The Designation API's purpose is to respond with a compute node on which to
 place a new machine or machine reservation. It needs to be passed a full payload
