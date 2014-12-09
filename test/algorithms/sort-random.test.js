@@ -8,42 +8,45 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
-var sorter = require('../../lib/algorithms/sort-min-ram.js');
+var sorter = require('../../lib/algorithms/sort-random.js');
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.sortMinRam = function (t)
+exports.sortRandom = function (t)
 {
-	var givenServers = [
+	var servers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 768 },
 		{ unreserved_ram: 512 }
 	];
 
-	var expectedServers = [
-		{ unreserved_ram: 256 },
-		{ unreserved_ram: 512 },
-		{ unreserved_ram: 768 }
-	];
-
 	var state = {};
-	var constraints = { pkg: { server_spread: 'min-ram' } };
+	var constraints = { pkg: { server_spread: 'random' } };
 
-	var results = sorter.run(log, state, givenServers, constraints);
-	var sortedServers = results[0];
-	var reasons = results[1];
+	for (var i = 0; i !== 100; i++) {
+		var results = sorter.run(log, state, servers, constraints);
+		var sorted = results[0];
+		var reasons = results[1];
 
-	t.deepEqual(sortedServers, expectedServers);
-	t.deepEqual(state, {});
-	t.deepEqual(reasons, undefined);
+		t.deepEqual(state, {});
+		t.deepEqual(reasons, undefined);
+
+		if (sorted[0].unreserved_ram !== servers[0].unreserved_ram ||
+		    sorted[1].unreserved_ram !== servers[0].unreserved_ram ||
+		    sorted[2].unreserved_ram !== servers[2].unreserved_ram) {
+			return (t.done());
+		}
+	}
+
+	t.ok(false);
 
 	t.done();
 };
 
-exports.sortMinRam_skip_wrong_spread = function (t)
+exports.sortRandom_skip_wrong_spread = function (t)
 {
 	var servers = [
 		{ unreserved_ram: 256 },

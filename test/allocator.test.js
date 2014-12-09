@@ -862,8 +862,10 @@ exports.test_loadAvailableAlgorithms = function (t)
 		'soft-filter-owner-many-zones',
 		'soft-filter-recent-servers',
 		'sort-2adic',
+		'sort-min-owner',
 		'sort-min-ram',
-		'sort-ram'
+		'sort-ram',
+		'sort-random'
 	];
 
 	t.deepEqual(names, expectedNames);
