@@ -7,7 +7,7 @@
   "dependencies": {
     "bunyan": "0.22.0",
     "node-uuid": "1.4.0",
-    "joyent-schemas": "git://github.com/joyent/schemas.git#master",
+    "joyent-schemas": "git://github.com/joyent/schemas.git#7d4e7ba",
     "jsprim": "~0.5.1"
   },
   "devDependencies": {
