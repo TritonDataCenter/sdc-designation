@@ -835,6 +835,7 @@ exports.test_loadAvailableAlgorithms = function (t)
 		'calculate-locality',
 		'calculate-recent-vms',
 		'calculate-server-unreserved',
+		'calculate-ticketed-vms',
 		'hard-filter-headnode',
 		'hard-filter-invalid-servers',
 		'hard-filter-large-servers',
