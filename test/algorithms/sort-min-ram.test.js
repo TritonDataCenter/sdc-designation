@@ -30,7 +30,7 @@ exports.sortMinRam = function (t)
 	];
 
 	var state = {};
-	var constraints = { pkg: { server_spread: 'min-ram' } };
+	var constraints = { pkg: { alloc_server_spread: 'min-ram' } };
 
 	var results = sorter.run(log, state, givenServers, constraints);
 	var sortedServers = results[0];
@@ -52,7 +52,7 @@ exports.sortMinRam_skip_wrong_spread = function (t)
 	];
 
 	var state = {};
-	var constraints = { pkg: { server_spread: 'min-owner' } };
+	var constraints = { pkg: { alloc_server_spread: 'min-owner' } };
 
 	var results = sorter.run(log, state, servers, constraints);
 	var sortedServers = results[0];

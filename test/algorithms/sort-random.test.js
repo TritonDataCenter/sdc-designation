@@ -24,7 +24,7 @@ exports.sortRandom = function (t)
 	];
 
 	var state = {};
-	var constraints = { pkg: { server_spread: 'random' } };
+	var constraints = { pkg: { alloc_server_spread: 'random' } };
 
 	for (var i = 0; i !== 100; i++) {
 		var results = sorter.run(log, state, servers, constraints);
@@ -55,7 +55,7 @@ exports.sortRandom_skip_wrong_spread = function (t)
 	];
 
 	var state = {};
-	var constraints = { pkg: { server_spread: 'min-owner' } };
+	var constraints = { pkg: { alloc_server_spread: 'min-owner' } };
 
 	var results = sorter.run(log, state, servers, constraints);
 	var sortedServers = results[0];

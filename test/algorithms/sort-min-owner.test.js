@@ -57,7 +57,7 @@ exports.sortMinOwner = function (t)
 	var state = {};
 	var constraints = {
 		vm: { owner_uuid: 'e6667010-7831-462f-ba1f-e345f8288106' },
-		pkg: { server_spread: 'min-owner' }
+		pkg: { alloc_server_spread: 'min-owner' }
 	};
 
 	var results = sorter.run(log, state, givenServers, constraints);
@@ -76,7 +76,7 @@ exports.sortMinOwner_skip_wrong_spread = function (t)
 	var state = {};
 	var constraints = {
 		vm: { owner_uuid: 'e6667010-7831-462f-ba1f-e345f8288106' },
-		pkg: { server_spread: 'random' }
+		pkg: { alloc_server_spread: 'random' }
 	};
 
 	var results = sorter.run(log, state, givenServers, constraints);
