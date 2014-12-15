@@ -24,9 +24,10 @@ exports.filterHeadnode = function (t)
 	];
 
 	var expectedServers = [ givenServers[0], givenServers[2] ];
+	var constraints = { defaults: {} };
 	var state = {};
 
-	var results = filter.run(log, state, givenServers, {});
+	var results = filter.run(log, state, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
@@ -34,14 +35,19 @@ exports.filterHeadnode = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
+	constraints = { defaults: { filter_headnode: false } };
+	results = filter.run(log, state, givenServers, constraints);
+	t.deepEqual(results[0], givenServers);
+
 	t.done();
 };
 
 exports.filterHeadnode_with_no_servers = function (t)
 {
 	var state = {};
+	var constraints = { defaults: {} };
 
-	var results = filter.run(log, state, []);
+	var results = filter.run(log, state, [], constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 

@@ -43,6 +43,20 @@ exports.sortRandom = function (t)
 
 	t.ok(false);
 
+	constraints = { pkg: {}, defaults: { server_spread: 'random' } };
+
+	for (i = 0; i !== 100; i++) {
+		results = sorter.run(log, state, servers, constraints);
+		sorted = results[1];
+
+		if (sorted[0].unreserved_ram !== servers[0].unreserved_ram ||
+		    sorted[1].unreserved_ram !== servers[0].unreserved_ram ||
+		    sorted[2].unreserved_ram !== servers[2].unreserved_ram) {
+			return (t.done());
+		}
+	}
+
+	t.ok(false);
 	t.done();
 };
 
@@ -64,6 +78,10 @@ exports.sortRandom_skip_wrong_spread = function (t)
 	t.deepEqual(sortedServers, servers);
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
+
+	constraints = { pkg: {}, defaults: { server_spread: 'min-owner' } };
+	results = sorter.run(log, state, servers, constraints);
+	t.deepEqual(results[0], servers);
 
 	t.done();
 };

@@ -42,7 +42,12 @@ exports.filterMinCpu = function (t)
 
 	var expectedServers = givenServers.slice(0, 2);
 	var state = {};
-	var constraints = { vm: { cpu_cap: 900 }, img: {}, pkg: {} };
+	var constraints = {
+		vm: { cpu_cap: 900 },
+		img: {},
+		pkg: {},
+		defaults: {}
+	};
 
 	var results = filter.run(log, state, givenServers, constraints);
 	var filteredServers = results[0];
@@ -60,6 +65,47 @@ exports.filterMinCpu = function (t)
 		    'but server has ratio 1'
 	};
 	t.deepEqual(reasons, expectedReasons);
+
+	t.done();
+};
+
+exports.filterMinCpu_with_override = function (t)
+{
+	var givenServers = [
+		{
+			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
+			unreserved_cpu: 400,
+			overprovision_ratios: { cpu: 1.0 }
+		},
+		{
+			uuid: '9324d37d-e160-4a9d-a6d8-39a519634398',
+			unreserved_cpu: 590,
+			overprovision_ratios: { cpu: 1.0 }
+		},
+		{
+			uuid: 'f07f6c2c-8f9c-4b77-89fe-4b777dff5826',
+			unreserved_cpu: 610,
+			overprovision_ratios: { cpu: 1.0 }
+		},
+		{
+			uuid: '69003dc2-1122-4851-8a2a-fccb609e4e84',
+			unreserved_cpu: 900,
+			overprovision_ratios: { cpu: 1.0 }
+		}
+	];
+
+	var state = {};
+	var constraints = {
+		vm: { cpu_cap: 900 },
+		img: {},
+		pkg: {},
+		defaults: { filter_min_resources: false }
+	};
+
+	var results = filter.run(log, state, givenServers, constraints);
+
+	t.deepEqual(results[0], givenServers);
+	t.deepEqual(state, {});
 
 	t.done();
 };
@@ -94,7 +140,8 @@ exports.filterMinCpu_with_overprovision_ratios = function (t)
 	var constraints = {
 		vm:  { cpu_cap: 900 },
 		img: {},
-		pkg: { overprovision_cpu: 1.5 }
+		pkg: { overprovision_cpu: 1.5 },
+		defaults: {}
 	};
 
 	var results = filter.run(log, state, givenServers, constraints);
@@ -119,7 +166,12 @@ exports.filterMinCpu_with_no_servers = function (t)
 {
 	var state = {};
 	var servers = [];
-	var constraints = { vm: { cpu_cap: 900 }, img: {}, pkg: {} };
+	var constraints = {
+		vm: { cpu_cap: 900 },
+		img: {},
+		pkg: {},
+		defaults: {}
+	};
 
 	var results = filter.run(log, state, servers, constraints);
 	var filteredServers = results[0];
@@ -155,7 +207,7 @@ exports.filterMinCpu_with_no_cpu = function (t)
 	];
 
 	var state = {};
-	var constraints = { vm: {}, img: {}, pkg: {} };
+	var constraints = { vm: {}, img: {}, pkg: {}, defaults: {} };
 
 	var results = filter.run(log, state, givenServers, constraints);
 	var filteredServers = results[0];
@@ -175,7 +227,8 @@ exports.filterMinCpu_with_no_servers = function (t)
 	var constraints = {
 		vm:  { cpu_cap: 900 },
 		img: {},
-		pkg: { overprovision_cpu: 1.0 }
+		pkg: { overprovision_cpu: 1.0 },
+		defaults: {}
 	};
 
 	var results = filter.run(log, state, servers, constraints);

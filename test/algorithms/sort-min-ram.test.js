@@ -40,6 +40,10 @@ exports.sortMinRam = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
+	constraints = { pkg: {}, defaults: { server_spread: 'min-ram' } };
+	results = sorter.run(log, state, givenServers, constraints);
+	t.deepEqual(results[0], expectedServers);
+
 	t.done();
 };
 
@@ -61,6 +65,10 @@ exports.sortMinRam_skip_wrong_spread = function (t)
 	t.deepEqual(sortedServers, servers);
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
+
+	constraints = { pkg: {}, defaults: { server_spread: 'min-owner' } };
+	results = sorter.run(log, state, servers, constraints);
+	t.deepEqual(results[0], servers);
 
 	t.done();
 };

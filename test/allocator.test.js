@@ -19,6 +19,38 @@ var logStub = {
 	error: function (err) { console.log(err); return true; }
 };
 
+exports.defaults = function (t)
+{
+	var allocator;
+
+	allocator = new Allocator(logStub);
+	t.deepEqual(allocator.defaults, {
+		server_spread: 'min-ram',
+		filter_headnode: true,
+		filter_min_resources: true,
+		filter_large_servers: true
+	});
+
+	allocator = new Allocator(logStub, null, {});
+	t.deepEqual(allocator.defaults, {
+		server_spread: 'min-ram',
+		filter_headnode: true,
+		filter_min_resources: true,
+		filter_large_servers: true
+	});
+
+	var defaults = {
+		server_spread: 'random',
+		filter_headnode: false,
+		filter_min_resources: false,
+		filter_large_servers: false
+	};
+	allocator = new Allocator(logStub, null, defaults);
+	t.deepEqual(allocator.defaults, defaults);
+
+	t.done();
+};
+
 exports.algorithms_pipeline = function (t)
 {
 	var serverStubs = [1, 2, 3, 4, 5];

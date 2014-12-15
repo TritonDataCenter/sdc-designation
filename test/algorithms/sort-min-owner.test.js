@@ -68,6 +68,15 @@ exports.sortMinOwner = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
+	constraints = {
+		vm: { owner_uuid: 'e6667010-7831-462f-ba1f-e345f8288106' },
+		pkg: {},
+		defaults: { server_spread: 'min-owner' }
+	};
+	results = sorter.run(log, state, givenServers, constraints);
+	t.deepEqual(results[0], expectedServers);
+
+
 	t.done();
 };
 
@@ -86,6 +95,14 @@ exports.sortMinOwner_skip_wrong_spread = function (t)
 	t.deepEqual(sortedServers, givenServers);
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
+
+	constraints = {
+		vm: { owner_uuid: 'e6667010-7831-462f-ba1f-e345f8288106' },
+		pkg: {},
+		defaults: { server_spread: 'random' }
+	};
+	results = sorter.run(log, state, givenServers, constraints);
+	t.deepEqual(results[0], givenServers);
 
 	t.done();
 };

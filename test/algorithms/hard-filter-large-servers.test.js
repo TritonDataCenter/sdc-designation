@@ -24,7 +24,7 @@ exports.filterLargeServers = function (t)
 	var expectedServers =
 	    givenServers.slice(0, givenServers.length - 3).reverse();
 	var state = {};
-	var constraints = {};
+	var constraints = { defaults: {} };
 
 	var results = filter.run(log, state, givenServers, constraints);
 	var filteredServers = results[0];
@@ -34,6 +34,10 @@ exports.filterLargeServers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
+	constraints = { defaults: { filter_large_servers: false } };
+	results = filter.run(log, state, givenServers, constraints);
+	t.deepEqual(results[0], givenServers);
+
 	t.done();
 };
 
@@ -41,7 +45,10 @@ exports.filterLargeServers_with_no_servers = function (t)
 {
 	var state = {};
 	var servers = [];
-	var constraints = { vm: { ram: 34 * 1024 } }; /* in MiB */
+	var constraints = {
+		vm: { ram: 34 * 1024 }, // in MiB
+		defaults: {}
+	};
 
 	var results = filter.run(log, state, servers, constraints);
 	var filteredServers = results[0];
