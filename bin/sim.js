@@ -21,7 +21,6 @@ var Allocator = require('../lib/allocator');
 
 
 
-var VMAPI_DUMP  = 'simulation/dc.json';
 var SERVER_RAM  = 131039; // in MiB
 var SERVER_DISK = 3283; // in GiB
 var SERVERS_PER_RACK = 12;
@@ -255,6 +254,29 @@ function createVm(vmUuid, ram, cpu, disk, type, ownerUuid) {
 
 
 /*
+ * Create a provisioning ticket, to emulate concurrent calls to DAPI.
+ */
+
+function createTicket(vmUuid, ram, cpu, disk, type, ownerUuid) {
+	var ticket = {
+		id: vmUuid,
+		scope: 'vm',
+		action: 'provision',
+
+		extra: {
+			owner_uuid: ownerUuid,
+			max_physical_memory: ram,
+			cpu_cap: cpu,
+			quota: Math.ceil(disk / 1024),
+			brand: type
+		}
+	};
+
+	return (ticket);
+}
+
+
+/*
  * Adds a VM object to a server object for a given server UUID.
  */
 
@@ -460,7 +482,7 @@ function displayLayout(servers, newestServerUuid, vmUuid, removedVmUuids) {
  * the next VM should go onto.
  */
 
-function allocate(allocator, activityList, servers) {
+function allocate(allocator, activityList, servers, tickets, concurrency) {
 	var removedVmUuids = [];
 	var activity = activityList.shift();
 
@@ -496,6 +518,10 @@ function allocate(allocator, activityList, servers) {
 		quota: disk
 	};
 
+	while (tickets.length > concurrency) {
+		tickets.shift();
+	}
+
 	var results = allocator.allocate(servers, desc, {}, pkg, [], true);
 	var server  = results[0];
 	var steps   = results[1];
@@ -503,12 +529,16 @@ function allocate(allocator, activityList, servers) {
 	if (!server) {
 		console.dir(steps);
 		// console.dir(servers);
+		// console.dir(tickets);
 		console.dir(desc);
 		process.exit(1);
 	}
 
 	var createdVm = createVm(vmUuid, ram, cpu, disk, brand, ownerUuid);
 	addVmToServer(createdVm, servers, server.uuid);
+
+	var ticket = createTicket(vmUuid, ram, cpu, disk, brand, ownerUuid);
+	tickets.push(ticket);
 
 	displayLayout(servers, server.uuid, createdVm.uuid, removedVmUuids);
 
@@ -521,14 +551,14 @@ function allocate(allocator, activityList, servers) {
  * Figure out what to do, and do it, based upon the given keypress.
  */
 
-function doInputCommand(key, allocator, activityList, servers) {
+function doInputCommand(key, servers, allocateVm) {
 	// ctrl-c
 	if (key === 'q' || key === '\u0003') {
 		process.exit();
 	}
 
 	if (key === 'n' || key === ' ') {
-		allocate(allocator, activityList, servers);
+		allocateVm();
 	}
 
 	if (key === 'd') {
@@ -539,7 +569,7 @@ function doInputCommand(key, allocator, activityList, servers) {
 		var iterations = Math.pow(10, key);
 
 		for (var i = 0; i !== iterations; i++) {
-			allocate(allocator, activityList, servers);
+			allocateVm();
 		}
 	}
 }
@@ -551,7 +581,7 @@ function doInputCommand(key, allocator, activityList, servers) {
  * result.
  */
 
-function waitOnInput(allocator, activityList, servers) {
+function waitOnInput(servers, allocateVm) {
 	var stdin = process.stdin;
 	stdin.setRawMode(true);
 	stdin.setEncoding('ascii');
@@ -560,7 +590,7 @@ function waitOnInput(allocator, activityList, servers) {
 	stdin.on('data', function (key) {
 		stdin.pause();
 
-		doInputCommand(key, allocator, activityList, servers);
+		doInputCommand(key, servers, allocateVm);
 
 		stdin.resume();
 	});
@@ -569,12 +599,29 @@ function waitOnInput(allocator, activityList, servers) {
 
 
 function main() {
-	var activityList = createActivityList(VMAPI_DUMP);
-	var servers = createServers(NUM_SERVERS, SERVER_RAM, SERVER_DISK);
-    var allocator = createAllocator();
+	if (process.argv.length !== 4) {
+		var err = console.error;
+		err('Usage: node ' + __filename + ' concurrency dump');
+		err('  concurrency is the number of concurrent calls');
+		err('  dump is the file containing JSON dump from vmapi');
+		process.exit(1);
+	}
 
-	allocate(allocator, activityList, servers);
-	waitOnInput(allocator, activityList, servers);
+	var concurrency = process.argv[2];
+	var dumpPath    = process.argv[3];
+
+	var activityList = createActivityList(dumpPath);
+	var servers = createServers(NUM_SERVERS, SERVER_RAM, SERVER_DISK);
+	var tickets = [];
+	var allocator = createAllocator();
+
+	function allocateVm() {
+		allocate(allocator, activityList, servers, tickets,
+		         concurrency);
+	}
+
+	allocateVm();
+	waitOnInput(servers, allocateVm);
 }
 
 
