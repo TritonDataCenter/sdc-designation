@@ -8,7 +8,7 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
-var sorter = require('../../lib/algorithms/sort-ram.js');
+var sorter = require('../../lib/algorithms/sort-max-ram.js');
 
 var log = {
 	trace: function () { return (true); },
@@ -30,7 +30,7 @@ function (t) {
 	];
 
 	var state = {};
-	var constraints = {};
+	var constraints = { pkg: { alloc_server_spread: 'max-ram' } };
 
 	var results = sorter.run(log, state, givenServers, constraints);
 	var sortedServers = results[0];
