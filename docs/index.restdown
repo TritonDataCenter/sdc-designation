@@ -284,36 +284,11 @@ application source code. An allocation algorithm takes a list of servers and
 various other pieces of data as input, and returns a filtered list of servers.
 
 *Note: CNAPI's configuration file's "dapi" key controls current sdc-designation
-config. Start there. This section might be out of date.* By default -- if DAPI's
-configuration file doesn't specify an `allocationDescription` -- the following
-chain of algorithms will be used (see below for description of what each one
-does):
+config. Start there. This section might be out of date.*
 
-    ['pipe', 'hard-filter-invalid-servers',
-             'hard-filter-setup',
-             'calculate-recent-vms',
-             'calculate-server-unreserved',
-             'calculate-locality',
-             'hard-filter-reserved',
-             'hard-filter-headnode',
-             'hard-filter-running',
-             'hard-filter-platform-versions',
-             'hard-filter-traits',
-             'hard-filter-overprovision-ratios',
-             ['or', ['pipe', 'hard-filter-reservoir',
-                             'hard-filter-min-ram',
-                             'hard-filter-min-disk',
-                             'hard-filter-min-cpu'],
-                    ['pipe', 'hard-filter-min-ram',
-                             'hard-filter-min-disk',
-                             'hard-filter-min-cpu']],
-             ['or', 'hard-filter-large-servers',
-                    'identity'],
-             'soft-filter-locality-hints',
-             'sort-min-ram',
-             'pick-weighted-random']
-
-Also see DEFAULT_DESC in ***$DAPI_ROOT/lib/allocator.js***.
+By default -- if sdc-designations's configuration file doesn't specify an
+`allocationDescription` -- the chain of algorithms defined by
+`DEFAULT_DESC` in [lib/allocator.js](../lib/allocator.js) will be used.
 
 This default description gives reasonable allocation results for a datacenter;
 make sure to do your research before modifying it. The description is organized
@@ -351,6 +326,9 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 
 ## Provided Algorithms
 
+*Note: This list is a little out of date. See
+[lib/algoritms](../lib/alogrithms/) for the authoritative list.*
+
 || **Name**                        || **Action**                                                  ||
 || calculate-locality              || Early calculations needed by the soft-filter-locality-hints plugin   ||
 || calculate-recent-vms            || Adds recent VMs to pipeline if they haven't appeared yet in CNAPI    ||
@@ -380,7 +358,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 || soft-filter-recent-servers      || Tries to ignore recently allocated-to CNs, to prevent races ||
 || sort-2adic                      || Order CNs by 2adic ordering of available RAM                ||
 || sort-min-ram                    || Order CNs by how little available RAM is left               ||
-|| sort-ram                        || Order CNs by available RAM                                  ||
+|| sort-max-ram                    || Order CNs by available RAM, most RAM first                  ||
 
 The allocation pipeline typically starts with the hard filters, then soft
 filters, then sorters, and finally a picker.
