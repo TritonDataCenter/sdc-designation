@@ -238,5 +238,34 @@
 			"Live Image": "20140710T010203Z"
 		},
 		"vms": {}
+	},
+	{
+		"uuid": "bc19a132-a1d7-408d-a8b3-73453c7d4f0b",
+		"memory_total_bytes": 274877906944,
+		"memory_available_bytes": 77309411328,
+		"disk_pool_size_bytes": 4398046511104,
+		"disk_installed_images_used_bytes": 4294967296,
+		"disk_zone_quota_bytes": 32212254720,
+		"disk_kvm_quota_bytes": 0,
+		"disk_kvm_zvol_volsize_bytes": 0,
+		"reservation_ratio": 0.15,
+		"reserved": false,
+		"setup": true,
+		"sysinfo": {
+			"Zpool Size in GiB": 4096,
+			"CPU Total Cores": 32,
+			"Network Interfaces": {},
+			"Live Image": "20140710T010203Z"
+		},
+		"vms": {
+			"d95e64c8-da45-4b81-a044-89e26db43cbc": {
+				"owner_uuid": "d95e64c8-da45-4b81-a044-89e26db43cbc",
+				"brand": "joyent",
+				"cpu_cap": 200,
+				"quota": 30,
+				"max_physical_memory": 4096,
+				"last_modified": "2014-03-12T12:27:40.235Z"
+			}
+		}
 	}
 ]
