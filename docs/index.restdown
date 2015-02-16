@@ -233,18 +233,21 @@ As an example of a valid server payload:
 
 ## `pkg`
 
-The package payload is optional, and contains details that the VM payload does
-not provide, like certain defaults. Right now packages are used by designation
-for two things: traits and overprovision ratios.
+The package contains details that the VM payload does not provide, like certain
+defaults.
 
 || **Attribute**         || **Type** || **Description**                                  ||
-|| traits                || hash     || Traits that a compute node must match            ||
+|| alloc_server_spread   || string   || Optionally change how VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random) ||
+|| cpu_cap               || integer  || Upper limit on how much CPU a zone can use.      ||
+|| max_physical_memory   || integer  || VM RAM size in MiB                               ||
 || min_platform          || hash     || Minimum platform on a CN for an SDC version      ||
 || overprovision_cpu     || float    || Ratio for maximum overprovisioning on CPU        ||
 || overprovision_memory  || float    || Ratio for maximum overprovisioning on RAM        ||
 || overprovision_storage || float    || Ratio for maximum overprovisioning on disk space ||
 || overprovision_io      || float    || Currently ignored                                ||
 || overprovision_network || float    || Currently ignored                                ||
+|| quota                 || integer  || VM disk size in MiB                              ||
+|| traits                || hash     || Traits that a compute node must match            ||
 
 Traits that the package provides can be overridden by traits in the VM payload.
 
@@ -254,7 +257,9 @@ Image Manifest section above.
 Each overprovision ratio is optional. If a ratio is provided, DAPI will attempt
 to ensure that the ratio (or better) is kept. If a ratio is not provided, DAPI
 will assume that overprovisioning on that resource does not matter, and will
-completely disregard maintaining any ratio.
+completely disregard maintaining any ratio. This feature only works if the
+allocation chain has been set up properly -- overprovisioning is disabled by
+default.
 
 E.g. if you want to guarantee that CPU is not overprovisioned, provide an
 overprovision_cpu of 1.0. If you'd like to overprovision CPU by two, use
@@ -273,6 +278,9 @@ An example of a valid package payload:
         "ssd": true
       }
     }
+
+For more details, see the PAPI docs, which describe the meanings of package
+attribute in more depth.
 
 
 
