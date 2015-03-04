@@ -886,6 +886,7 @@ exports.test_loadAvailableAlgorithms = function (t)
 		'hard-filter-ticketed-servers',
 		'hard-filter-traits',
 		'hard-filter-vlans',
+		'hard-filter-volumes-from',
 		'identity',
 		'override-overprovisioning',
 		'pick-random',
