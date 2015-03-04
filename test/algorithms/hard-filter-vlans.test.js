@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2015, Joyent, Inc.
  */
 
 var filter = require('../../lib/algorithms/hard-filter-vlans.js');
@@ -107,6 +107,19 @@ var servers = [
 				}
 			}
 		}
+	},
+
+	{
+		uuid: '666660a9-4174-4e97-91d3-4becd075d280',
+		sysinfo: {
+			'Network Interfaces': { },
+			'Virtual Network Interfaces': {
+				e1000g0: {
+					'Link Status': 'up'
+					// Missing 'Overlay Nic Tags' entirely
+				}
+			}
+		}
 	}
 ];
 
@@ -139,6 +152,8 @@ exports.filterVlans_on_single_vlan = function (t)
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'Server missing vlan "external"',
 		'5555fa4e-144f-43e1-809f-70404573b076':
+			'Server missing vlan "external"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "external"'
 	};
 	test(t, ['external'], expectedUuids, expectedReasons);
@@ -152,6 +167,8 @@ exports.filterVlans_on_single_vlan = function (t)
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'Server missing vlan "admin"',
 		'5555fa4e-144f-43e1-809f-70404573b076':
+			'Server missing vlan "admin"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "admin"'
 	};
 	test(t, ['admin'], expectedUuids, expectedReasons);
@@ -167,6 +184,8 @@ exports.filterVlans_on_single_vlan = function (t)
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'Server missing vlan "customer12"',
 		'5555fa4e-144f-43e1-809f-70404573b076':
+			'Server missing vlan "customer12"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "customer12"'
 	};
 	test(t, ['customer12'], expectedUuids, expectedReasons);
@@ -176,7 +195,8 @@ exports.filterVlans_on_single_vlan = function (t)
 		'222266d7-465d-4c22-b26e-a6707a22390e',
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8',
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c',
-		'5555fa4e-144f-43e1-809f-70404573b076'
+		'5555fa4e-144f-43e1-809f-70404573b076',
+		'666660a9-4174-4e97-91d3-4becd075d280'
 	];
 	expectedReasons = {};
 	test(t, [], expectedUuids, expectedReasons);
@@ -193,6 +213,8 @@ exports.filterVlans_on_single_vlan = function (t)
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'Server missing vlan "doesnotexist"',
 		'5555fa4e-144f-43e1-809f-70404573b076':
+			'Server missing vlan "doesnotexist"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "doesnotexist"'
 	};
 	test(t, ['doesnotexist'], [], expectedReasons);
@@ -211,6 +233,8 @@ exports.filterVlans_on_multiple_vlans = function (t)
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'Server missing vlan "external"',
 		'5555fa4e-144f-43e1-809f-70404573b076':
+			'Server missing vlan "external"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "external"'
 	};
 	test(t, ['external', 'admin'], expectedUuids, expectedReasons);
@@ -222,6 +246,8 @@ exports.filterVlans_on_multiple_vlans = function (t)
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'Server missing vlan "admin"',
 		'5555fa4e-144f-43e1-809f-70404573b076':
+			'Server missing vlan "admin"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "admin"'
 	};
 	test(t, ['admin', 'external'], expectedUuids, expectedReasons);
@@ -237,6 +263,8 @@ exports.filterVlans_on_multiple_vlans = function (t)
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'Server missing vlan "customer12"',
 		'5555fa4e-144f-43e1-809f-70404573b076':
+			'Server missing vlan "customer12"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "customer12"'
 	};
 	test(t, ['customer12', 'admin', 'external'], expectedUuids,
@@ -254,6 +282,8 @@ exports.filterVlans_on_multiple_vlans = function (t)
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'Server missing vlan "admin"',
 		'5555fa4e-144f-43e1-809f-70404573b076':
+			'Server missing vlan "admin"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "admin"'
 	};
 	test(t, ['admin', 'doesnotexist'], [], expectedReasons);
@@ -290,6 +320,8 @@ exports.filterVlans_on_single_overlay_tag = function (t)
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
 			'Server missing vlan "sdc_overlay"',
 		'222266d7-465d-4c22-b26e-a6707a22390e':
+			'Server missing vlan "sdc_overlay"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "sdc_overlay"'
 	};
 	test(t, ['sdc_overlay'], expectedUuids, expectedReasons);
@@ -310,7 +342,9 @@ exports.filterVlans_on_overlay_tag_and_vlan = function (t)
 		'222266d7-465d-4c22-b26e-a6707a22390e':
 			'Server missing vlan "sdc_overlay"',
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "customer13"'
+			'Server missing vlan "customer13"',
+		'666660a9-4174-4e97-91d3-4becd075d280':
+			'Server missing vlan "sdc_overlay"'
 	};
 	test(t, ['sdc_overlay', 'customer13'], expectedUuids, expectedReasons);
 
