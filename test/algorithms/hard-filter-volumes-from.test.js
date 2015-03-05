@@ -42,7 +42,8 @@ var servers = [
 	}
 ];
 
-exports.filterVolumesFrom = function (t) {
+exports.filterVolumesFrom = function (t)
+{
 	var vm = {
 		docker: true, // just something non-null for this test
 		internal_metadata: {
@@ -75,7 +76,8 @@ exports.filterVolumesFrom = function (t) {
 	t.done();
 };
 
-exports.filterVolumesFrom_with_no_servers = function (t) {
+exports.filterVolumesFrom_with_no_servers = function (t)
+{
 	var vm = {
 		docker: true, // just something non-null for this test
 		internal_metadata: {
@@ -99,7 +101,8 @@ exports.filterVolumesFrom_with_no_servers = function (t) {
 	t.done();
 };
 
-exports.filterVolumesFrom_with_no_metadata = function (t) {
+exports.filterVolumesFrom_with_no_metadata = function (t)
+{
 	var vm = {
 		docker: true // just something non-null for this test
 	};
@@ -117,7 +120,8 @@ exports.filterVolumesFrom_with_no_metadata = function (t) {
 	t.done();
 };
 
-exports.filterVolumesFrom_with_no_volumesfrom = function (t) {
+exports.filterVolumesFrom_with_no_volumesfrom = function (t)
+{
 	var vm = {
 		docker: true, // just something non-null for this test
 		internal_metadata: {}
@@ -136,7 +140,8 @@ exports.filterVolumesFrom_with_no_volumesfrom = function (t) {
 	t.done();
 };
 
-exports.name = function (t) {
+exports.name = function (t)
+{
 	t.ok(typeof (filter.name) === 'string');
 	t.done();
 };
