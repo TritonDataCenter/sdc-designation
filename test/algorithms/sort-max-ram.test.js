@@ -43,6 +43,52 @@ function (t) {
 	t.done();
 };
 
+exports.sortRam_without_pkg =
+function (t) {
+	var givenServers = [
+		{ unreserved_ram: 256 },
+		{ unreserved_ram: 768 },
+		{ unreserved_ram: 512 }
+	];
+
+	var expectedServers = [
+		{ unreserved_ram: 768 },
+		{ unreserved_ram: 512 },
+		{ unreserved_ram: 256 }
+	];
+
+	var state = {};
+	var constraints = {
+		defaults: { server_spread: 'max-ram' }
+	};
+
+	var results = sorter.run(log, state, givenServers, constraints);
+	var sortedServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(sortedServers, expectedServers);
+	t.deepEqual(state, {});
+	t.deepEqual(reasons, undefined);
+
+	t.done();
+};
+
+exports.sortRam_without_servers =
+function (t) {
+	var state = {};
+	var constraints = { pkg: { alloc_server_spread: 'max-ram' } };
+
+	var results = sorter.run(log, state, [], constraints);
+	var sortedServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(sortedServers, []);
+	t.deepEqual(state, {});
+	t.deepEqual(reasons, undefined);
+
+	t.done();
+};
+
 exports.name = function (t)
 {
 	t.ok(typeof (sorter.name) === 'string');

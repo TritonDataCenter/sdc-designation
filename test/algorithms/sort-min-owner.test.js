@@ -80,6 +80,31 @@ exports.sortMinOwner = function (t)
 	t.done();
 };
 
+exports.sortMinOwner_without_pkg = function (t)
+{
+	var expectedServers = [
+		givenServers[2],
+		givenServers[1],
+		givenServers[0]
+	];
+
+	var state = {};
+	var constraints = {
+		vm: { owner_uuid: 'e6667010-7831-462f-ba1f-e345f8288106' },
+		defaults: { server_spread: 'min-owner' }
+	};
+
+	var results = sorter.run(log, state, givenServers, constraints);
+	var sortedServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(sortedServers, expectedServers);
+	t.deepEqual(state, {});
+	t.deepEqual(reasons, undefined);
+
+	t.done();
+};
+
 exports.sortMinOwner_skip_wrong_spread = function (t)
 {
 	var state = {};

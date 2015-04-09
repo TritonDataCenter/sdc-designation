@@ -60,6 +60,36 @@ exports.sortRandom = function (t)
 	t.done();
 };
 
+exports.sortRandom_without_package = function (t)
+{
+	var servers = [
+		{ unreserved_ram: 256 },
+		{ unreserved_ram: 768 },
+		{ unreserved_ram: 512 }
+	];
+
+	var state = {};
+	var constraints = { defaults: { server_spread: 'random' } };
+
+	for (var i = 0; i !== 100; i++) {
+		var results = sorter.run(log, state, servers, constraints);
+		var sorted = results[0];
+		var reasons = results[1];
+
+		t.deepEqual(state, {});
+		t.deepEqual(reasons, undefined);
+
+		if (sorted[0].unreserved_ram !== servers[0].unreserved_ram ||
+		    sorted[1].unreserved_ram !== servers[0].unreserved_ram ||
+		    sorted[2].unreserved_ram !== servers[2].unreserved_ram) {
+			return (t.done());
+		}
+	}
+
+	t.ok(false);
+	t.done();
+};
+
 exports.sortRandom_skip_wrong_spread = function (t)
 {
 	var servers = [

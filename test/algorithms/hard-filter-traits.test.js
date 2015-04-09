@@ -652,6 +652,36 @@ exports.filterTraits_with_no_traits_on_VM_or_manifest = function (t)
 		    'Combined vm/pkg/img require no traits ' +
 		    'but server has {"ssd":true}'
 	};
+	t.deepEqual(reasons, expectedReasons);
+
+	t.done();
+};
+
+exports.filterTraits_with_no_pkg = function (t)
+{
+	var state = {};
+	var givenServers = [
+		{
+			uuid: '636203ab-ae96-4d5c-aaf1-00f030958bee',
+			traits: { ssd: true }
+		},
+		{ uuid: 'cc0c7133-2bdd-4f49-93ae-f24350e8c4d2', traits: {} },
+		{ uuid: 'a8c4fc80-9987-4778-9c04-743393c50398' }
+	];
+	var constraints = { vm: { ram: 512 }, img: {} };
+
+	var results = filter.run(log, state, givenServers, constraints);
+	var filteredServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(filteredServers, givenServers.slice(1, 3));
+	t.deepEqual(state, {});
+	var expectedReasons = {
+		'636203ab-ae96-4d5c-aaf1-00f030958bee':
+		    'Combined vm/pkg/img require no traits ' +
+		    'but server has {"ssd":true}'
+	};
+	t.deepEqual(reasons, expectedReasons);
 
 	t.done();
 };

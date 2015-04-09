@@ -79,6 +79,46 @@ exports.disableOverprovisioning = function (t)
 	t.done();
 };
 
+exports.disableOverprovisioning_without_pkg = function (t)
+{
+	var givenServers = [
+		{ unreserved_cpu: 1 },
+		{ unreserved_cpu: 2, overprovision_ratios: {} },
+		{ unreserved_cpu: 3, overprovision_ratios: { cpu:  1 } },
+		{ unreserved_cpu: 4, overprovision_ratios: { disk: 3 } }
+	];
+
+	var expectedServers = [
+		{
+			unreserved_cpu: 1,
+			overprovision_ratios: { cpu: 4, ram: 1, disk: 1 }
+		},
+		{
+			unreserved_cpu: 2,
+			overprovision_ratios: { cpu: 4, ram: 1, disk: 1 }
+		},
+		{
+			unreserved_cpu: 3,
+			overprovision_ratios: { cpu: 4, ram: 1, disk: 1 }
+		},
+		{
+			unreserved_cpu: 4,
+			overprovision_ratios: { cpu: 4, ram: 1, disk: 1 }
+		}
+	];
+
+	var state = {};
+
+	var results = filter.run(log, state, givenServers, {});
+	var filteredServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(filteredServers, expectedServers);
+	t.deepEqual(reasons, undefined);
+
+	t.done();
+};
+
 exports.disableOverprovisioning_with_no_servers = function (t)
 {
 	var state = {};

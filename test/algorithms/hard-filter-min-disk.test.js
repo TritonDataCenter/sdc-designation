@@ -69,6 +69,50 @@ exports.filterMinDisk = function (t)
 	t.done();
 };
 
+exports.filterMinDisk_without_pkg = function (t)
+{
+	var givenServers = [
+		{
+			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
+			unreserved_disk: 2560,
+			overprovision_ratios: {}
+		},
+		{
+			uuid: '9324d37d-e160-4a9d-a6d8-39a519634398',
+			unreserved_disk: 5110,
+			overprovision_ratios: {}
+		},
+		{
+			uuid: 'f07f6c2c-8f9c-4b77-89fe-4b777dff5826',
+			unreserved_disk: 5120,
+			overprovision_ratios: { disk: 1.0 }
+		},
+		{
+			uuid: '69003dc2-1122-4851-8a2a-fccb609e4e84',
+			unreserved_disk: 7680,
+			overprovision_ratios: { disk: 1.0 }
+		}
+	];
+
+	var expectedServers = givenServers;
+	var state = {};
+	var constraints = {
+		vm: { quota: 5120 },
+		img: {},
+		defaults: {}
+	};
+
+	var results = filter.run(log, state, givenServers, constraints);
+	var filteredServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(filteredServers, expectedServers);
+	t.deepEqual(state, {});
+	t.deepEqual(reasons, {});
+
+	t.done();
+};
+
 exports.filterMinDisk_with_override = function (t)
 {
 	var givenServers = [

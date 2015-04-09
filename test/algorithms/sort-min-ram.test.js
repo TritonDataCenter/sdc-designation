@@ -73,6 +73,48 @@ exports.sortMinRam_skip_wrong_spread = function (t)
 	t.done();
 };
 
+exports.sortMinRam_without_pkg = function (t)
+{
+	var givenServers = [
+		{ unreserved_ram: 256 },
+		{ unreserved_ram: 768 },
+		{ unreserved_ram: 512 }
+	];
+
+	var expectedServers = [
+		{ unreserved_ram: 256 },
+		{ unreserved_ram: 512 },
+		{ unreserved_ram: 768 }
+	];
+
+	var state = {};
+	var constraints = { defaults: { server_spread: 'min-ram' } };
+
+	var results = sorter.run(log, state, givenServers, constraints);
+	var servers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(servers, expectedServers);
+	t.equal(reasons, null);
+
+	t.done();
+};
+
+exports.sortMinRam_with_no_servers = function (t)
+{
+	var state = {};
+	var constraints = { defaults: { server_spread: 'min-ram' } };
+
+	var results = sorter.run(log, state, [], constraints);
+	var servers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(servers, []);
+	t.equal(reasons, null);
+
+	t.done();
+};
+
 exports.name = function (t)
 {
 	t.ok(typeof (sorter.name) === 'string');

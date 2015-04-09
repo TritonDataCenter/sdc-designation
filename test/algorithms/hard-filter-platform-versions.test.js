@@ -387,6 +387,23 @@ exports.filterPlatformVersions_ignore_non_versions = function (t)
 	t.done();
 };
 
+exports.filterPlatformVersions_no_pkg = function (t)
+{
+	var state = {};
+	var expectedServers = testServers;
+	var constraints = { img: {} };
+
+	var results = filter.run(log, state, testServers, constraints);
+	var filteredServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(filteredServers, expectedServers);
+	t.deepEqual(state, {});
+	t.deepEqual(reasons, {});
+
+	t.done();
+};
+
 exports.filterPlatformVersions_with_no_servers = function (t)
 {
 	var givenServers = [];

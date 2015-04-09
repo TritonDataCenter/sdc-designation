@@ -273,3 +273,181 @@ exports.allocate = function (t)
 		t.done();
 	});
 };
+
+exports.allocate = function (t)
+{
+	var expectedSteps = [
+		{
+			step: 'Received by DAPI',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4',
+				'asdsa'
+			]
+		}, {
+			step: 'Servers which have been setup',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4',
+				'asdsa'
+			]
+		}, {
+			step: 'Servers which are currently running',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			],
+			reasons: {
+				asdsa: 'Server has status: undefined'
+			}
+		}, {
+			step: 'Servers objects which are valid',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			/* JSSTYLED */
+			step: 'Servers containing VMs required for volumes-from',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Add VMs which have open provisioning tickets',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Calculate localities of owner\'s VMs',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers which are not reserved',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers which are not headnodes',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers supporting required VLANs',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			/* JSSTYLED */
+			step: 'Servers which meet image manifest platform requirements',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers with correct traits',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			],
+			reasons: {
+				/* JSSTYLED */
+				'00000000-0000-0000-0000-00259094373c': 'Combined vm/pkg/img require no traits but server has {"cabbages":true}'
+			}
+		}, {
+			/* JSSTYLED */
+			step: 'Servers that had consecutive failed provisions recently',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Add VMs which have been allocated to recently',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Calculate unreserved resources on each server',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			/* JSSTYLED */
+			step: 'Servers with same overprovision ratios as requested VM',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers with enough unreserved RAM',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers with enough unreserved disk',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers with enough unreserved CPU',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers which are not in the reservoir',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Filter out the largest and most empty servers',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers with requested locality considered',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Sort servers by minimum unreserved RAM',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Sort servers by maximum unreserved RAM',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			/* JSSTYLED */
+			step: 'Sort servers by minimum zones belonging to owner',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Sort servers randomly',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Random weighted server',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}
+	];
+
+	newAllocator(function (allocator) {
+		var res = allocator.allocate(SERVERS, VM, IMG, null, TICKETS);
+		var server = res[0];
+		var steps  = res[1];
+
+		t.equal(server.uuid, '00000000-0000-0000-0000-0025909437d4');
+		t.deepEqual(steps, expectedSteps);
+
+		t.done();
+	});
+};
