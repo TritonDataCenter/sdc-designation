@@ -192,6 +192,12 @@ exports.allocate = function (t)
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
+			step: 'Servers with more VMs than limit',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
 			step: 'Servers supporting required VLANs',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
@@ -333,6 +339,12 @@ exports.allocate = function (t)
 			]
 		}, {
 			step: 'Servers which are not headnodes',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			step: 'Servers with more VMs than limit',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'

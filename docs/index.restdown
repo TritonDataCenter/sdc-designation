@@ -334,7 +334,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 
 ## Provided Algorithms
 
-*Note: This list is a little out of date. See
+*Note: This list may be a little out of date. See
 [lib/algoritms](../lib/alogrithms/) for the authoritative list.*
 
 || **Name**                        || **Action**                                                  ||
@@ -357,6 +357,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 || hard-filter-setup               || Removes CNs which are not setup                             ||
 || hard-filter-traits              || Removes CNs with traits that cannot fulfill VM traits       ||
 || hard-filter-vlans               || Removes CNs which do not have required nic tags             ||
+|| hard-filter-vm-count            || Removes CNs with more than <set in config> number of VMs    ||
 || hard-filter-volumes-from        || Removes CNs which do not contain VMs listed in docker:volumesfrom metadata, if provided ||
 || identity                        || Returns the same servers it received                        ||
 || override-overprovisioning       || Substitutes package and server overprovision data for own defaults   ||
