@@ -617,7 +617,7 @@ function allocate(allocator, activityList, servers, tickets, concurrency) {
 		tickets.shift();
 	}
 
-	var results = allocator.allocate(servers, desc, {}, pkg, [], true);
+	var results = allocator.allocate(servers, desc, {}, pkg, [], false);
 	var server  = results[0];
 	var steps   = results[1];
 
