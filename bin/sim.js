@@ -464,8 +464,6 @@ function displayVmLayout(servers) {
  */
 
 function renderHistogram(servers) {
-	var stdout = process.stdout;
-
 	var utilizations = servers.map(function (server) {
 		return (calculateServerUtilization(server)[1]);
 	});
@@ -478,11 +476,12 @@ function renderHistogram(servers) {
 
 		var barLength = Math.floor(numMembers / servers.length * 70);
 
-		stdout.write(i + '\t');
+		var str = i + '\t';
 		for (var chr = 0; chr !== barLength; chr++) {
-			stdout.write('@');
+			str += '@';
 		}
-		stdout.write('\n');
+
+		console.log(str);
 	}
 }
 
