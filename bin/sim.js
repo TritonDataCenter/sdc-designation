@@ -21,10 +21,12 @@ var Allocator = require('../lib/allocator');
 
 
 
+var SERVER_SPREAD = 'min-ram';
 var SERVER_RAM  = 131039; // in MiB
 var SERVER_DISK = 3283; // in GiB
 var SERVERS_PER_RACK = 12;
-var NUM_SERVERS = SERVERS_PER_RACK * 25;
+var NUM_RACKS = 24;
+var NUM_SERVERS = SERVERS_PER_RACK * NUM_RACKS;
 var MiB = 1024 * 1024;
 
 
@@ -33,10 +35,12 @@ var ALLOC_CHAIN = [
 	'pipe', 'hard-filter-setup',
 	        'hard-filter-running',
 	        'hard-filter-invalid-servers',
+	        'hard-filter-volumes-from',
 	        'calculate-ticketed-vms',
 	        'calculate-locality',
 	        'hard-filter-reserved',
 	        'hard-filter-headnode',
+//	        'hard-filter-vm-count',
 	        'hard-filter-vlans',
 	        'hard-filter-platform-versions',
 	        'hard-filter-traits',
@@ -46,6 +50,7 @@ var ALLOC_CHAIN = [
 	        'hard-filter-overprovision-ratios',
 	        'hard-filter-min-ram',
 	        'hard-filter-min-cpu',
+//	        'hard-filter-min-disk',
 	       ['or', 'hard-filter-reservoir',
 	              'identity'],
 	       ['or', 'hard-filter-large-servers',
@@ -57,10 +62,12 @@ var ALLOC_CHAIN = [
 	       'pick-weighted-random'];
 
 var ALLOC_DEFAULTS = {
-	server_spread: 'min-ram',
+	server_spread: SERVER_SPREAD,
 	filter_headnode: true,
+	filter_min_disk: false,
 	filter_min_resources: true,
-	filter_large_servers: true
+	filter_large_servers: true,
+	filter_vm_limit: null
 };
 
 
@@ -345,6 +352,26 @@ function createServers(numServers, ram, disk) {
 
 
 /*
+ * Determine how many VMs there are on a server, and what percentage of RAM
+ * they're using of that server.
+ */
+
+function calculateServerUtilization(server) {
+	var vms = server.vms;
+	var numVms = Object.keys(vms).length;
+
+	var ramUsed = Object.keys(vms).reduce(function (sum, vmUuid) {
+		return (sum + vms[vmUuid].max_physical_memory);
+	}, 0);
+
+	var ratioFull = ramUsed / (server.memory_total_bytes / MiB);
+	var percentFull = Math.floor(100 * ratioFull);
+
+	return ([numVms, percentFull]);
+}
+
+
+/*
  * Instantiate one copy of DAPI's allocator and return it.
  */
 
@@ -371,15 +398,9 @@ function createAllocator() {
  */
 
 function renderServer(server, highlight) {
-	var vms = server.vms;
-	var numVms = Object.keys(vms).length;
-
-	var ramUsed = Object.keys(vms).reduce(function (sum, vmUuid) {
-		return (sum + vms[vmUuid].max_physical_memory);
-	}, 0);
-
-	var ratioFull = ramUsed / (server.memory_total_bytes / MiB);
-	var percentFull = Math.floor(100 * ratioFull);
+	var res = calculateServerUtilization(server);
+	var numVms = res[0];
+	var percentFull = res[1];
 
 	var padding = '  ';
 	if (('' + numVms).length == 2) {
@@ -470,8 +491,31 @@ function displayLayout(servers, newestServerUuid, vmUuid, removedVmUuids) {
 	console.log(str);
 
 	console.log('\033[m'); // reset to normal colours
-	console.log('(q)uit, (n)ext, (d)etails, iterations: ' +
+	console.log('(q)uit, (n)ext, (d)etails, (c)sv dump, iterations: ' +
 				'10^(1) 10^(2) 10^(3) 10^(4) 10^(5)');
+}
+
+
+
+/*
+ * Dump to stdout a CSV of number of VMs and percentage used per server.
+ */
+
+var csvIndex = 0;
+function dumpVmCsv(servers) {
+	var filename = 'sim' + csvIndex + '.csv';
+	csvIndex += 1;
+
+	var file = fs.openSync(filename, 'w');
+
+	servers.forEach(function (server) {
+		var utilization = calculateServerUtilization(server);
+		fs.writeSync(file, utilization.join(',') + '\n');
+	});
+
+	fs.closeSync(file);
+
+	console.log('CSV written to', filename);
 }
 
 
@@ -563,6 +607,10 @@ function doInputCommand(key, servers, allocateVm) {
 
 	if (key === 'd') {
 		displayVmLayout(servers);
+	}
+
+	if (key === 'c') {
+		dumpVmCsv(servers);
 	}
 
 	if (['1', '2', '3', '4', '5'].indexOf(key) !== -1) {
