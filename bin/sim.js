@@ -21,6 +21,7 @@ var Allocator = require('../lib/allocator');
 
 
 
+var BAR_RANGE = 5; // the range of each histogram bar
 var SERVER_SPREAD = 'min-ram';
 var SERVER_RAM  = 131039; // in MiB
 var SERVER_DISK = 3283; // in GiB
@@ -458,21 +459,43 @@ function displayVmLayout(servers) {
 
 
 /*
+ * Displays a histogram of what percentage of servers have a given percent
+ * RAM utilization.
+ */
+
+function renderHistogram(servers) {
+	var stdout = process.stdout;
+
+	var utilizations = servers.map(function (server) {
+		return (calculateServerUtilization(server)[1]);
+	});
+
+	for (var i = 0; i !== 100; i += BAR_RANGE) {
+		var numMembers = utilizations.filter(function (utilization) {
+			return (utilization >= i &&
+			        utilization < (i + BAR_RANGE));
+		}).length;
+
+		var barLength = Math.floor(numMembers / servers.length * 70);
+
+		stdout.write(i + '\t');
+		for (var chr = 0; chr !== barLength; chr++) {
+			stdout.write('@');
+		}
+		stdout.write('\n');
+	}
+}
+
+
+
+/*
  * Displays all servers in their racks, and how many VMs are on each server.
  */
 
-function displayLayout(servers, newestServerUuid, vmUuid, removedVmUuids) {
-	console.log('\033[2J'); // clear screen
-
-	for (var i = 0; i !== removedVmUuids.length; i++)
-		console.log('Remove VM', removedVmUuids[i]);
-
-	console.log('Add VM', vmUuid, 'to server', newestServerUuid);
-	console.log();
-
+function renderLayout(servers, newestServerUuid) {
 	var rows = [];
 
-	for (i = 0; i !== servers.length; i++) {
+	for (var i = 0; i !== servers.length; i++) {
 		var server = servers[i];
 		var highlight = (server.uuid === newestServerUuid);
 
@@ -489,10 +512,39 @@ function displayLayout(servers, newestServerUuid, vmUuid, removedVmUuids) {
 	// hack
 	var str = rows.join('\t');
 	console.log(str);
+}
+
+
+
+/*
+ * Displays which VMs have been added and removed, a menu, and whichever graph
+ * is currently selected for display of servers' state.
+ */
+
+var graphMode = 0;
+function display(servers, newestServerUuid, vmUuid, removedVmUuids) {
+	console.log('\033[2J'); // clear screen
+
+
+	if (removedVmUuids) {
+		for (var i = 0; i !== removedVmUuids.length; i++)
+			console.log('Remove VM', removedVmUuids[i]);
+	}
+
+	if (newestServerUuid && vmUuid) {
+		console.log('Add VM', vmUuid, 'to server', newestServerUuid);
+		console.log();
+	}
+
+	if (graphMode === 0) {
+		renderLayout(servers, newestServerUuid);
+	} else {
+		renderHistogram(servers);
+	}
 
 	console.log('\033[m'); // reset to normal colours
-	console.log('(q)uit, (n)ext, (d)etails, (c)sv dump, iterations: ' +
-				'10^(1) 10^(2) 10^(3) 10^(4) 10^(5)');
+	console.log('(q)uit, (n)ext, (d)etails, (c)sv dump, (g)raph mode,\n' +
+	            'iterations: 10^(1) 10^(2) 10^(3) 10^(4) 10^(5)');
 }
 
 
@@ -584,7 +636,7 @@ function allocate(allocator, activityList, servers, tickets, concurrency) {
 	var ticket = createTicket(vmUuid, ram, cpu, disk, brand, ownerUuid);
 	tickets.push(ticket);
 
-	displayLayout(servers, server.uuid, createdVm.uuid, removedVmUuids);
+	display(servers, server.uuid, createdVm.uuid, removedVmUuids);
 
 	return (null);
 }
@@ -602,7 +654,7 @@ function doInputCommand(key, servers, allocateVm) {
 	}
 
 	if (key === 'n' || key === ' ') {
-		allocateVm();
+		allocateVm(servers);
 	}
 
 	if (key === 'd') {
@@ -613,11 +665,21 @@ function doInputCommand(key, servers, allocateVm) {
 		dumpVmCsv(servers);
 	}
 
+	if (key === 'g') {
+		if (graphMode === 0) {
+			graphMode = 1;
+		} else {
+			graphMode = 0;
+		}
+
+		display(servers);
+	}
+
 	if (['1', '2', '3', '4', '5'].indexOf(key) !== -1) {
 		var iterations = Math.pow(10, key);
 
 		for (var i = 0; i !== iterations; i++) {
-			allocateVm();
+			allocateVm(servers);
 		}
 	}
 }
@@ -663,12 +725,12 @@ function main() {
 	var tickets = [];
 	var allocator = createAllocator();
 
-	function allocateVm() {
-		allocate(allocator, activityList, servers, tickets,
+	function allocateVm(_servers) {
+		allocate(allocator, activityList, _servers, tickets,
 		         concurrency);
 	}
 
-	allocateVm();
+	allocateVm(servers);
 	waitOnInput(servers, allocateVm);
 }
 
