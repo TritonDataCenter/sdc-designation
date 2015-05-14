@@ -23,8 +23,8 @@ var Allocator = require('../lib/allocator');
 
 var BAR_RANGE = 5; // the range of each histogram bar
 var SERVER_SPREAD = 'min-ram';
-var SERVER_RAM  = 131039; // in MiB
-var SERVER_DISK = 3283; // in GiB
+var SERVER_RAM  = 262111; // in MiB
+var SERVER_DISK = 3336; // in GiB
 var SERVERS_PER_RACK = 12;
 var NUM_RACKS = 24;
 var NUM_SERVERS = SERVERS_PER_RACK * NUM_RACKS;
@@ -83,13 +83,16 @@ function loadZoneData(filename) {
 	var vms = JSON.parse(fileData);
 
 	vms = vms.filter(function (vm) {
-		if (vm.ram > SERVER_RAM || !vm.create_timestamp) {
+		if (vm.ram > SERVER_RAM || !vm.create_timestamp)
+			return (false);
+
+		if (!vm.uuid || !vm.ram || !vm.cpu_cap || !vm.quota ||
+		    !vm.brand || !vm.owner_uuid) {
 			return (false);
 		}
 
-		if (!vm.tags) {
+		if (!vm.tags)
 			return (true);
-		}
 
 		return (Object.keys(vm.tags).length === 0);
 	});
@@ -476,6 +479,10 @@ function renderHistogram(servers) {
 
 		var barLength = Math.floor(numMembers / servers.length * 70);
 
+		// we do this to make small numbers more obvious
+		if (barLength > 0 && barLength < 1)
+			barLength = 1;
+
 		var str = i + '\t';
 		for (var chr = 0; chr !== barLength; chr++) {
 			str += '@';
@@ -483,6 +490,8 @@ function renderHistogram(servers) {
 
 		console.log(str);
 	}
+
+	console.log();
 }
 
 
@@ -524,7 +533,6 @@ var graphMode = 0;
 function display(servers, newestServerUuid, vmUuid, removedVmUuids) {
 	console.log('\033[2J'); // clear screen
 
-
 	if (removedVmUuids) {
 		for (var i = 0; i !== removedVmUuids.length; i++)
 			console.log('Remove VM', removedVmUuids[i]);
@@ -541,7 +549,8 @@ function display(servers, newestServerUuid, vmUuid, removedVmUuids) {
 		renderHistogram(servers);
 	}
 
-	console.log('\033[m'); // reset to normal colours
+	console.log('\033[mAllocations:', allocCount,  // also resets colours
+	        '  Successes:', successCount, '  Failures:', failureCount);
 	console.log('(q)uit, (n)ext, (d)etails, (c)sv dump, (g)raph mode,\n' +
 	            'iterations: 10^(1) 10^(2) 10^(3) 10^(4) 10^(5)');
 }
@@ -577,7 +586,12 @@ function dumpVmCsv(servers) {
  * the next VM should go onto.
  */
 
+var allocCount   = 0;
+var successCount = 0;
+var failureCount = 0;
 function allocate(allocator, activityList, servers, tickets, concurrency) {
+	allocCount += 1;
+
 	var removedVmUuids = [];
 	var activity = activityList.shift();
 
@@ -619,15 +633,15 @@ function allocate(allocator, activityList, servers, tickets, concurrency) {
 
 	var results = allocator.allocate(servers, desc, {}, pkg, [], false);
 	var server  = results[0];
-	var steps   = results[1];
+//	var steps   = results[1];
 
 	if (!server) {
-		console.dir(steps);
-		// console.dir(servers);
-		// console.dir(tickets);
-		console.dir(desc);
-		process.exit(1);
+		failureCount += 1;
+		display(servers, null, null, removedVmUuids);
+		return (null);
 	}
+
+	successCount += 1;
 
 	var createdVm = createVm(vmUuid, ram, cpu, disk, brand, ownerUuid);
 	addVmToServer(createdVm, servers, server.uuid);
@@ -729,7 +743,7 @@ function main() {
 		         concurrency);
 	}
 
-	allocateVm(servers);
+	display(servers);
 	waitOnInput(servers, allocateVm);
 }
 
