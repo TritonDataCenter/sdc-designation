@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/calculate-recent-vms.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.addRecentVms_no_prior_vms = function (t)
-{
+
+test('addRecentVms() with no prior VMs', function (t) {
 	var state = {};
 	var constraints = {};
 
@@ -52,11 +54,11 @@ exports.addRecentVms_no_prior_vms = function (t)
 	t.deepEqual(state, { recent_vms: {} });
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.addRecentVms_some_prior_vms = function (t)
-{
+
+test('addRecentVms() with some prior VMs', function (t) {
 	var MiB = 1024 * 1024;
 	var GiB = MiB * 1024;
 
@@ -262,11 +264,11 @@ exports.addRecentVms_some_prior_vms = function (t)
 
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.post = function (t)
-{
+
+test('post', function (t) {
 	var vmUuid = 'bc2584ed-f218-4df5-a35a-416338e57734';
 	var now = +new Date();
 	var server = { uuid: 'e00bba42-3242-4652-8e8f-30e19e1b03ec' };
@@ -316,12 +318,12 @@ exports.post = function (t)
 	delete state.recent_vms[0].last_modified;
 
 	t.deepEqual(state, expectedState);
-	t.done();
-};
+	t.end();
+});
+
 
 /* this can happen when an allocation fails */
-exports.post_without_server = function (t)
-{
+test('post without server', function (t) {
 	var constraints = {
 		vm: {
 			vm_uuid: 'bc2584ed-f218-4df5-a35a-416338e57734',
@@ -342,11 +344,11 @@ exports.post_without_server = function (t)
 	filter.post(log, state, null, null, constraints);
 
 	t.deepEqual(state, { recent_vms: [] });
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

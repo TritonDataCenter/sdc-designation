@@ -8,16 +8,18 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/soft-filter-owner-many-zones.js');
 var uuid = require('node-uuid');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterManyZones_many = function (t)
-{
+
+test('filterManyZones() with many', function (t) {
 	var ownerUuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 
 	var givenServers = [
@@ -56,11 +58,11 @@ exports.filterManyZones_many = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterManyZones_few = function (t)
-{
+
+test('filterManyZones() with few', function (t) {
 	var ownerUuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 
 	var givenServers = [ {
@@ -123,11 +125,11 @@ exports.filterManyZones_few = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterManyZones_with_no_servers = function (t)
-{
+
+test('filterManyZones() with no servers', function (t) {
 	var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 	var servers = [];
 	var state = {};
@@ -141,14 +143,15 @@ exports.filterManyZones_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
+
+test('name', function (t) {
 	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+	t.end();
+});
+
 
 function
 genVms(numVms, numOwnerVms, ownerUuid)
@@ -165,6 +168,7 @@ genVms(numVms, numOwnerVms, ownerUuid)
 
 	return (vms);
 }
+
 
 function
 sortServers(servers)

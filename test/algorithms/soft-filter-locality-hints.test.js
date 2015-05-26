@@ -14,8 +14,10 @@
  * 'expected' in that file should match 'state' in this one.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/soft-filter-locality-hints.js');
 var genUuid = require('node-uuid');
+
 
 var log = {
 	trace: function () { return (true); },
@@ -24,8 +26,8 @@ var log = {
 
 var ownerUuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 
-exports.filter_far_locality_with_rack_free = function (t)
-{
+
+test('filter far locality with rack free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -52,10 +54,10 @@ exports.filter_far_locality_with_rack_free = function (t)
 	};
 
 	filterServers(t, state, vmDetails, servers, expected);
-};
+});
 
-exports.filter_far_locality_with_no_rack_free = function (t)
-{
+
+test('filter far locality with no rack free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -87,10 +89,10 @@ exports.filter_far_locality_with_no_rack_free = function (t)
 	};
 
 	filterServers(t, state, vmDetails, servers, expected);
-};
+});
 
-exports.filter_far_locality_with_no_rack_or_server_free = function (t)
-{
+
+test('filter far locality with no rack or server free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
@@ -122,10 +124,10 @@ exports.filter_far_locality_with_no_rack_or_server_free = function (t)
 	};
 
 	filterServers(t, state, vmDetails, servers, expected);
-};
+});
 
-exports.filter_near_locality_with_free_server_in_rack = function (t)
-{
+
+test('filter near locality with free server in rack', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -157,10 +159,10 @@ exports.filter_near_locality_with_free_server_in_rack = function (t)
 	};
 
 	filterServers(t, state, vmDetails, servers, expected);
-};
+});
 
-exports.filter_near_locality_with_no_free_servers_in_rack = function (t)
-{
+
+test('filter near locality with no free servers in rack', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
@@ -192,10 +194,10 @@ exports.filter_near_locality_with_no_free_servers_in_rack = function (t)
 	};
 
 	filterServers(t, state, vmDetails, servers, expected);
-};
+});
 
-exports.filter_locality_near_and_far = function (t)
-{
+
+test('filter locality near and far', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
@@ -240,10 +242,10 @@ exports.filter_locality_near_and_far = function (t)
 	};
 
 	filterServers(t, state, vmDetails, servers, expected);
-};
+});
 
-exports.filter_locality_with_strings = function (t)
-{
+
+test('filter locality with strings', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -270,10 +272,10 @@ exports.filter_locality_with_strings = function (t)
 	};
 
 	filterServers(t, state, vmDetails, servers, expected);
-};
+});
 
-exports.filter_with_no_servers = function (t)
-{
+
+test('filter with no servers', function (t) {
 	var state = { locality: {} };
 	var servers = [];
 	state.locality[ownerUuid] = {
@@ -304,14 +306,15 @@ exports.filter_with_no_servers = function (t)
 	t.deepEqual(state, origState);
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});
+
 
 function
 listServerUuids(servers, indexes)
@@ -325,6 +328,7 @@ listServerUuids(servers, indexes)
 
 	return (uuids);
 }
+
 
 function
 genVms(numVms, numOwnerVms)
@@ -342,6 +346,7 @@ genVms(numVms, numOwnerVms)
 	return (vms);
 }
 
+
 function
 sortServers(servers)
 {
@@ -349,6 +354,7 @@ sortServers(servers)
 		return (a.uuid > b.uuid ? 1 : -1);
 	}));
 }
+
 
 function
 filterServers(t, state, vmDetails, servers, expectedServers)
@@ -362,42 +368,10 @@ filterServers(t, state, vmDetails, servers, expectedServers)
 	t.deepEqual(state, origState);
 	t.deepEqual(reasons, undefined);
 
-	t.done();
+	t.end();
 }
 
-/*
- * Deep copies a an object. This method assumes an acyclic graph.
- */
+
 function deepCopy(obj) {
-	var type = typeof (obj);
-
-	if (type == 'object') {
-		if (obj === null)
-			return (null);
-
-	var clone;
-	if (obj instanceof Buffer) {
-		clone = new Buffer(obj);
-
-		/* XXX for some reason obj instanceof Array doesn't work here */
-		} else if (typeof (obj.length) == 'number') {
-			clone = [];
-			for (var i = obj.length - 1; i >= 0; i--) {
-				clone[i] = deepCopy(obj[i]);
-			}
-
-		} else {
-			clone = {};
-			for (i in obj) {
-				clone[i] = deepCopy(obj[i]);
-			}
-		}
-
-		return (clone);
-
-	} else if (type == 'string') {
-		return ('' + obj);
-	} else {
-		return (obj);
-	}
+	return (JSON.parse(JSON.stringify(obj)));
 }

@@ -8,7 +8,9 @@
  * Copyright (c) 2015, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-volumes-from.js');
+
 
 var log = {
 	trace: function () { return (true); }
@@ -42,8 +44,8 @@ var servers = [
 	}
 ];
 
-exports.filterVolumesFrom = function (t)
-{
+
+test('filterVolumesFrom()', function (t) {
 	var vm = {
 		docker: true, // just something non-null for this test
 		internal_metadata: {
@@ -73,11 +75,11 @@ exports.filterVolumesFrom = function (t)
 
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterVolumesFrom_with_no_servers = function (t)
-{
+
+test('filterVolumesFrom() with no servers', function (t) {
 	var vm = {
 		docker: true, // just something non-null for this test
 		internal_metadata: {
@@ -98,11 +100,11 @@ exports.filterVolumesFrom_with_no_servers = function (t)
 	t.deepEqual(reasons, {});
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterVolumesFrom_with_no_metadata = function (t)
-{
+
+test('filterVolumesFrom() with no metadata', function (t) {
 	var vm = {
 		docker: true // just something non-null for this test
 	};
@@ -117,11 +119,11 @@ exports.filterVolumesFrom_with_no_metadata = function (t)
 	t.deepEqual(reasons, {});
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterVolumesFrom_with_no_volumesfrom = function (t)
-{
+
+test('filterVolumesFrom() with no volumesfrom', function (t) {
 	var vm = {
 		docker: true, // just something non-null for this test
 		internal_metadata: {}
@@ -137,11 +139,11 @@ exports.filterVolumesFrom_with_no_volumesfrom = function (t)
 	t.deepEqual(reasons, {});
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

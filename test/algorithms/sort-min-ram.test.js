@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var sorter = require('../../lib/algorithms/sort-min-ram.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.sortMinRam = function (t)
-{
+
+test('sortMinRam()', function (t) {
 	var givenServers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 768 },
@@ -44,11 +46,11 @@ exports.sortMinRam = function (t)
 	results = sorter.run(log, state, givenServers, constraints);
 	t.deepEqual(results[0], expectedServers);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.sortMinRam_skip_wrong_spread = function (t)
-{
+
+test('sortMinRam() skip wrong spread', function (t) {
 	var servers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 768 },
@@ -70,11 +72,11 @@ exports.sortMinRam_skip_wrong_spread = function (t)
 	results = sorter.run(log, state, servers, constraints);
 	t.deepEqual(results[0], servers);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.sortMinRam_without_pkg = function (t)
-{
+
+test('sortMinRam() without pkg', function (t) {
 	var givenServers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 768 },
@@ -95,13 +97,13 @@ exports.sortMinRam_without_pkg = function (t)
 	var reasons = results[1];
 
 	t.deepEqual(servers, expectedServers);
-	t.equal(reasons, null);
+	t.equal(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.sortMinRam_with_no_servers = function (t)
-{
+
+test('sortMinRam() with no servers', function (t) {
 	var state = {};
 	var constraints = { defaults: { server_spread: 'min-ram' } };
 
@@ -110,13 +112,13 @@ exports.sortMinRam_with_no_servers = function (t)
 	var reasons = results[1];
 
 	t.deepEqual(servers, []);
-	t.equal(reasons, null);
+	t.equal(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (sorter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (sorter.name), 'string');
+	t.end();
+});

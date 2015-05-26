@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var identity = require('../../lib/algorithms/identity.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.identity = function (t)
-{
+
+test('identity()', function (t) {
 	var givenServers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 511 },
@@ -35,11 +37,11 @@ exports.identity = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.identity_with_no_servers = function (t)
-{
+
+test('identity() with no servers', function (t) {
 	var state = {};
 	var givenServers = [];
 	var constraints = {};
@@ -52,11 +54,11 @@ exports.identity_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
+
+test('name', function (t) {
 	t.ok(typeof (identity.name) === 'string');
-	t.done();
-};
+	t.end();
+});

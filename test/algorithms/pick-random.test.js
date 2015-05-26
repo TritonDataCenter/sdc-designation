@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var picker = require('../../lib/algorithms/pick-random.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.pickRandom = function (t)
-{
+
+test('pickRandom()', function (t) {
 	var givenServers = [
 		{ memory_available_bytes: 256 },
 		{ memory_available_bytes: 768 },
@@ -43,11 +45,11 @@ exports.pickRandom = function (t)
 
 	t.ok(pickedServers[256] && pickedServers[512] && pickedServers[768]);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.pickRandom_with_no_servers = function (t)
-{
+
+test('pickRandom() with no servers', function (t) {
 	var servers = [];
 	var constraints = {};
 
@@ -63,11 +65,11 @@ exports.pickRandom_with_no_servers = function (t)
 		t.deepEqual(reasons, undefined);
 	}
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (picker.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (picker.name), 'string');
+	t.end();
+});

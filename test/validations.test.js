@@ -8,7 +8,9 @@
  * Copyright (c) 2015, Joyent, Inc.
  */
 
+var test = require('tape');
 var validations = require('../lib/validations.js');
+
 
 var SERVER = {
 	sysinfo: {
@@ -186,8 +188,8 @@ function deepCopy(obj)
 	return (JSON.parse(JSON.stringify(obj)));
 }
 
-exports.validateTraits = function (t)
-{
+
+test('validate traits', function (t) {
 	var validTraits = [
 		{},
 		{ 'cabbages': true },
@@ -206,11 +208,11 @@ exports.validateTraits = function (t)
 //	var res2 = validations.validateTraits(badTraits);
 //	t.ok(res2);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validatePlatformLimits = function (t)
-{
+
+test('validate platform limits', function (t) {
 	var validLimits = [
 		{},
 		{ min_platform: {} },
@@ -238,11 +240,11 @@ exports.validatePlatformLimits = function (t)
 	res2 = validations.validatePlatformLimits(badLimits, tag);
 	t.ok(res2);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validateLocality = function (t)
-{
+
+test('validate locality', function (t) {
 	var validLocalities = [
 		{},
 		{ far: 'c85e0079-fe94-461e-8b1f-9a6d7c0d9b5c' },
@@ -265,11 +267,11 @@ exports.validateLocality = function (t)
 	var res2 = validations.validateLocality(badLocality);
 	t.ok(res2);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validateVm = function (t)
-{
+
+test('validate vm', function (t) {
 	var validVms = [
 		{
 			vm_uuid: '6c5ac296-ff76-4581-8d39-4b3c35484082',
@@ -301,11 +303,12 @@ exports.validateVm = function (t)
 		var res = validations.validateVmPayload(vm);
 		t.ifError(res);
 	});
-	t.done();
-};
 
-exports.validateVmPayload = function (t)
-{
+	t.end();
+});
+
+
+test('validate VM payload', function (t) {
 	var validVms = [
 		{
 			vm_uuid: '6c5ac296-ff76-4581-8d39-4b3c35484082',
@@ -341,7 +344,6 @@ exports.validateVmPayload = function (t)
 		t.ifError(res);
 	});
 
-
 	var requirements = { min_ram: 768 };
 	var res2 = validations.validateVmPayload(validVms[0], requirements);
 	t.ifError(res2);
@@ -363,11 +365,11 @@ exports.validateVmPayload = function (t)
 	res2 = validations.validateVmPayload(badPayload);
 	t.ok(res2);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validateServer = function (t)
-{
+
+test('validate server', function (t) {
 	var res = validations.validateServer(SERVER);
 	t.ifError(res);
 
@@ -376,22 +378,22 @@ exports.validateServer = function (t)
 	res = validations.validateServer(badServer);
 	t.ok(res);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validateServers = function (t)
-{
+
+test('validate servers', function (t) {
 	var res = validations.validateServers([SERVER]);
 	t.ifError(res);
 
 	res = validations.validateServers([]);
 	t.ok(res);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validateImage = function (t)
-{
+
+test('validate image', function (t) {
 	var res = validations.validateImage(IMG);
 	t.ifError(res);
 
@@ -400,11 +402,11 @@ exports.validateImage = function (t)
 	res = validations.validateImages(badImg);
 	t.ok(res);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validateImages = function (t)
-{
+
+test('validate images', function (t) {
 	var res = validations.validateImages([IMG]);
 	t.ifError(res);
 
@@ -413,11 +415,11 @@ exports.validateImages = function (t)
 	res = validations.validateImages([badImg]);
 	t.ok(res);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validatePackage = function (t)
-{
+
+test('validate package', function (t) {
 	var res = validations.validatePackage(PKG);
 	t.ifError(res);
 
@@ -426,11 +428,11 @@ exports.validatePackage = function (t)
 	res = validations.validatePackage(badPkg);
 	t.ok(res);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validatePackages = function (t)
-{
+
+test('validate packages', function (t) {
 	var res = validations.validatePackages([PKG]);
 	t.ifError(res);
 
@@ -439,11 +441,11 @@ exports.validatePackages = function (t)
 	res = validations.validatePackages([badPkg]);
 	t.ok(res);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validateTicket = function (t)
-{
+
+test('validate ticket', function (t) {
 	var res = validations.validateTicket(TICKET);
 	t.ifError(res);
 
@@ -452,11 +454,11 @@ exports.validateTicket = function (t)
 	res = validations.validateTicket(badTicket);
 	t.ok(res);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.validateTickets = function (t)
-{
+
+test('validate tickets', function (t) {
 	var res = validations.validateTickets([TICKET]);
 	t.ifError(res);
 
@@ -465,5 +467,5 @@ exports.validateTickets = function (t)
 	res = validations.validateTicket([badTicket]);
 	t.ok(res);
 
-	t.done();
-};
+	t.end();
+});

@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var picker = require('../../lib/algorithms/pick-weighted-random.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.pickWeightedRandom_with_many_servers = function (t)
-{
+
+test('pickWeightedRandom with many servers', function (t) {
 	var numServers = 100;
 	var weightRatio = 0.05;
 	var iterPerServer = 60;
@@ -59,11 +61,11 @@ exports.pickWeightedRandom_with_many_servers = function (t)
 	for (i = selectedServerRange; i !== numServers; i++)
 		t.ok(!pickedServers[i]);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.pickWeightedRandom_with_one_server = function (t)
-{
+
+test('pickWeightedRandom() with one server', function (t) {
 	var givenServers = [ { memory_available_bytes: 256 } ];
 	var constraints = {};
 
@@ -80,11 +82,11 @@ exports.pickWeightedRandom_with_one_server = function (t)
 		t.deepEqual(reasons, undefined);
 	}
 
-	t.done();
-};
+	t.end();
+});
 
-exports.pickWeightedRandom_with_no_servers = function (t)
-{
+
+test('pickWeightedRandom() with no servers', function (t) {
 	var servers = [];
 	var constraints = {};
 
@@ -100,11 +102,11 @@ exports.pickWeightedRandom_with_no_servers = function (t)
 		t.deepEqual(reasons, undefined);
 	}
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (picker.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (picker.name), 'string');
+	t.end();
+});

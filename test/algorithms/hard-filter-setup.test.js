@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-setup.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterSetup = function (t)
-{
+
+test('filterSetup()', function (t) {
 	var givenServers = [
 		{ memory_available_bytes: 128 },
 		{ memory_available_bytes: 256, setup: true },
@@ -36,11 +38,11 @@ exports.filterSetup = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterSetup_with_no_servers = function (t)
-{
+
+test('filterSetup() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = {};
@@ -53,11 +55,11 @@ exports.filterSetup_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterSetup_with_malformed_servers_1 = function (t)
-{
+
+test('filterSetup() with malformed servers 1', function (t) {
 	var state = {};
 	var servers = 'foo';
 	var constraints = {};
@@ -70,11 +72,11 @@ exports.filterSetup_with_malformed_servers_1 = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterSetup_with_malformed_servers_2 = function (t)
-{
+
+test('filterSetup() with malformed servers 2', function (t) {
 	var state = {};
 	var servers = [ 'foo', { setup: true }, { setup: false } ];
 	var constraints = {};
@@ -87,11 +89,11 @@ exports.filterSetup_with_malformed_servers_2 = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

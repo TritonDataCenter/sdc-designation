@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/override-overprovisioning.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.disableOverprovisioning = function (t)
-{
+
+test('disable overprovisioning', function (t) {
 	var givenServers = [
 		{ unreserved_cpu: 1 },
 		{ unreserved_cpu: 2, overprovision_ratios: {} },
@@ -76,11 +78,11 @@ exports.disableOverprovisioning = function (t)
 		overprovision_disk: 1
 	});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.disableOverprovisioning_without_pkg = function (t)
-{
+
+test('disable overprovisioning without pkg', function (t) {
 	var givenServers = [
 		{ unreserved_cpu: 1 },
 		{ unreserved_cpu: 2, overprovision_ratios: {} },
@@ -116,11 +118,11 @@ exports.disableOverprovisioning_without_pkg = function (t)
 	t.deepEqual(filteredServers, expectedServers);
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.disableOverprovisioning_with_no_servers = function (t)
-{
+
+test('disable overprovisioning with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = { pkg: {} };
@@ -133,11 +135,11 @@ exports.disableOverprovisioning_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

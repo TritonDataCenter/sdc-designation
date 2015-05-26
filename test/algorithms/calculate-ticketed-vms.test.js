@@ -270,6 +270,6 @@ exports.calculateTicketedVms_no_tickets = function (t)
 
 exports.name = function (t)
 {
-	t.ok(typeof (filter.name) === 'string');
+	t.equal(typeof (filter.name), 'string');
 	t.done();
 };

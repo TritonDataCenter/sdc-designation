@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-traits.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterTraits_for_VMs = function (t)
-{
+
+test('filterTraits() for VMs', function (t) {
 	var givenServers = [
 		{
 			uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
@@ -175,11 +177,11 @@ exports.filterTraits_for_VMs = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterTraits_for_image_manifests = function (t)
-{
+
+test('filterTraits() for image manifests', function (t) {
 	var givenServers = [
 		{
 			uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
@@ -345,11 +347,11 @@ exports.filterTraits_for_image_manifests = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterTraits_for_VMs_and_manifests = function (t)
-{
+
+test('filterTraits() for VMs and manifests', function (t) {
 	var givenServers = [
 		{
 			uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
@@ -450,11 +452,11 @@ exports.filterTraits_for_VMs_and_manifests = function (t)
 
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterTraits_for_packages_and_manifests = function (t)
-{
+
+test('filterTraits() for packages and manifests', function (t) {
 	var givenServers = [
 		{
 			uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
@@ -567,11 +569,11 @@ exports.filterTraits_for_packages_and_manifests = function (t)
 
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterTraits_with_no_traits_on_server = function (t)
-{
+
+test('filterTraits() with no traits on server', function (t) {
 	var results;
 	var reasons;
 	var expectedReasons;
@@ -608,11 +610,11 @@ exports.filterTraits_with_no_traits_on_server = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterTraits_with_no_traits_on_VM_or_manifest = function (t)
-{
+
+test('filterTraits() with no traits on VM or manifest', function (t) {
 	var results;
 	var reasons;
 	var expectedReasons;
@@ -654,11 +656,11 @@ exports.filterTraits_with_no_traits_on_VM_or_manifest = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterTraits_with_no_pkg = function (t)
-{
+
+test('filterTraits() with no package', function (t) {
 	var state = {};
 	var givenServers = [
 		{
@@ -683,11 +685,11 @@ exports.filterTraits_with_no_pkg = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterTraits_with_no_servers = function (t)
-{
+
+test('filterTraits() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = { vm: { ram: 512 }, pkg: {}, img: {} };
@@ -700,11 +702,11 @@ exports.filterTraits_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

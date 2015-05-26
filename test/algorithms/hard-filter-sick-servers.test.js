@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-sick-servers.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterSickServers = function (t)
-{
+
+test('filterSickServers()', function (t) {
 	var givenServers = [ {
 		/* should be included because doesn't have two failures */
 		uuid: '647d5e40-bab5-465e-b351-311eec116822',
@@ -136,11 +138,11 @@ exports.filterSickServers = function (t)
 		/* END JSSTYLED */
 	});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterSickServers_with_no_servers = function (t)
-{
+
+test('filterSickServers() with no servers', function (t) {
 	var state = {};
 
 	var results = filter.run(log, state, [], {});
@@ -151,14 +153,15 @@ exports.filterSickServers_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
+
+test('name', function (t) {
 	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+	t.end();
+});
+
 
 function
 ago(min)

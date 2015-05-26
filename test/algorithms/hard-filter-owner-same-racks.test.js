@@ -8,16 +8,18 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var mod_fs = require('fs');
 var filter = require('../../lib/algorithms/hard-filter-owner-same-racks.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterSameRacks = function (t)
-{
+
+test('filterSameRacks()', function (t) {
 	var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 	var givenServers = JSON.parse(mod_fs.readFileSync(__dirname +
 	    '/hf-owner-same-racks.json'));
@@ -49,11 +51,11 @@ exports.filterSameRacks = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterSameRacks_with_no_vms = function (t)
-{
+
+test('filterSameRacks() with no VMs', function (t) {
 	var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 	var state = {};
 	var givenServers = [
@@ -72,11 +74,11 @@ exports.filterSameRacks_with_no_vms = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterSameRacks_with_no_servers = function (t)
-{
+
+test('filterSameRacks() with no servers', function (t) {
 	var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 	var state = {};
 	var servers = [];
@@ -90,11 +92,11 @@ exports.filterSameRacks_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-reserved.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterReserved = function (t)
-{
+
+test('filterReserved()', function (t) {
 	var givenServers = [
 		{ memory_available_bytes: 128, reserved: false },
 		{ memory_available_bytes: 384 },
@@ -35,11 +37,11 @@ exports.filterReserved = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterReserved_with_no_servers = function (t)
-{
+
+test('filterReserved() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = {};
@@ -52,11 +54,11 @@ exports.filterReserved_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

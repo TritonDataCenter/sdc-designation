@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-reservoir.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterReservoir = function (t)
-{
+
+test('filterReservoir()', function (t) {
 	var givenServers = [
 		{ memory_available_bytes: 128, reservoir: false },
 		{ memory_available_bytes: 384 },
@@ -35,11 +37,11 @@ exports.filterReservoir = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterReservoir_with_no_servers = function (t)
-{
+
+test('filterReservoir() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = {};
@@ -52,11 +54,11 @@ exports.filterReservoir_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('nam,e', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

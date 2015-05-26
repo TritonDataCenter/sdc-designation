@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-min-cpu.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterMinCpu = function (t)
-{
+
+test('filterMinCpu()', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -66,11 +68,11 @@ exports.filterMinCpu = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinCpu_without_pkg = function (t)
-{
+
+test('filterMinCpu() without pkg', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -110,11 +112,11 @@ exports.filterMinCpu_without_pkg = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinCpu_with_override = function (t)
-{
+
+test('filterMinCpu() with override', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -151,11 +153,11 @@ exports.filterMinCpu_with_override = function (t)
 	t.deepEqual(results[0], givenServers);
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinCpu_with_overprovision_ratios = function (t)
-{
+
+test('filterMinCpu() with overprovision ratios', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -203,11 +205,11 @@ exports.filterMinCpu_with_overprovision_ratios = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinCpu_with_no_cpu = function (t)
-{
+
+test('filterMinCpu with no cpu', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -237,11 +239,11 @@ exports.filterMinCpu_with_no_cpu = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinCpu_with_no_servers = function (t)
-{
+
+test('filterMinCpu() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = {
@@ -261,11 +263,11 @@ exports.filterMinCpu_with_no_servers = function (t)
 	var expectedReasons = {};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

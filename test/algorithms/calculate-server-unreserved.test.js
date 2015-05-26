@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/calculate-server-unreserved.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.calculateServerUnreserved = function (t)
-{
+
+test('calculateServerUnreserved()', function (t) {
 	var GB = 1024 * 1024 * 1024;
 
 	var serversInfo = [
@@ -166,11 +168,11 @@ exports.calculateServerUnreserved = function (t)
 	t.equal(servers[3].unreserved_ram,  4331);
 	t.equal(servers[3].unreserved_cpu,  2750);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.calculateServerUnreserved_no_servers = function (t)
-{
+
+test('calculateServerUnreserved() with no servers', function (t) {
 	var state = {};
 	var serversInfo = [];
 	var constraints = {};
@@ -183,11 +185,11 @@ exports.calculateServerUnreserved_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

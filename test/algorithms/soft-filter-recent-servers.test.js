@@ -8,21 +8,24 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var uuid = require('node-uuid');
 var filter = require('../../lib/algorithms/soft-filter-recent-servers.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
+
 var givenServers = [];
 for (var ii = 0; ii < 12; ii++) {
 	givenServers.push({ uuid: uuid() });
 }
 
-exports.filterRecentServers_no_prior_servers = function (t)
-{
+
+test('filterRecentServers() with no prior servers', function (t) {
 	var expectedServers = givenServers;
 	var state = {};
 	var constraints = {};
@@ -35,11 +38,11 @@ exports.filterRecentServers_no_prior_servers = function (t)
 	t.deepEqual(state, { recent_servers: {} });
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterRecentServers_some_prior_servers = function (t)
-{
+
+test('filterRecentServers() with some prior servers', function (t) {
 	var now = +new Date();
 	var expectedServers  = givenServers.slice(0, 11);
 	var oldServerUuid	= givenServers[11].uuid;
@@ -61,11 +64,11 @@ exports.filterRecentServers_some_prior_servers = function (t)
 	t.equal(state.recent_servers[oldServerUuid], now - 4 * 60 * 1000);
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterRecentServers_more_prior_servers = function (t)
-{
+
+test('filterRecentServers() with more prior servers', function (t) {
 	var now = +new Date();
 	var expectedServers = givenServers.slice(3, givenServers.length);
 
@@ -93,11 +96,11 @@ exports.filterRecentServers_more_prior_servers = function (t)
 		t.deepEqual(state.recent_servers[serverUuid], timestamp);
 	}
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterRecentServers_with_no_prior_servers = function (t)
-{
+
+test('filterRecentServers() with no prior servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = {};
@@ -110,11 +113,11 @@ exports.filterRecentServers_with_no_prior_servers = function (t)
 	t.deepEqual(state, { recent_servers: {} });
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.post = function (t)
-{
+
+test('post', function (t) {
 	var server = givenServers[0];
 	var state  = { recent_servers: {} };
 	var now	= +new Date();
@@ -124,22 +127,22 @@ exports.post = function (t)
 	t.equal(Object.keys(state.recent_servers).length, 1);
 	t.ok(state.recent_servers[server.uuid] >= now);
 
-	t.done();
-};
+	t.end();
+});
+
 
 /* this can happen when allocations fails */
-exports.post_without_server = function (t)
-{
+test('post without server', function (t) {
 	var state  = { recent_servers: {} };
 
 	filter.post(log, state, null);
 
 	t.deepEqual(state, { recent_servers: {} });
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

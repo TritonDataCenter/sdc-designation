@@ -8,9 +8,10 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
-var assert = require('assert');
+var test = require('tape');
 var common = require('./common');
 var Allocator = require('../lib/allocator.js');
+
 
 var logStub = {
 	trace: function () { return true; },
@@ -224,12 +225,12 @@ var expected = [
 	}
 ];
 
-exports.test_capacity = function (t)
-{
+
+test('capacity', function (t) {
 	var allocator = new Allocator(logStub);
-	var res = allocator.packageCapacity(common.exampleServers,
+	var res = allocator.packageCapacity(common.getExampleServers(),
 		images, packages);
 
 	t.deepEqual(res, expected);
-	t.done();
-};
+	t.end();
+});

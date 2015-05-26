@@ -8,6 +8,20 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
-var mod_fs = require('fs');
+var fs = require('fs');
 
-module.exports = JSON.parse(mod_fs.readFileSync(__dirname + '/common.json'));
+
+var servers;
+
+function getExampleServers() {
+	if (!servers)
+		servers = fs.readFileSync(__dirname + '/common.json');
+
+	// parsing now as a form of deep copy, so multiple tests can't conflict
+	return (JSON.parse(servers).exampleServers);
+}
+
+
+module.exports = {
+	getExampleServers: getExampleServers
+};

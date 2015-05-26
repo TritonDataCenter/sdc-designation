@@ -23,7 +23,7 @@
 #
 # Tools
 #
-NODEUNIT  := ./node_modules/.bin/nodeunit
+TAP  := ./node_modules/.bin/tape
 
 #
 # Files
@@ -51,17 +51,15 @@ ROOT            := $(shell pwd)
 # Repo-specific targets
 #
 .PHONY: all
-all: $(NODEUNIT) $(REPO_DEPS)
+all: $(TAP) $(REPO_DEPS)
 	$(NPM) rebuild
 
-$(NODEUNIT): | $(NPM_EXEC)
+$(TAP): | $(NPM_EXEC)
 	$(NPM) install
 
-CLEAN_FILES += $(NODEUNIT) ./node_modules/tap
-
 .PHONY: test
-test: $(NODEUNIT)
-	$(NODEUNIT) test/*.test.js test/algorithms/*.test.js
+test: $(TAP)
+	$(TAP) test/*.test.js test/algorithms/*.test.js
 
 include ./tools/mk/Makefile.deps
 include ./tools/mk/Makefile.node_deps.targ

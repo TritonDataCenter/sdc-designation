@@ -8,12 +8,15 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-platform-versions.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
+
 
 var testServers = genServers([
 	['b6d9d432-16bd-41b5-b3ac-7e3986380c37', '6.5', '20121218T203452Z'],
@@ -28,8 +31,8 @@ var testServers = genServers([
 	['26dbdcdc-ed50-4169-b27f-e12f27c20026', '7.1', '20130129T122401Z']
 ]);
 
-exports.filterPlatformVersions_no_platform_requirements = function (t)
-{
+
+test('filterPlatformVersions() no platform versions', function (t) {
 	var state = {};
 	var expectedServers = testServers;
 	var constraints = { img: {}, pkg: {} };
@@ -42,11 +45,12 @@ exports.filterPlatformVersions_no_platform_requirements = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_min_platform_requirements_for_images =
-function (t) {
+
+test('filterPlatformVersions() min platform requirements for images',
+		function (t) {
 	var expectedServers = testServers.slice(5, 9);
 	expectedServers.unshift(testServers[3]);
 
@@ -78,11 +82,12 @@ function (t) {
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_min_platform_requirements_for_packages =
-function (t) {
+
+test('filterPlatformVersions() min platform requirements for packages',
+		function (t) {
 	var expectedServers = testServers.slice(5, 9);
 	expectedServers.unshift(testServers[3]);
 
@@ -110,11 +115,11 @@ function (t) {
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_max_platform_requirements = function (t)
-{
+
+test('filterPlatformVersions() max platform requirements', function (t) {
 	var expectedServers = testServers.slice(0, 3);
 	expectedServers.push(testServers[4]);
 
@@ -147,11 +152,11 @@ exports.filterPlatformVersions_max_platform_requirements = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_minmax_platform_requirements_1 = function (t)
-{
+
+test('filterPlatformVersions() minmax platform requirements 1', function (t) {
 	var expectedServers = testServers.slice(0, 1);
 
 	var state = {};
@@ -187,11 +192,11 @@ exports.filterPlatformVersions_minmax_platform_requirements_1 = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_minmax_platform_requirements_2 = function (t)
-{
+
+test('filterPlatformVersions() minmax platform requirements 2', function (t) {
 	var expectedServers = testServers.slice(2, 6);
 	expectedServers.unshift(testServers[0]);
 	expectedServers[expectedServers.length] = testServers[7];
@@ -224,11 +229,11 @@ exports.filterPlatformVersions_minmax_platform_requirements_2 = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_minmax_platform_requirements_3 = function (t)
-{
+
+test('filterPlatformVersions() minmax platform requirements 3', function (t) {
 	var expectedServers = testServers.slice(3, 6);
 	expectedServers.unshift(testServers[0]);
 	expectedServers[expectedServers.length] = testServers[7];
@@ -265,11 +270,11 @@ exports.filterPlatformVersions_minmax_platform_requirements_3 = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_minmax_platform_requirements_4 = function (t)
-{
+
+test('filterPlatformVersions() minmax platform requirements 4', function (t) {
 	var expectedServers = testServers.slice(2, 7);
 	expectedServers.unshift(testServers[0]);
 
@@ -304,11 +309,11 @@ exports.filterPlatformVersions_minmax_platform_requirements_4 = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_minmax_platform_requirements_5 = function (t)
-{
+
+test('filterPlatformVersions() minmax platform requirements 5', function (t) {
 	var expectedServers = testServers.slice(2, 6);
 	expectedServers.unshift(testServers[0]);
 	expectedServers[expectedServers.length] = testServers[7];
@@ -341,11 +346,11 @@ exports.filterPlatformVersions_minmax_platform_requirements_5 = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_ignore_non_versions = function (t)
-{
+
+test('filterPlatformVersions() ignore non-versions', function (t) {
 	var expectedServers = testServers.slice(2, 6);
 	expectedServers.unshift(testServers[0]);
 	expectedServers[expectedServers.length] = testServers[7];
@@ -384,11 +389,11 @@ exports.filterPlatformVersions_ignore_non_versions = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_no_pkg = function (t)
-{
+
+test('filterPlatformVersions() no pkg', function (t) {
 	var state = {};
 	var expectedServers = testServers;
 	var constraints = { img: {} };
@@ -401,11 +406,11 @@ exports.filterPlatformVersions_no_pkg = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterPlatformVersions_with_no_servers = function (t)
-{
+
+test('filterPlatformVersions() with no servers', function (t) {
 	var givenServers = [];
 	var state = {};
 	var constraints = { vm: {}, img: {}, pkg: {} };
@@ -418,14 +423,15 @@ exports.filterPlatformVersions_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});
+
 
 function
 genServers(serverData)

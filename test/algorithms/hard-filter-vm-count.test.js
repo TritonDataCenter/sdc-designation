@@ -8,7 +8,9 @@
  * Copyright (c) 2015, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-vm-count.js');
+
 
 var log = {
 	trace: function () { return (true); },
@@ -41,8 +43,8 @@ var testServers = [ {
 	vms: {}
 } ];
 
-exports.filterVmCount = function (t)
-{
+
+test('filterVmCount()', function (t) {
 	var expectedServers = [ testServers[1], testServers[3] ];
 	var state = {};
 	var constraints = { defaults: { filter_vm_limit: 3 } };
@@ -62,12 +64,11 @@ exports.filterVmCount = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
 
-exports.filterVmCount_with_no_limit = function (t)
-{
+test('filterVmCount() with no limit', function (t) {
 	var state = {};
 	var constraints = { defaults: {} };
 
@@ -77,12 +78,11 @@ exports.filterVmCount_with_no_limit = function (t)
 	t.deepEqual(filteredServers, testServers);
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
 
-exports.filterVmCount_with_no_servers = function (t)
-{
+test('filterVmCount() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = { defaults: { filter_vm_limit: 3 } };
@@ -95,11 +95,11 @@ exports.filterVmCount_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

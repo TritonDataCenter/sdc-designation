@@ -15,8 +15,10 @@
  * 'state' in that one.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/calculate-locality.js');
 var genUuid = require('node-uuid');
+
 
 var log = {
 	trace: function () { return (true); },
@@ -25,8 +27,8 @@ var log = {
 
 var ownerUuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 
-exports.filter_default_locality_with_rack_free = function (t)
-{
+
+test('filter default locality with rack free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -47,10 +49,10 @@ exports.filter_default_locality_with_rack_free = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_default_locality_with_no_rack_free = function (t)
-{
+
+test('filter default locality with no rack free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -71,10 +73,10 @@ exports.filter_default_locality_with_no_rack_free = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_default_locality_with_no_rack_or_server_free = function (t)
-{
+
+test('filter default locality with no rack or server free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
@@ -95,10 +97,10 @@ exports.filter_default_locality_with_no_rack_or_server_free = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_far_locality_with_rack_free = function (t)
-{
+
+test('filter far locality with rack free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -124,10 +126,10 @@ exports.filter_far_locality_with_rack_free = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_far_locality_with_no_rack_free = function (t)
-{
+
+test('filter far locality with no rack free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -157,10 +159,10 @@ exports.filter_far_locality_with_no_rack_free = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_far_locality_with_no_rack_or_server_free = function (t)
-{
+
+test('filter far locality with no rack or server free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
@@ -190,10 +192,10 @@ exports.filter_far_locality_with_no_rack_or_server_free = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_near_locality_with_free_server_in_rack = function (t)
-{
+
+test('filter near locality with free server in rack', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -223,10 +225,10 @@ exports.filter_near_locality_with_free_server_in_rack = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_near_locality_with_no_free_servers_in_rack = function (t)
-{
+
+test('filter near locality with no free servers in rack', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
@@ -256,10 +258,10 @@ exports.filter_near_locality_with_no_free_servers_in_rack = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_locality_near_and_far = function (t)
-{
+
+test('filter locality near and far', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
@@ -301,10 +303,10 @@ exports.filter_locality_near_and_far = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_locality_with_strings = function (t)
-{
+
+test('filter locality with strings', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -330,10 +332,10 @@ exports.filter_locality_with_strings = function (t)
 	};
 
 	testState(t, vmDetails, servers, expected);
-};
+});
 
-exports.filter_with_no_servers = function (t)
-{
+
+test('filter with no servers', function (t) {
 	var expected = { locality: {} };
 	expected.locality[ownerUuid] = {
 		nearServerUuids: {},
@@ -367,11 +369,11 @@ exports.filter_with_no_servers = function (t)
 	t.deepEqual(filteredServers, servers);
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.post_deletes_state = function (t)
-{
+
+test('post deletes state', function (t) {
 	var state = { locality: {} };
 	state.locality[ownerUuid] = {
 		nearServerUuids: {},
@@ -387,14 +389,15 @@ exports.post_deletes_state = function (t)
 	filter.post(log, state, {}, [], { vm: { owner_uuid: ownerUuid } });
 	t.deepEqual(state, { locality: {} });
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});
+
 
 function
 listServerUuids(servers, indexes)
@@ -408,6 +411,7 @@ listServerUuids(servers, indexes)
 
 	return (uuids);
 }
+
 
 function
 genVms(numVms, numOwnerVms)
@@ -425,6 +429,7 @@ genVms(numVms, numOwnerVms)
 	return (vms);
 }
 
+
 function
 testState(t, vmDetails, servers, expectedState)
 {
@@ -438,5 +443,5 @@ testState(t, vmDetails, servers, expectedState)
 	t.deepEqual(filteredServers, servers);
 	t.deepEqual(reasons, undefined);
 
-	t.done();
+	t.end();
 }

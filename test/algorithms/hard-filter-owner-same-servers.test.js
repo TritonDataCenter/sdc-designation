@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-owner-same-servers.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterSameServers = function (t)
-{
+
+test('filterSameServers()', function (t) {
 	var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 
 	var givenServers = [ {
@@ -91,11 +93,11 @@ exports.filterSameServers = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterSameServers_with_no_servers = function (t)
-{
+
+test('filterSameServers() with no servers', function (t) {
 	var owner_uuid = 'd4bb1b60-9172-4c58-964e-fe58a9989708';
 	var state = {};
 	var servers = [];
@@ -109,11 +111,11 @@ exports.filterSameServers_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

@@ -8,8 +8,10 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/' +
     'hard-filter-overprovision-ratios.js');
+
 
 var log = {
 	trace: function () { return (true); },
@@ -50,8 +52,8 @@ var givenServers = [
 	}
 ];
 
-exports.filterOverprovisionRatios = function (t)
-{
+
+test('filterOverprovisionRatios()', function (t) {
 	var results;
 	var reasons;
 	var constraints;
@@ -101,11 +103,11 @@ exports.filterOverprovisionRatios = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterOverprovisionRatios_without_pkg = function (t)
-{
+
+test('filterOverprovisionRatios() without pkg', function (t) {
 	var state = {};
 	var constraints = {};
 
@@ -115,11 +117,11 @@ exports.filterOverprovisionRatios_without_pkg = function (t)
 	t.deepEqual(filteredServers, givenServers);
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterOverprovisionRatios_with_no_servers = function (t)
-{
+
+test('filterOverprovisionRatios() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = { pkg: { overprovision_ram: 1.0 } };
@@ -130,11 +132,11 @@ exports.filterOverprovisionRatios_with_no_servers = function (t)
 	t.equal(filteredServers.length, 0);
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

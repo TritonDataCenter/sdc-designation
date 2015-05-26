@@ -8,7 +8,9 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-ticketed-servers.js');
+
 
 var log = {
 	trace: function () { return (true); },
@@ -75,8 +77,8 @@ var tickets = [ {
 	action: 'provision'
 } ];
 
-exports.filterTickets = function (t)
-{
+
+test('filterTickets()', function (t) {
 	var expectedServers = servers.slice(0, 2);
 	var state = {};
 	var constraints = { tickets: tickets };
@@ -95,11 +97,11 @@ exports.filterTickets = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterTickets_with_no_servers = function (t)
-{
+
+test('filterTickets() with no servers', function (t) {
 	var state = {};
 	var constraints = { tickets: tickets };
 
@@ -111,11 +113,11 @@ exports.filterTickets_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterTickets_with_no_tickets = function (t)
-{
+
+test('filterTickets() with no tickets', function (t) {
 	var expectedServers = servers;
 	var state = {};
 	var constraints = { tickets: [] };
@@ -128,11 +130,11 @@ exports.filterTickets_with_no_tickets = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

@@ -8,7 +8,9 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var sorter = require('../../lib/algorithms/sort-min-owner.js');
+
 
 var log = {
 	trace: function () { return (true); },
@@ -46,8 +48,8 @@ var givenServers = [ {
 	vms: {}
 } ];
 
-exports.sortMinOwner = function (t)
-{
+
+test('sortMinOwner()', function (t) {
 	var expectedServers = [
 		givenServers[2],
 		givenServers[1],
@@ -77,11 +79,11 @@ exports.sortMinOwner = function (t)
 	t.deepEqual(results[0], expectedServers);
 
 
-	t.done();
-};
+	t.end();
+});
 
-exports.sortMinOwner_without_pkg = function (t)
-{
+
+test('sortMinOwner() without pkg', function (t) {
 	var expectedServers = [
 		givenServers[2],
 		givenServers[1],
@@ -102,11 +104,11 @@ exports.sortMinOwner_without_pkg = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.sortMinOwner_skip_wrong_spread = function (t)
-{
+
+test('sortMinOwner() skip wrong spread', function (t) {
 	var state = {};
 	var constraints = {
 		vm: { owner_uuid: 'e6667010-7831-462f-ba1f-e345f8288106' },
@@ -129,11 +131,11 @@ exports.sortMinOwner_skip_wrong_spread = function (t)
 	results = sorter.run(log, state, givenServers, constraints);
 	t.deepEqual(results[0], givenServers);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (sorter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (sorter.name), 'string');
+	t.end();
+});

@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var sorter = require('../../lib/algorithms/sort-max-ram.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.sortRam =
-function (t) {
+
+test('sortRam()', function (t) {
 	var givenServers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 768 },
@@ -40,11 +42,11 @@ function (t) {
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.sortRam_without_pkg =
-function (t) {
+
+test('sortRam() without pkg', function (t) {
 	var givenServers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 768 },
@@ -70,11 +72,11 @@ function (t) {
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.sortRam_without_servers =
-function (t) {
+
+test('sortRam() without servers', function (t) {
 	var state = {};
 	var constraints = { pkg: { alloc_server_spread: 'max-ram' } };
 
@@ -86,11 +88,11 @@ function (t) {
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (sorter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (sorter.name), 'string');
+	t.end();
+});

@@ -8,8 +8,10 @@
  * Copyright (c) 2015, Joyent, Inc.
  */
 
+var test = require('tape');
 var Allocator = require('../lib/allocator.js');
 var common = require('./common');
+
 
 var log = {
 	trace: function () {},
@@ -19,7 +21,7 @@ var log = {
 	error: function () {}
 };
 
-var SERVERS = common.exampleServers;
+var SERVERS = common.getExampleServers();
 SERVERS[0].traits = {
 	cabbages: true
 };
@@ -128,8 +130,8 @@ function newAllocator(cb)
 	})();
 }
 
-exports.allocate = function (t)
-{
+
+test('allocate 1', function (t) {
 	var expectedSteps = [
 		{
 			step: 'Received by DAPI',
@@ -276,12 +278,12 @@ exports.allocate = function (t)
 		t.equal(server.uuid, '00000000-0000-0000-0000-00259094373c');
 		t.deepEqual(steps, expectedSteps);
 
-		t.done();
+		t.end();
 	});
-};
+});
 
-exports.allocate = function (t)
-{
+
+test('allocate 2', function (t) {
 	var expectedSteps = [
 		{
 			step: 'Received by DAPI',
@@ -460,6 +462,6 @@ exports.allocate = function (t)
 		t.equal(server.uuid, '00000000-0000-0000-0000-0025909437d4');
 		t.deepEqual(steps, expectedSteps);
 
-		t.done();
+		t.end();
 	});
-};
+});

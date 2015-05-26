@@ -8,8 +8,10 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var mod_fs = require('fs');
 var filter = require('../../lib/algorithms/hard-filter-invalid-servers.js');
+
 
 var log = {
 	trace: function () { return (true); },
@@ -17,8 +19,8 @@ var log = {
 	warn:  function () { return (true); }
 };
 
-exports.filterInvalidServers = function (t)
-{
+
+test('filterInvalidServers()', function (t) {
 	var serversInfo = JSON.parse(mod_fs.readFileSync(__dirname +
 	    '/hf-invalid-servers.json'));
 
@@ -46,11 +48,11 @@ exports.filterInvalidServers = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterInvalidServers_no_servers = function (t)
-{
+
+test('filterInvalidServers() with no servers', function (t) {
 	var state = {};
 	var serversInfo = [];
 	var constraints = {};
@@ -63,11 +65,11 @@ exports.filterInvalidServers_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

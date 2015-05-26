@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-running.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterRunning = function (t)
-{
+
+test('filterRunning()', function (t) {
 	var givenServers = [
 		{ uuid: '2c86607e-7cdd-4d6b-a7db-16d91efe770c' },
 		{
@@ -51,11 +53,11 @@ exports.filterRunning = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterRunning_with_no_servers = function (t)
-{
+
+test('filterRunning() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = {};
@@ -68,11 +70,11 @@ exports.filterRunning_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterRunning_with_malformed_servers_1 = function (t)
-{
+
+test('filterRunning() with malformed servers 1', function (t) {
 	var state = {};
 	var servers = 'foo';
 	var constraints = {};
@@ -85,11 +87,11 @@ exports.filterRunning_with_malformed_servers_1 = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterRunning_with_malformed_servers_2 = function (t)
-{
+
+test('filterRunning() with malformed servers 2', function (t) {
 	var state = {};
 	var servers = [
 		'foo',
@@ -111,11 +113,11 @@ exports.filterRunning_with_malformed_servers_2 = function (t)
 		    'Server has status: rebooting'
 	});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-min-disk.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterMinDisk = function (t)
-{
+
+test('filterMinDisk()', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -66,11 +68,11 @@ exports.filterMinDisk = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinDisk_without_pkg = function (t)
-{
+
+test('filterMinDisk() without pkg', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -110,11 +112,11 @@ exports.filterMinDisk_without_pkg = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinDisk_with_override = function (t)
-{
+
+test('filterMinDisk() with override', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -151,11 +153,11 @@ exports.filterMinDisk_with_override = function (t)
 	t.deepEqual(results[0], givenServers);
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinDisk_with_overprovision_ratios = function (t)
-{
+
+test('filterMinDisk() with overprovision ratios', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -205,17 +207,17 @@ exports.filterMinDisk_with_overprovision_ratios = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinDisk_with_no_servers = function (t)
-{
+
+test('filterMinDisk() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = {
 		vm: { quota: 5120 },
 		img: {},
-		pkg: {},
+		pkg: { overprovision_disk: 1.0 },
 		defaults: {}
 	};
 
@@ -227,11 +229,11 @@ exports.filterMinDisk_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinDisk_with_no_disk = function (t)
-{
+
+test('filterMinDisk() with no disk', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
@@ -261,33 +263,11 @@ exports.filterMinDisk_with_no_disk = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinDisk_with_no_servers = function (t)
-{
-	var state = {};
-	var servers = [];
-	var constraints = {
-		vm:  { quota: 5120 },
-		img: {},
-		pkg: { overprovision_disk: 1.0 },
-		defaults: {}
-	};
 
-	var results = filter.run(log, state, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
-	t.deepEqual(reasons, {});
-
-	t.done();
-};
-
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

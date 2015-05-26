@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var sorter = require('../../lib/algorithms/sort-random.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.sortRandom = function (t)
-{
+
+test('sortRandom()', function (t) {
 	var servers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 768 },
@@ -37,7 +39,7 @@ exports.sortRandom = function (t)
 		if (sorted[0].unreserved_ram !== servers[0].unreserved_ram ||
 		    sorted[1].unreserved_ram !== servers[0].unreserved_ram ||
 		    sorted[2].unreserved_ram !== servers[2].unreserved_ram) {
-			return (t.done());
+			return (t.end());
 		}
 	}
 
@@ -52,16 +54,16 @@ exports.sortRandom = function (t)
 		if (sorted[0].unreserved_ram !== servers[0].unreserved_ram ||
 		    sorted[1].unreserved_ram !== servers[0].unreserved_ram ||
 		    sorted[2].unreserved_ram !== servers[2].unreserved_ram) {
-			return (t.done());
+			return (t.end());
 		}
 	}
 
 	t.ok(false);
-	t.done();
-};
+	t.end();
+});
 
-exports.sortRandom_without_package = function (t)
-{
+
+test('sortRandom() without pkg', function (t) {
 	var servers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 768 },
@@ -82,16 +84,16 @@ exports.sortRandom_without_package = function (t)
 		if (sorted[0].unreserved_ram !== servers[0].unreserved_ram ||
 		    sorted[1].unreserved_ram !== servers[0].unreserved_ram ||
 		    sorted[2].unreserved_ram !== servers[2].unreserved_ram) {
-			return (t.done());
+			return (t.end());
 		}
 	}
 
 	t.ok(false);
-	t.done();
-};
+	t.end();
+});
 
-exports.sortRandom_skip_wrong_spread = function (t)
-{
+
+test('sortRandom() skip wrong spread', function (t) {
 	var servers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 768 },
@@ -113,11 +115,11 @@ exports.sortRandom_skip_wrong_spread = function (t)
 	results = sorter.run(log, state, servers, constraints);
 	t.deepEqual(results[0], servers);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (sorter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (sorter.name), 'string');
+	t.end();
+});

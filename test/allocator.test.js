@@ -8,8 +8,10 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var common = require('./common');
 var Allocator = require('../lib/allocator.js');
+
 
 var logStub = {
 	trace: function () { return true; },
@@ -19,8 +21,8 @@ var logStub = {
 	error: function (err) { console.log(err); return true; }
 };
 
-exports.defaults = function (t)
-{
+
+test('defaults', function (t) {
 	var allocator;
 
 	allocator = new Allocator(logStub);
@@ -48,11 +50,11 @@ exports.defaults = function (t)
 	allocator = new Allocator(logStub, null, defaults);
 	t.deepEqual(allocator.defaults, defaults);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.algorithms_pipeline = function (t)
-{
+
+test('algorithms pipeline', function (t) {
 	var serverStubs = [1, 2, 3, 4, 5];
 	var executed = [];
 	var allocator;
@@ -113,12 +115,12 @@ exports.algorithms_pipeline = function (t)
 	t.equal(serverStub, 3);
 	t.deepEqual(executed, [1, 2, 4, 3]);
 
-	t.done();
-};
+	t.end();
+});
+
 
 /* assumes state from algorithms_pipeline() test */
-exports.algorithms_state_retained = function (t)
-{
+test('algorithms state retained', function (t) {
 	var serverStub = { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' };
 	var executed = [];
 	var allocator;
@@ -182,11 +184,11 @@ exports.algorithms_state_retained = function (t)
 
 	t.deepEqual(results[1], expected);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.algorithms_shortcuts_with_no_servers = function (t)
-{
+
+test('algorithms shortcuts with no servers', function (t) {
 	var serverStub = { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' };
 	var executed = [];
 	var allocator;
@@ -265,11 +267,11 @@ exports.algorithms_shortcuts_with_no_servers = function (t)
 
 	t.deepEqual(results[1], expected);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_dispatch_1 = function (t)
-{
+
+test('dispatch 1', function (t) {
 	var serverStubs = [
 		{ uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
 		{ uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
@@ -349,11 +351,11 @@ exports.test_dispatch_1 = function (t)
 
 	t.deepEqual(results[1], expected);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_dispatch_2 = function (t)
-{
+
+test('dispatch 2', function (t) {
 	var serverStubs = [
 		{ uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
 		{ uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
@@ -426,13 +428,11 @@ exports.test_dispatch_2 = function (t)
 
 	t.deepEqual(results[1], expected);
 
-	t.done();
-};
+	t.end();
+});
 
 
-
-exports.test_dispatch_3 = function (t)
-{
+test('dispatch 3', function (t) {
 	var serverStubs = [
 		{ uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
 		{ uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
@@ -493,11 +493,11 @@ exports.test_dispatch_3 = function (t)
 
 	t.deepEqual(results[1], expected);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_pipe_1 = function (t)
-{
+
+test('pipe 1', function (t) {
 	var serverStubs = [
 		{ uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
 		{ uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
@@ -557,11 +557,11 @@ exports.test_pipe_1 = function (t)
 	    '1727e98c-50b0-46de-96dd-3b360f522ce7' ],
 	    [ '1727e98c-50b0-46de-96dd-3b360f522ce7' ] ]);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_pipe_2 = function (t)
-{
+
+test('pipe 2', function (t) {
 	var serverStubs = [
 		{ uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
 		{ uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
@@ -616,11 +616,11 @@ exports.test_pipe_2 = function (t)
 	    '1727e98c-50b0-46de-96dd-3b360f522ce7' ],
 	    [] ]);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_or_1 = function (t)
-{
+
+test('or 1', function (t) {
 	var serverStubs = [
 		{ uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
 		{ uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
@@ -669,11 +669,11 @@ exports.test_or_1 = function (t)
 	t.deepEqual(visitedAlgorithms, plugins);
 	t.deepEqual(remainingServers, [ [], [], [] ]);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_or_2 = function (t)
-{
+
+test('or 2', function (t) {
 	var serverStubs = [
 		{ uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
 		{ uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
@@ -722,11 +722,11 @@ exports.test_or_2 = function (t)
 	    [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
 	    '94d987a9-968e-47ce-a959-4f14324bef7f' ] ]);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_cleanup = function (t)
-{
+
+test('cleanup', function (t) {
 	var executed = [];
 
 	var dup = {
@@ -772,11 +772,11 @@ exports.test_cleanup = function (t)
 
 	t.deepEqual(executed, [3, 1, 2]);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_createPluginSummary = function (t)
-{
+
+test('create plugin summary', function (t) {
 	var serverStubs = [
 		{ uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' },
 		{ uuid: '94d987a9-968e-47ce-a959-4f14324bef7f' },
@@ -853,11 +853,11 @@ exports.test_createPluginSummary = function (t)
 
 	t.deepEqual(summary, expected);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_loadAvailableAlgorithms = function (t)
-{
+
+test('load available algorithms', function (t) {
 	var allocator = new Allocator(logStub);
 	var algorithms = allocator._loadAvailableAlgorithms();
 
@@ -905,21 +905,21 @@ exports.test_loadAvailableAlgorithms = function (t)
 
 	t.deepEqual(names, expectedNames);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_loadAlgorithm = function (t)
-{
+
+test('load algorithms', function (t) {
 	var allocator = new Allocator(logStub);
 	var algorithm = allocator._loadAlgorithm('hard-filter-headnode');
 
 	t.equal(algorithm.name, 'Servers which are not headnodes');
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_createExpression = function (t)
-{
+
+test('create expression', function (t) {
 	var description = [
 		'or',
 		[ 'pipe',
@@ -953,11 +953,11 @@ exports.test_createExpression = function (t)
 
 	t.deepEqual(expectedExpression, expression);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_deepCopy = function (t)
-{
+
+test('deepCopy', function (t) {
 	var allocator = new Allocator(logStub);
 	var original, clone;
 	var frozen;
@@ -1012,13 +1012,13 @@ exports.test_deepCopy = function (t)
 	clone.a.push(null);
 	t.deepEqual(original, { a: [1, { b: 2 }, frozen, 'foo'] });
 
-	t.done();
-};
+	t.end();
+});
 
-exports.test_serverCapacity = function (t)
-{
+
+test('server capacity', function (t) {
 	var allocator = new Allocator(logStub);
-	var results = allocator.serverCapacity(common.exampleServers);
+	var results = allocator.serverCapacity(common.getExampleServers());
 
 	var expectedResults = [ {
 		'00000000-0000-0000-0000-00259094373c': {
@@ -1037,5 +1037,6 @@ exports.test_serverCapacity = function (t)
 	} ];
 
 	t.deepEqual(results, expectedResults);
-	t.done();
-};
+
+	t.end();
+});

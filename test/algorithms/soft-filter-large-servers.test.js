@@ -8,19 +8,22 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/soft-filter-large-servers.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
+
 var givenServers = [];
 for (var ii = 0; ii < 20; ii++)
 	givenServers.push({ unreserved_ram: ii * 8 * 1024 });
 
-exports.filterLargeServers_with_small_allocation = function (t)
-{
+
+test('filterLargeServers() with small allocation', function (t) {
 	var expectedServers =
 	    givenServers.slice(0, givenServers.length - 3).reverse();
 	var state = {};
@@ -34,11 +37,11 @@ exports.filterLargeServers_with_small_allocation = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterLargeServers_with_large_allocation = function (t)
-{
+
+test('filterLargeServers() with large allocation', function (t) {
 	var expectedServers = givenServers.slice(givenServers.length - 3,
 	    givenServers.length).reverse();
 	var state = {};
@@ -52,11 +55,11 @@ exports.filterLargeServers_with_large_allocation = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterLargeServers_with_few_servers = function (t)
-{
+
+test('filterLargeServers() with few servers', function (t) {
 	var servers = givenServers.slice(0, 3).reverse();
 	var state = {};
 	var constraints = { vm: { ram: 34 * 1024 } };	/* for vm, in MiB */
@@ -69,11 +72,11 @@ exports.filterLargeServers_with_few_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterLargeServers_with_no_servers = function (t)
-{
+
+test('filterLargeServers() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = { vm: { ram: 34 * 1024 } };  /* for vm, in MiB */
@@ -86,11 +89,11 @@ exports.filterLargeServers_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

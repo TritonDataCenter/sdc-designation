@@ -8,15 +8,17 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-min-ram.js');
+
 
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-exports.filterMinRam = function (t)
-{
+
+test('filterMinRam()', function (t) {
 	var givenServers = [
 		{
 			uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
@@ -59,11 +61,11 @@ exports.filterMinRam = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinRam_without_pkg = function (t)
-{
+
+test('filterMinRam() without pkg', function (t) {
 	var givenServers = [
 		{
 			uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
@@ -100,11 +102,11 @@ exports.filterMinRam_without_pkg = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinRam_with_override = function (t)
-{
+
+test('filterMinRam() with override', function (t) {
 	var givenServers = [
 		{
 			uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
@@ -138,11 +140,11 @@ exports.filterMinRam_with_override = function (t)
 	t.deepEqual(results[0], givenServers);
 	t.deepEqual(state, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinRam_with_overprovision_ratios = function (t)
-{
+
+test('filterMinRam() with overprovision ratios', function (t) {
 	var givenServers = [
 		{
 			uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
@@ -185,11 +187,11 @@ exports.filterMinRam_with_overprovision_ratios = function (t)
 	};
 	t.deepEqual(reasons, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterMinRam_with_no_servers = function (t)
-{
+
+test('filterMinRam() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = {
@@ -206,11 +208,11 @@ exports.filterMinRam_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});

@@ -8,7 +8,9 @@
  * Copyright (c) 2015, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-vlans.js');
+
 
 var log = {
 	trace: function () { return (true); },
@@ -123,8 +125,9 @@ var servers = [
 	}
 ];
 
+
 function
-test(t, vlans, expectedUuids, expectedReasons)
+runTest(t, vlans, expectedUuids, expectedReasons)
 {
 	var state = {};
 	var constraints = { vm: { nic_tags: vlans } };
@@ -140,8 +143,8 @@ test(t, vlans, expectedUuids, expectedReasons)
 	t.deepEqual(reasons, expectedReasons);
 }
 
-exports.filterVlans_on_single_vlan = function (t)
-{
+
+test('filterVlans() on single vlan', function (t) {
 	var expectedUuids = [ '00009386-8c67-b674-587f-101f1db2eda7',
 		'222266d7-465d-4c22-b26e-a6707a22390e' ];
 	var expectedReasons = {
@@ -156,7 +159,7 @@ exports.filterVlans_on_single_vlan = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "external"'
 	};
-	test(t, ['external'], expectedUuids, expectedReasons);
+	runTest(t, ['external'], expectedUuids, expectedReasons);
 
 	expectedUuids = [ '00009386-8c67-b674-587f-101f1db2eda7',
 		'1111e5f9-75e6-43e8-a016-a85835b377e1',
@@ -171,7 +174,7 @@ exports.filterVlans_on_single_vlan = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "admin"'
 	};
-	test(t, ['admin'], expectedUuids, expectedReasons);
+	runTest(t, ['admin'], expectedUuids, expectedReasons);
 
 	expectedUuids = [ '222266d7-465d-4c22-b26e-a6707a22390e' ];
 	expectedReasons = {
@@ -188,7 +191,7 @@ exports.filterVlans_on_single_vlan = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "customer12"'
 	};
-	test(t, ['customer12'], expectedUuids, expectedReasons);
+	runTest(t, ['customer12'], expectedUuids, expectedReasons);
 
 	expectedUuids = [ '00009386-8c67-b674-587f-101f1db2eda7',
 		'1111e5f9-75e6-43e8-a016-a85835b377e1',
@@ -199,7 +202,7 @@ exports.filterVlans_on_single_vlan = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280'
 	];
 	expectedReasons = {};
-	test(t, [], expectedUuids, expectedReasons);
+	runTest(t, [], expectedUuids, expectedReasons);
 
 	expectedReasons = {
 		'00009386-8c67-b674-587f-101f1db2eda7':
@@ -217,13 +220,13 @@ exports.filterVlans_on_single_vlan = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "doesnotexist"'
 	};
-	test(t, ['doesnotexist'], [], expectedReasons);
+	runTest(t, ['doesnotexist'], [], expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterVlans_on_multiple_vlans = function (t)
-{
+
+test('filterVlans() on multiple vlans', function (t) {
 	var expectedUuids = [ '00009386-8c67-b674-587f-101f1db2eda7',
 		'222266d7-465d-4c22-b26e-a6707a22390e' ];
 	var expectedReasons = { '1111e5f9-75e6-43e8-a016-a85835b377e1':
@@ -237,7 +240,7 @@ exports.filterVlans_on_multiple_vlans = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "external"'
 	};
-	test(t, ['external', 'admin'], expectedUuids, expectedReasons);
+	runTest(t, ['external', 'admin'], expectedUuids, expectedReasons);
 
 	expectedReasons = { '1111e5f9-75e6-43e8-a016-a85835b377e1':
 		'NIC e1000g0 for tag "external" is down',
@@ -250,7 +253,7 @@ exports.filterVlans_on_multiple_vlans = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "admin"'
 	};
-	test(t, ['admin', 'external'], expectedUuids, expectedReasons);
+	runTest(t, ['admin', 'external'], expectedUuids, expectedReasons);
 
 	expectedUuids = [ '222266d7-465d-4c22-b26e-a6707a22390e' ];
 	expectedReasons = {
@@ -267,7 +270,7 @@ exports.filterVlans_on_multiple_vlans = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "customer12"'
 	};
-	test(t, ['customer12', 'admin', 'external'], expectedUuids,
+	runTest(t, ['customer12', 'admin', 'external'], expectedUuids,
 		expectedReasons);
 
 	expectedReasons = {
@@ -286,13 +289,13 @@ exports.filterVlans_on_multiple_vlans = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "admin"'
 	};
-	test(t, ['admin', 'doesnotexist'], [], expectedReasons);
+	runTest(t, ['admin', 'doesnotexist'], [], expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterVlans_with_no_servers = function (t)
-{
+
+test('filterVlans() with no servers', function (t) {
 	var state = {};
 	var emptyServers = [];
 	var constraints = { vm: { nic_tags: ['admin'] } };
@@ -305,11 +308,11 @@ exports.filterVlans_with_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterVlans_on_single_overlay_tag = function (t)
-{
+
+test('filterVlans() on single overlay tag', function (t) {
 	var expectedUuids = [ '3333059f-8ce2-4573-b56a-4ed2db802ea8',
 		'5555fa4e-144f-43e1-809f-70404573b076' ];
 	var expectedReasons = {
@@ -324,13 +327,13 @@ exports.filterVlans_on_single_overlay_tag = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "sdc_overlay"'
 	};
-	test(t, ['sdc_overlay'], expectedUuids, expectedReasons);
+	runTest(t, ['sdc_overlay'], expectedUuids, expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.filterVlans_on_overlay_tag_and_vlan = function (t)
-{
+
+test('filterVlans() on overlay tag and vlan', function (t) {
 	var expectedUuids = [ '5555fa4e-144f-43e1-809f-70404573b076' ];
 	var expectedReasons = {
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
@@ -346,13 +349,14 @@ exports.filterVlans_on_overlay_tag_and_vlan = function (t)
 		'666660a9-4174-4e97-91d3-4becd075d280':
 			'Server missing vlan "sdc_overlay"'
 	};
-	test(t, ['sdc_overlay', 'customer13'], expectedUuids, expectedReasons);
+	runTest(t, ['sdc_overlay', 'customer13'], expectedUuids,
+		expectedReasons);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
-	t.ok(typeof (filter.name) === 'string');
-	t.done();
-};
+
+test('name', function (t) {
+	t.equal(typeof (filter.name), 'string');
+	t.end();
+});
