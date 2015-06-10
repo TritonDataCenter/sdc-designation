@@ -616,6 +616,7 @@ function allocate(allocator, activityList, servers, tickets, concurrency) {
 
 	var desc = {
 		ram: ram,
+		cpu_cap: cpu,
 		quota: Math.ceil(disk / 1024),
 		brand: brand,
 		owner_uuid: ownerUuid
