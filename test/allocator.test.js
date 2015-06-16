@@ -868,6 +868,7 @@ test('load available algorithms', function (t) {
 		'calculate-recent-vms',
 		'calculate-server-unreserved',
 		'calculate-ticketed-vms',
+		'hard-filter-capness',
 		'hard-filter-headnode',
 		'hard-filter-invalid-servers',
 		'hard-filter-large-servers',

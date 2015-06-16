@@ -200,6 +200,13 @@ test('allocate 1', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
+			/* JSSTYLED */
+			step: 'Servers which have same existence of cpu_cap as package',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
 			step: 'Servers supporting required VLANs',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
@@ -347,6 +354,13 @@ test('allocate 2', function (t) {
 			]
 		}, {
 			step: 'Servers with more VMs than limit',
+			remaining: [
+				'00000000-0000-0000-0000-00259094373c',
+				'00000000-0000-0000-0000-0025909437d4'
+			]
+		}, {
+			/* JSSTYLED */
+			step: 'Servers which have same existence of cpu_cap as package',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
