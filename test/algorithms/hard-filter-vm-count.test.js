@@ -9,6 +9,7 @@
  */
 
 var test = require('tape');
+var genUuid = require('node-uuid');
 var filter = require('../../lib/algorithms/hard-filter-vm-count.js');
 
 
@@ -69,14 +70,39 @@ test('filterVmCount()', function (t) {
 
 
 test('filterVmCount() with no limit', function (t) {
+	var server = {
+		uuid: '0e07a7a2-92a2-4e59-915a-45ceae9cb75c',
+		vms: {}
+	};
+
+	// should not filter out server with <224 VMs
+	for (var i = 0; i !== 223; i++) {
+		server.vms[genUuid()] = {};
+	}
+
 	var state = {};
 	var constraints = { defaults: {} };
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, state, [server], constraints);
 	var filteredServers = results[0];
 
-	t.deepEqual(filteredServers, testServers);
+	t.deepEqual(filteredServers, [server]);
 	t.deepEqual(state, {});
+
+	// should filter out server with >=224 VMs
+	server.vms[genUuid()] = {};
+
+	results = filter.run(log, state, [server], constraints);
+	filteredServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(filteredServers, []);
+	t.deepEqual(state, {});
+
+	t.deepEqual(reasons, {
+		'0e07a7a2-92a2-4e59-915a-45ceae9cb75c':
+			'Server has 224 VMs (limit is 224)'
+	});
 
 	t.end();
 });
