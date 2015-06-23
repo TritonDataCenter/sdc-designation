@@ -42,7 +42,7 @@ var ALLOC_CHAIN = [
 	        'hard-filter-reserved',
 	        'hard-filter-headnode',
 //	        'hard-filter-vm-count',
-		'hard-filter-capness',
+	        'hard-filter-capness',
 	        'hard-filter-vlans',
 	        'hard-filter-platform-versions',
 	        'hard-filter-traits',
