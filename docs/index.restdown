@@ -158,10 +158,11 @@ however, the schema description governs.
 || uuid                   || string   || UUID of server                                  ||
 || memory_available_bytes || integer  || RAM available for allocation, in bytes          ||
 || memory_total_bytes     || integer  || Total RAM on server, in bytes                   ||
-|| disk_pool_size_bytes   || integer  || Total storage pool size, in bytes ||
+|| disk_pool_size_bytes   || integer  || Total storage pool size, in bytes               ||
 || disk_installed_images_used_bytes || integer || Storage pool space consumed by images, bytes ||
-|| disk_zone_quota_bytes  || integer  || Storage pool quota for all zone root datasets ||
-|| disk_kvm_quota_bytes   || integer  || Storage pool quota for all KVM disk zvols ||
+|| disk_zone_quota_bytes  || integer  || Storage pool quota for all zone root datasets   ||
+|| disk_kvm_quota_bytes   || integer  || Storage pool quota for all KVM disk zvols       ||
+|| disk_cores_quota_used_bytes      || integet || Storage pool space consumed by corefiles, bytes ||
 || overprovision_ratios   || object   || Deprecated ||
 || reservation_ratio      || float    || Fraction of DRAM to reserve for ZFS ARC and OS  ||
 || reserved               || boolean  || If the server has been reserved by an operator  ||
@@ -194,6 +195,7 @@ As an example of a valid server payload:
 		disk_zone_quota_bytes: 32212254720,
 		disk_kvm_quota_bytes: 0,
 		disk_kvm_zvol_volsize_bytes: 0,
+		disk_cores_quota_used_bytes: 0,
 		reservation_ratio: 0.15,
 		reserved: false,
 		setup: true,
