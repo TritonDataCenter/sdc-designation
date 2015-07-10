@@ -29,6 +29,7 @@ test('calculateServerUnreserved()', function (t) {
 			disk_zone_quota_bytes: 0,
 			disk_kvm_quota_bytes: (25 + 5 + 10 + 10) * GB,
 			disk_kvm_zvol_volsize_bytes: (25 + 5) * GB,
+			disk_cores_quota_used_bytes: 1 * GB,
 			reservation_ratio: 0.15,
 			sysinfo: {
 				'Zpool Size in GiB': 2048,
@@ -56,6 +57,7 @@ test('calculateServerUnreserved()', function (t) {
 			disk_zone_quota_bytes: 20 * GB,
 			disk_kvm_quota_bytes: (10 + 10) * GB,
 			disk_kvm_zvol_volsize_bytes: 10 * GB,
+			disk_cores_quota_used_bytes: 1 * GB,
 			reservation_ratio: 0.25,
 			sysinfo: {
 				'Zpool Size in GiB': 2048,
@@ -84,6 +86,7 @@ test('calculateServerUnreserved()', function (t) {
 			disk_zone_quota_bytes: (20 + 10) * GB,
 			disk_kvm_quota_bytes: 0,
 			disk_kvm_zvol_volsize_bytes: 0,
+			disk_cores_quota_used_bytes: 0,
 			reservation_ratio: 0.15,
 			sysinfo: {
 				'Zpool Size in GiB': 4096,
@@ -112,6 +115,7 @@ test('calculateServerUnreserved()', function (t) {
 			disk_zone_quota_bytes: (20 + 30) * GB,
 			disk_kvm_quota_bytes: (10 + 30) * GB,
 			disk_kvm_zvol_volsize_bytes: 30 * GB,
+			disk_cores_quota_used_bytes: 1 * GB,
 			reservation_ratio: 0.15,
 			sysinfo: {
 				'Zpool Size in GiB': 4096,
@@ -152,11 +156,11 @@ test('calculateServerUnreserved()', function (t) {
 	t.deepEqual(servers, serversInfo);
 	t.deepEqual(reasons, undefined);
 
-	t.equal(servers[0].unreserved_disk, 2096128);
+	t.equal(servers[0].unreserved_disk, 2095104);
 	t.equal(servers[0].unreserved_ram,  209);
 	t.equal(servers[0].unreserved_cpu,  1600);
 
-	t.equal(servers[1].unreserved_disk, 2095104);
+	t.equal(servers[1].unreserved_disk, 2094080);
 	t.equal(servers[1].unreserved_ram,  1924);
 	t.equal(servers[1].unreserved_cpu,  2400);
 
@@ -164,7 +168,7 @@ test('calculateServerUnreserved()', function (t) {
 	t.equal(servers[2].unreserved_ram,  4331);
 	t.equal(servers[2].unreserved_cpu,  3200);
 
-	t.equal(servers[3].unreserved_disk, 4144128);
+	t.equal(servers[3].unreserved_disk, 4143104);
 	t.equal(servers[3].unreserved_ram,  4331);
 	t.equal(servers[3].unreserved_cpu,  2750);
 
