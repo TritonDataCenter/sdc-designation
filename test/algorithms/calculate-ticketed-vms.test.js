@@ -8,6 +8,7 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var test = require('tape');
 var filter = require('../../lib/algorithms/calculate-ticketed-vms.js');
 
 var log = {
@@ -180,10 +181,7 @@ var tickets = [ {
 	}
 } ];
 
-exports.calculateTicketedVms = function (t)
-{
-
-
+test('calculate ticketed VMs', function (t) {
 	var state = {};
 	var constraints = { tickets: tickets };
 	var results = filter.run(log, state, serversInfo, constraints);
@@ -233,11 +231,10 @@ exports.calculateTicketedVms = function (t)
 		}
 	});
 
-	t.done();
-};
+	t.end();
+});
 
-exports.calculateTicketedVms_no_servers = function (t)
-{
+test('calculate ticketed VMs with no servers', function (t) {
 	var state = {};
 	var constraints = { tickets: tickets };
 
@@ -249,11 +246,10 @@ exports.calculateTicketedVms_no_servers = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.calculateTicketedVms_no_tickets = function (t)
-{
+test('calculate ticketed VMs with no tickets', function (t) {
 	var state = {};
 	var constraints = { tickets: [] };
 
@@ -265,11 +261,10 @@ exports.calculateTicketedVms_no_tickets = function (t)
 	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
-	t.done();
-};
+	t.end();
+});
 
-exports.name = function (t)
-{
+test('name', function (t) {
 	t.equal(typeof (filter.name), 'string');
-	t.done();
-};
+	t.end();
+});
