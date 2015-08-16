@@ -16,8 +16,12 @@ var log = {
 	debug: function () { return (true); }
 };
 
+var GiB = 1024 * 1024 * 1024;
+
 var serversInfo = [ {
 	uuid: '7f9b1a24-dd28-430e-92ed-604fed51772b',
+	disk_kvm_zvol_volsize_bytes: 25 * GiB,
+	disk_zone_quota_bytes: 5 * GiB,
 	vms: {
 		'1ac434da-01aa-4663-8420-d3524ed1de0c': {
 			uuid: '1ac434da-01aa-4663-8420-d3524ed1de0c',
@@ -42,6 +46,8 @@ var serversInfo = [ {
 	}
 }, {
 	uuid: '38a07663-4ca2-4f95-bdcb-5d84f078626d',
+	disk_kvm_zvol_volsize_bytes: 10 * GiB,
+	disk_zone_quota_bytes: 20 * GiB,
 	vms: {
 		'62559b33-4f3a-4505-a942-87cc557fdf4e': {
 			uuid: '62559b33-4f3a-4505-a942-87cc557fdf4e',
@@ -66,9 +72,13 @@ var serversInfo = [ {
 	}
 }, {
 	uuid: '67e48c2e-45bb-400a-bc7d-3143894aacfa',
+	disk_kvm_zvol_volsize_bytes: 0,
+	disk_zone_quota_bytes: 0,
 	vms: {}
 }, {
-	uuid: '0c104a5b-1844-4205-821b-f0c989ccf6e7'
+	uuid: '0c104a5b-1844-4205-821b-f0c989ccf6e7',
+	disk_kvm_zvol_volsize_bytes: 0,
+	disk_zone_quota_bytes: 0
 } ];
 
 var tickets = [ {
@@ -197,6 +207,8 @@ test('calculate ticketed VMs', function (t) {
 	delete server.vms['8e54da2f-996f-491c-92ff-1b1d6c48f314'].last_modified;
 	t.deepEqual(server, {
 		uuid: '67e48c2e-45bb-400a-bc7d-3143894aacfa',
+		disk_kvm_zvol_volsize_bytes: 0,
+		disk_zone_quota_bytes: 10 * GiB,
 		vms: {
 			'8e54da2f-996f-491c-92ff-1b1d6c48f314': {
 				uuid: '8e54da2f-996f-491c-92ff-1b1d6c48f314',
@@ -216,6 +228,8 @@ test('calculate ticketed VMs', function (t) {
 	delete server.vms['cbd5b6b3-861d-44d1-a2b7-65ea39ada45a'].last_modified;
 	t.deepEqual(server, {
 		uuid: '0c104a5b-1844-4205-821b-f0c989ccf6e7',
+		disk_kvm_zvol_volsize_bytes: 50 * GiB,
+		disk_zone_quota_bytes: 0,
 		vms: {
 			'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a': {
 				uuid: 'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a',

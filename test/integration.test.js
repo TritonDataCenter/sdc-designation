@@ -112,7 +112,7 @@ var TICKETS = [
 			owner_uuid: '0ddc0513-f414-4ee5-81cc-7b716fd04a6a',
 			max_physical_memory: 1024,
 			cpu_cap: 2000,
-			quota: 10240,
+			quota: 1024,
 			brand: 'smartos'
 		}
 	}
