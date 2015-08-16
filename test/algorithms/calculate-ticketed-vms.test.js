@@ -186,8 +186,16 @@ var tickets = [ {
 		owner_uuid: '930896af-bf8c-48d4-885c-6573a94b1853',
 		max_physical_memory: 2048,
 		cpu_cap: 600,
-		quota: 50,
-		brand: 'kvm'
+		quota: 10,
+		brand: 'kvm',
+		disks: [ {
+			image_uuid: 'd8d81aee-20cf-11e5-8503-2bc101a1d577',
+			image_name: 'debian-7',
+			image_size: 10240
+		}, {
+			size: 25600,
+			refreservation: 25600
+		} ]
 	}
 } ];
 
@@ -228,8 +236,8 @@ test('calculate ticketed VMs', function (t) {
 	delete server.vms['cbd5b6b3-861d-44d1-a2b7-65ea39ada45a'].last_modified;
 	t.deepEqual(server, {
 		uuid: '0c104a5b-1844-4205-821b-f0c989ccf6e7',
-		disk_kvm_zvol_volsize_bytes: 50 * GiB,
-		disk_zone_quota_bytes: 0,
+		disk_kvm_zvol_volsize_bytes: 25 * GiB,
+		disk_zone_quota_bytes: 10 * GiB, // for root kvm dataset
 		vms: {
 			'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a': {
 				uuid: 'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a',
@@ -237,7 +245,7 @@ test('calculate ticketed VMs', function (t) {
 					'6573a94b1853',
 				max_physical_memory: 3072,
 				cpu_cap: 600,
-				quota: 50,
+				quota: 10,
 				brand: 'kvm',
 				zone_state: 'running',
 				state: 'running'
