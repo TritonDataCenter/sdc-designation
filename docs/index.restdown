@@ -162,7 +162,7 @@ however, the schema description governs.
 || disk_installed_images_used_bytes || integer || Storage pool space consumed by images, bytes ||
 || disk_zone_quota_bytes  || integer  || Storage pool quota for all zone root datasets   ||
 || disk_kvm_quota_bytes   || integer  || Storage pool quota for all KVM disk zvols       ||
-|| disk_cores_quota_used_bytes      || integet || Storage pool space consumed by corefiles, bytes ||
+|| disk_cores_quota_used_bytes      || integer || Storage pool space consumed by corefiles, bytes ||
 || overprovision_ratios   || object   || Deprecated ||
 || reservation_ratio      || float    || Fraction of DRAM to reserve for ZFS ARC and OS  ||
 || reserved               || boolean  || If the server has been reserved by an operator  ||
@@ -233,6 +233,8 @@ As an example of a valid server payload:
 	}
 ```
 
+
+
 ## `pkg`
 
 The package contains details that the VM payload does not provide, like certain
@@ -284,6 +286,27 @@ An example of a valid package payload:
 For more details, see the PAPI docs, which describe the meanings of package
 attribute in more depth.
 
+
+
+## defaults
+
+Some default values can be altered upon allocator initialisation.
+
+|| **Attribute**            || **Type** || **Default** || **Description** ||
+|| disable_override_overprovisioning || Boolean || false || Whether the override-overprovisioning plugin should be disabled. ||
+|| filter_headnode          || Boolean  || true    || Whether to remove the headnode from consideration for a new VM.       ||
+|| filter_min_resources     || Boolean  || true    || Whether to filter out CNs which don't have enough space for a new VM. ||
+|| filter_large_servers     || Boolean  || true    || Whether to remove large empty servers as much as possible.            ||
+|| filter_vm_limit          || Integer  || 224     || Maximum number of VMs allowed on one CN.                              ||
+|| overprovision_ratio_cpu  || Float    || 4.0     || How much CPU can be overprovisioned per CN.                           ||
+|| overprovision_ratio_ram  || Float    || 1.0     || How much RAM can be overprovisioned per CN.                           ||
+|| overprovision_ratio_disk || Float    || 1.0     || How much disk space can be overprovisioned per CN.                    ||
+|| server_spread            || String   || min-ram || How VMs are spread across servers.                                    ||
+
+`server_spread` can be one of 'min-ram', 'max-ram', 'random', or 'min-owner'. 
+min-ram tries to place new VMs on the CNs with the least free RAM. max-ram does
+the opposite. min-owner tries to place VMs on CNs which have the least other
+VMs belonging to the same owner. And random places VMs randomly across CNs.
 
 
 # Allocation Algorithms
