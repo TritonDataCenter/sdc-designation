@@ -168,8 +168,8 @@ test('calculateServerUnreserved()', function (t) {
 	t.equal(servers[2].unreserved_ram,  4331);
 	t.equal(servers[2].unreserved_cpu,  3200);
 
-	t.equal(servers[3].unreserved_disk, 4143104);
-	t.equal(servers[3].unreserved_ram,  4331);
+	t.equal(servers[3].unreserved_disk, 4122624);
+	t.equal(servers[3].unreserved_ram,  2965);
 	t.equal(servers[3].unreserved_cpu,  2750);
 
 	t.end();

@@ -65,6 +65,59 @@ test('filterMinRam()', function (t) {
 });
 
 
+test('filterMinRam() with KVM', function (t) {
+	var givenServers = [
+		{
+			uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+			unreserved_ram: 256,
+			overprovision_ratios: { ram: 2.0 }
+		},
+		{
+			uuid: '4fe12d99-f013-4983-9e39-6e2f35b37aec',
+			unreserved_ram: 511,
+			overprovision_ratios: { ram: 2.0 }
+		},
+		{
+			uuid: '7a8c759c-2a82-4d9b-bed4-7049b71197cb',
+			unreserved_ram: 512,
+			overprovision_ratios: { ram: 2.0 }
+		},
+		{
+			uuid: 'f60f7e40-2e92-47b8-8686-1b46a85dd35f',
+			unreserved_ram: 768,
+			overprovision_ratios: { ram: 2.0 }
+		}
+	];
+
+	var expectedServers = givenServers.slice(2, 4);
+	var state = {};
+	var constraints = {
+		vm: { ram: 512, brand: 'kvm' },
+		pkg: { overprovision_ram: 2.0 },
+		defaults: {}
+	};
+
+	var results = filter.run(log, state, givenServers, constraints);
+	var filteredServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(filteredServers, expectedServers);
+	t.deepEqual(state, {});
+
+	var expectedReasons = {
+		'f667e0fa-33db-48da-a5d0-9fe837ce93fc':
+			'VM\'s calculated 512 RAM is less than ' +
+			'server\'s spare 256',
+		'4fe12d99-f013-4983-9e39-6e2f35b37aec':
+			'VM\'s calculated 512 RAM is less than ' +
+			'server\'s spare 511'
+	};
+	t.deepEqual(reasons, expectedReasons);
+
+	t.end();
+});
+
+
 test('filterMinRam() without pkg', function (t) {
 	var givenServers = [
 		{
