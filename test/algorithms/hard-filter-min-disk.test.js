@@ -12,6 +12,9 @@ var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-min-disk.js');
 
 
+var MiB = 1024 * 1024;
+var GiB = 1024 * MiB;
+
 var log = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
@@ -157,26 +160,26 @@ test('filterMinDisk() with override', function (t) {
 });
 
 
-test('filterMinDisk() with overprovision ratios', function (t) {
+test('filterMinDisk() with overprovision ratios - kvm', function (t) {
 	var givenServers = [
 		{
 			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
-			unreserved_disk: 2560,
+			unreserved_disk: 25600,
 			overprovision_ratios: { disk: 1.0 }
 		},
 		{
 			uuid: '9324d37d-e160-4a9d-a6d8-39a519634398',
-			unreserved_disk: 5110,
+			unreserved_disk: 50000,
 			overprovision_ratios: { disk: 1.0 }
 		},
 		{
 			uuid: 'f07f6c2c-8f9c-4b77-89fe-4b777dff5826',
-			unreserved_disk: 5120,
+			unreserved_disk: 51200,
 			overprovision_ratios: { disk: 1.0 }
 		},
 		{
 			uuid: '69003dc2-1122-4851-8a2a-fccb609e4e84',
-			unreserved_disk: 7680,
+			unreserved_disk: 76800,
 			overprovision_ratios: { disk: 1.0 }
 		}
 	];
@@ -184,9 +187,18 @@ test('filterMinDisk() with overprovision ratios', function (t) {
 	var expectedServers = givenServers.slice(2, 4);
 	var state = {};
 	var constraints = {
-		vm:  { quota: 7680 },
-		img: {},
-		pkg: { overprovision_disk: 1.5 },
+		vm:  { quota: 10 }, // in GiB
+		img: {
+			type: 'zvol',
+			image_size: 10 * 1024, // in MiB
+			files: [ {
+				size: 150 * MiB // in bytes
+			} ]
+		},
+		pkg: {
+			quota: 29 * 1024, // in MiB
+			overprovision_disk: 1.5
+		},
 		defaults: {}
 	};
 
@@ -199,11 +211,70 @@ test('filterMinDisk() with overprovision ratios', function (t) {
 
 	var expectedReasons = {
 		'79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf':
-		    'VM\'s calculated 5120 disk is less than ' +
-		    'server\'s spare 2560',
+		    'VM\'s calculated 50326 MiB disk is more than ' +
+		    'server\'s spare 25600 MiB',
 		'9324d37d-e160-4a9d-a6d8-39a519634398':
-		    'VM\'s calculated 5120 disk is less than ' +
-		    'server\'s spare 5110'
+		    'VM\'s calculated 50326 MiB disk is more than ' +
+		    'server\'s spare 50000 MiB'
+	};
+	t.deepEqual(reasons, expectedReasons);
+
+	t.end();
+});
+
+
+test('filterMinDisk() with overprovision ratios - zone', function (t) {
+	var givenServers = [
+		{
+			uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
+			unreserved_disk: 25600,
+			overprovision_ratios: { disk: 1.0 }
+		},
+		{
+			uuid: '9324d37d-e160-4a9d-a6d8-39a519634398',
+			unreserved_disk: 50000,
+			overprovision_ratios: { disk: 1.0 }
+		},
+		{
+			uuid: 'f07f6c2c-8f9c-4b77-89fe-4b777dff5826',
+			unreserved_disk: 51200,
+			overprovision_ratios: { disk: 1.0 }
+		},
+		{
+			uuid: '69003dc2-1122-4851-8a2a-fccb609e4e84',
+			unreserved_disk: 76800,
+			overprovision_ratios: { disk: 1.0 }
+		}
+	];
+
+	var expectedServers = givenServers.slice(1, 4);
+	var state = {};
+	var constraints = {
+		vm:  { quota: 29 }, // in GiB
+		img: {
+			image_size: 10 * 1024, // in MiB
+			files: [ {
+				size: 150 * MiB // in bytes
+			} ]
+		},
+		pkg: {
+			quota: 29 * 1024, // in MiB
+			overprovision_disk: 1.5
+		},
+		defaults: {}
+	};
+
+	var results = filter.run(log, state, givenServers, constraints);
+	var filteredServers = results[0];
+	var reasons = results[1];
+
+	t.deepEqual(filteredServers, expectedServers);
+	t.deepEqual(state, {});
+
+	var expectedReasons = {
+		'79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf':
+		    'VM\'s calculated 30188 MiB disk is more than ' +
+		    'server\'s spare 25600 MiB'
 	};
 	t.deepEqual(reasons, expectedReasons);
 
@@ -215,8 +286,13 @@ test('filterMinDisk() with no servers', function (t) {
 	var state = {};
 	var servers = [];
 	var constraints = {
-		vm: { quota: 5120 },
-		img: {},
+		vm: { quota: 5 }, // in GiB
+		img: {
+			image_size: 1 * 1024, // in MiB
+			files: [ {
+				size: 150 * MiB // in bytes
+			} ]
+		},
 		pkg: { overprovision_disk: 1.0 },
 		defaults: {}
 	};

@@ -176,7 +176,7 @@ var expected = [
 		image_uuid: '8663eda9-247e-465f-8657-92a4c289b61a',
 		image_name: 'adminui',
 		image_version: 'master-20130521T200112Z-g2d51b90',
-		slots: 104
+		slots: 103
 	},
 	{
 		package_uuid: '1ee2a2ab-2138-8542-b563-a67bb03792f7',
@@ -194,7 +194,7 @@ var expected = [
 		image_uuid: '8663eda9-247e-465f-8657-92a4c289b61a',
 		image_name: 'adminui',
 		image_version: 'master-20130521T200112Z-g2d51b90',
-		slots: 133
+		slots: 131
 	},
 	{
 		package_uuid: '73a1ca34-1e30-48c7-8681-70314a9c67d3',
