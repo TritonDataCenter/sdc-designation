@@ -156,17 +156,17 @@ test('calculateServerUnreserved()', function (t) {
 	t.deepEqual(servers, serversInfo);
 	t.deepEqual(reasons, undefined);
 
-	t.equal(servers[0].unreserved_disk, 2095104);
+	t.equal(servers[0].unreserved_disk, 2043904);
 	t.equal(servers[0].unreserved_ram,  209);
-	t.equal(servers[0].unreserved_cpu,  1600);
+	t.equal(servers[0].unreserved_cpu,  1425);
 
-	t.equal(servers[1].unreserved_disk, 2094080);
+	t.equal(servers[1].unreserved_disk, 2053120);
 	t.equal(servers[1].unreserved_ram,  1924);
-	t.equal(servers[1].unreserved_cpu,  2400);
+	t.equal(servers[1].unreserved_cpu,  2225);
 
-	t.equal(servers[2].unreserved_disk, 4191232);
+	t.equal(servers[2].unreserved_disk, 4160512);
 	t.equal(servers[2].unreserved_ram,  4331);
-	t.equal(servers[2].unreserved_cpu,  3200);
+	t.equal(servers[2].unreserved_cpu,  2500);
 
 	t.equal(servers[3].unreserved_disk, 4122624);
 	t.equal(servers[3].unreserved_ram,  2965);
