@@ -26,7 +26,7 @@ HTTP service.  All allocation-related HTTP service is provided via
 CNAPI.  See CNAPI documentation for information on setting up a CNAPI
 server for testing.
 
-To update the docs, edit "docs/index.restdown".  The makefile is used to
+To update the docs, edit "docs/index.md".  The makefile is used to
 rebuild the documentation as well as for pre-integration testing.
 
 Before integrating anything into the gate, run `make prepush` and get a

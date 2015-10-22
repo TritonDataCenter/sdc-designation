@@ -28,7 +28,7 @@ TAP  := ./node_modules/.bin/tape
 #
 # Files
 #
-DOC_FILES	 = index.restdown
+DOC_FILES	 = index.md
 RESTDOWN_FLAGS   = --brand-dir=deps/restdown-brand-remora
 JS_FILES	:= $(shell find lib test bin -name '*.js')
 JSL_CONF_NODE	 = tools/jsl.node.conf
