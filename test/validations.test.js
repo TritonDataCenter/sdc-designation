@@ -248,6 +248,8 @@ test('validate locality', function (t) {
 	var validLocalities = [
 		{},
 		{ far: 'c85e0079-fe94-461e-8b1f-9a6d7c0d9b5c' },
+		{ far: 'c85e0079-fe94-461e-8b1f-9a6d7c0d9b5c', strict: true },
+		{ far: 'c85e0079-fe94-461e-8b1f-9a6d7c0d9b5c', strict: false },
 		{
 			near: '0c6d54ea-05f9-49a7-a35b-e2dd901afd78',
 			far: [
@@ -265,6 +267,11 @@ test('validate locality', function (t) {
 	var badLocality = deepCopy(validLocalities[1]);
 	badLocality.far = 'foo';
 	var res2 = validations.validateLocality(badLocality);
+	t.ok(res2);
+
+	badLocality = deepCopy(validLocalities[1]);
+	badLocality.strict = 'blah';
+	res2 = validations.validateLocality(badLocality);
 	t.ok(res2);
 
 	t.end();

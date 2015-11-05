@@ -568,6 +568,19 @@ near VMs, since high availability is usually more important than performance:
 
 "near" and "far" are both optional, and can either be a UUID or arrays of UUIDs.
 
-Beware that this is not a guarantee, only that DAPI will make a reasonable
-effort to fulfill it if possible. If it cannot meet those hints, it will provide
-a server anyway.
+By default, hints are hints: if the constraints cannot be fulfilled, a placement
+is still found for a VM. In many cases we want a guarantee about placement. In
+that case, providing a `strict` attribute set to true will achieve this:
+
+    "locality": {
+      "strict": true,
+      "near": "803e6c05-7c89-464f-b8f7-37aa99ee3ead",
+      "far": ["53e93593-6c4b-4268-963f-32633f526548",
+              "a48514a8-95ec-4c2e-a874-63c332a7c8bc",
+              "1988fa44-b849-449f-abf0-ab0f198d862e"]
+    }
+
+When `strict` is true, either a server will be found that fulfills all
+requirements, or the allocation will fail. An example is a request that wants to
+guarantee a new database VM does not end up on the same server as a different
+database VM, for HA purposes.

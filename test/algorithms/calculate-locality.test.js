@@ -43,9 +43,9 @@ test('filter default locality with rack free', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: {},
 		farServerUuids: listServerUuids(servers, [0, 4]),
-		nearRackUuids: {},
-		farRackUuids: { r01: true },
-		algorithms: ['far']
+		nearRackIds: {},
+		farRackIds: { r01: true },
+		localities: ['soft_far']
 	};
 
 	testState(t, vmDetails, servers, expected);
@@ -67,9 +67,9 @@ test('filter default locality with no rack free', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: {},
 		farServerUuids: listServerUuids(servers, [0, 2, 3, 4]),
-		nearRackUuids: {},
-		farRackUuids: { r01: true, r02: true },
-		algorithms: ['far']
+		nearRackIds: {},
+		farRackIds: { r01: true, r02: true },
+		localities: ['soft_far']
 	};
 
 	testState(t, vmDetails, servers, expected);
@@ -91,16 +91,16 @@ test('filter default locality with no rack or server free', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: {},
 		farServerUuids: listServerUuids(servers, [0, 1, 2, 3, 4]),
-		nearRackUuids: {},
-		farRackUuids: { r01: true, r02: true },
-		algorithms: ['far']
+		nearRackIds: {},
+		farRackIds: { r01: true, r02: true },
+		localities: ['soft_far']
 	};
 
 	testState(t, vmDetails, servers, expected);
 });
 
 
-test('filter far locality with rack free', function (t) {
+test('filter soft far locality with rack free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -120,16 +120,16 @@ test('filter far locality with rack free', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: {},
 		farServerUuids: listServerUuids(servers, [2]),
-		nearRackUuids: {},
-		farRackUuids: { r02: true },
-		algorithms: ['far']
+		nearRackIds: {},
+		farRackIds: { r02: true },
+		localities: ['soft_far']
 	};
 
 	testState(t, vmDetails, servers, expected);
 });
 
 
-test('filter far locality with no rack free', function (t) {
+test('filter soft far locality with no rack free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -153,16 +153,16 @@ test('filter far locality with no rack free', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: {},
 		farServerUuids: listServerUuids(servers, [0, 2]),
-		nearRackUuids: {},
-		farRackUuids: { r01: true, r02: true },
-		algorithms: ['far']
+		nearRackIds: {},
+		farRackIds: { r01: true, r02: true },
+		localities: ['soft_far']
 	};
 
 	testState(t, vmDetails, servers, expected);
 });
 
 
-test('filter far locality with no rack or server free', function (t) {
+test('filter soft far locality with no rack or server free', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 2) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
@@ -186,16 +186,16 @@ test('filter far locality with no rack or server free', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: {},
 		farServerUuids: listServerUuids(servers, [0, 1, 2, 3, 4]),
-		nearRackUuids: {},
-		farRackUuids: { r01: true, r02: true },
-		algorithms: ['far']
+		nearRackIds: {},
+		farRackIds: { r01: true, r02: true },
+		localities: ['soft_far']
 	};
 
 	testState(t, vmDetails, servers, expected);
 });
 
 
-test('filter near locality with free server in rack', function (t) {
+test('filter soft near locality with free server in rack', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 0) },
@@ -219,16 +219,16 @@ test('filter near locality with free server in rack', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: listServerUuids(servers, [0]),
 		farServerUuids: {},
-		nearRackUuids: { r01: true },
-		farRackUuids: {},
-		algorithms: ['near']
+		nearRackIds: { r01: true },
+		farRackIds: {},
+		localities: ['soft_near']
 	};
 
 	testState(t, vmDetails, servers, expected);
 });
 
 
-test('filter near locality with no free servers in rack', function (t) {
+test('filter soft near locality with no free servers in rack', function (t) {
 	var servers = [
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
 		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
@@ -252,9 +252,9 @@ test('filter near locality with no free servers in rack', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: listServerUuids(servers, [0, 1]),
 		farServerUuids: {},
-		nearRackUuids: { r01: true },
-		farRackUuids: {},
-		algorithms: ['near']
+		nearRackIds: { r01: true },
+		farRackIds: {},
+		localities: ['soft_near']
 	};
 
 	testState(t, vmDetails, servers, expected);
@@ -297,9 +297,54 @@ test('filter locality near and far', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: listServerUuids(servers, [0, 1, 2]),
 		farServerUuids:  listServerUuids(servers, [0, 2]),
-		nearRackUuids: { r01: true, r02: true },
-		farRackUuids:  { r01: true, r02: true },
-		algorithms: ['far', 'near']
+		nearRackIds: { r01: true, r02: true },
+		farRackIds:  { r01: true, r02: true },
+		localities: ['soft_far', 'soft_near']
+	};
+
+	testState(t, vmDetails, servers, expected);
+});
+
+
+test('filter locality with strict', function (t) {
+	var servers = [
+		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
+		{ uuid: genUuid(), rack_identifier: 'r01', vms: genVms(3, 1) },
+		{ uuid: genUuid(), rack_identifier: 'r02', vms: genVms(3, 1) },
+		{ uuid: genUuid(), rack_identifier: 'r02', vms: genVms(3, 0) },
+		{ uuid: genUuid(), vms: genVms(3, 2) }
+	];
+
+	var nearOwnerVms = servers.slice(0, 3).map(function (s) {
+		return (s.vms);
+	}).map(function (vms) {
+		return (Object.keys(vms).filter(function (uuid) {
+			return (vms[uuid].owner_uuid === ownerUuid);
+		}));
+	});
+
+	var farOwnerVms = [servers[0], servers[2]].map(function (s) {
+		return (s.vms);
+	}).map(function (vms) {
+		return (Object.keys(vms).filter(function (uuid) {
+			return (vms[uuid].owner_uuid === ownerUuid);
+		}));
+	});
+
+	var near = [].concat.apply([], nearOwnerVms);
+	var far  = [].concat.apply([], farOwnerVms);
+	var vmDetails = {
+		owner_uuid: ownerUuid,
+		locality: { near: near, far: far, strict: true }
+	};
+
+	var expected = { locality: {} };
+	expected.locality[ownerUuid] = {
+		nearServerUuids: listServerUuids(servers, [0, 1, 2]),
+		farServerUuids:  listServerUuids(servers, [0, 2]),
+		nearRackIds: { r01: true, r02: true },
+		farRackIds:  { r01: true, r02: true },
+		localities: ['hard_far', 'hard_near']
 	};
 
 	testState(t, vmDetails, servers, expected);
@@ -326,9 +371,9 @@ test('filter locality with strings', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: {},
 		farServerUuids:  listServerUuids(servers, [2]),
-		nearRackUuids: {},
-		farRackUuids:  { r02: true },
-		algorithms: ['far']
+		nearRackIds: {},
+		farRackIds:  { r02: true },
+		localities: ['soft_far']
 	};
 
 	testState(t, vmDetails, servers, expected);
@@ -340,9 +385,9 @@ test('filter with no servers', function (t) {
 	expected.locality[ownerUuid] = {
 		nearServerUuids: {},
 		farServerUuids:  {},
-		nearRackUuids: {},
-		farRackUuids:  {},
-		algorithms: []
+		nearRackIds: {},
+		farRackIds:  {},
+		localities: []
 	};
 
 	var state = {};
@@ -378,9 +423,9 @@ test('post deletes state', function (t) {
 	state.locality[ownerUuid] = {
 		nearServerUuids: {},
 		farServerUuids:  {},
-		nearRackUuids: {},
-		farRackUuids:  {},
-		algorithms: []
+		nearRackIds: {},
+		farRackIds:  {},
+		localities: []
 	};
 
 	filter.post(log, state, {}, [], { vm: { owner_uuid: genUuid() } });
