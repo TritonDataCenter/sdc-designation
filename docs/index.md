@@ -584,3 +584,7 @@ When `strict` is true, either a server will be found that fulfills all
 requirements, or the allocation will fail. An example is a request that wants to
 guarantee a new database VM does not end up on the same server as a different
 database VM, for HA purposes.
+
+Strict will only work with servers that have had their `rack_identifier`
+correctly set. If the `rack_identifier`s in a DC have not been set, attempts to
+allocate with `strict` true will fail, except in some undefined cases.
