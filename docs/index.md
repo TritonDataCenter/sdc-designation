@@ -42,15 +42,16 @@ The VM payload describes the VM to be allocated. For example, how much disk it
 needs, how much RAM, and so forth. DAPI accepts arbitrary descriptions of the
 VM, but the current version only considers the following characteristics:
 
-|| **Attribute** || **Type** || **Description**                                      ||
-|| vm_uuid       || string   || The UUID of the VM we're attempting to allocate      ||
-|| ram           || integer  || RAM required, in MiB                                 ||
-|| quota         || integer  || Disk required, in MiB                                ||
-|| cpu_cap       || integer  || Max CPU allowed, in percent                          ||
-|| traits        || hash     || Traits that a compute node must match                ||
-|| nic_tags      || array    || If VLAN filtering is enabled, nic_tags needed for VM ||
-|| owner_uuid    || string   || UUID of the new zone's owner                         ||
-|| locality      || hash     || Hints for VM placement                               ||
+| **Attribute** | **Type** | **Description**                                      |
+| ------------- | -------- | ---------------------------------------------------- |
+| vm_uuid       | string   | The UUID of the VM we're attempting to allocate      |
+| ram           | integer  | RAM required, in MiB                                 |
+| quota         | integer  | Disk required, in MiB                                |
+| cpu_cap       | integer  | Max CPU allowed, in percent                          |
+| traits        | hash     | Traits that a compute node must match                |
+| nic_tags      | array    | If VLAN filtering is enabled, nic_tags needed for VM |
+| owner_uuid    | string   | UUID of the new zone's owner                         |
+| locality      | hash     | Hints for VM placement                               |
 
 The following are a couple of valid VM payload examples. The object must contain
 at least ***ram*** and ***owner_uuid***.
@@ -99,19 +100,21 @@ a VM.
 In contrast to VMs, image manifests are more strictly validated. Currently DAPI
 understands the following characteristics:
 
-|| **Attribute** || **Type** || **Description**                          ||
-|| traits        || hash     || Traits that a compute node must match    ||
-|| requirements  || hash     || Various restrictions that a CN must meet ||
-|| image_size    || integer  || Size in MiB of KVM root filesystem       ||
+| **Attribute** | **Type** | **Description**                          |
+| ------------- | -------- | ---------------------------------------- |
+| traits        | hash     | Traits that a compute node must match    |
+| requirements  | hash     | Various restrictions that a CN must meet |
+| image_size    | integer  | Size in MiB of KVM root filesystem       |
 
 Currently, DAPI considers the following attributes in ***requirements***, all
 attributes being optional:
 
-|| **Attribute** || **Type** || **Description**                             ||
-|| min_ram       || integer  || Minimum RAM in MiB needed for a zone        ||
-|| max_ram       || integer  || Maximum RAM in MiB allowed for a zone       ||
-|| min_platform  || hash     || Minimum platform on a CN for an SDC version ||
-|| max_platform  || hash     || Minimum platform on a CN for an SDC version ||
+| **Attribute** | **Type** | **Description**                             |
+| ------------- | -------- | ------------------------------------------- |
+| min_ram       | integer  | Minimum RAM in MiB needed for a zone        |
+| max_ram       | integer  | Maximum RAM in MiB allowed for a zone       |
+| min_platform  | hash     | Minimum platform on a CN for an SDC version |
+| max_platform  | hash     | Minimum platform on a CN for an SDC version |
 
 min_platform and max_platform are hashes with SDC versions as keys, and CN
 platform versions as values. This is used to ensure that datasets which require
@@ -154,33 +157,35 @@ schema](https://github.com/joyent/schemas/blob/master/lib/dapi/server.js)
 are considered.  For convenience, these attributes are listed here;
 however, the schema description governs.
 
-|| **Attribute**          || **Type** || **Description**                                 ||
-|| uuid                   || string   || UUID of server                                  ||
-|| memory_available_bytes || integer  || RAM available for allocation, in bytes          ||
-|| memory_total_bytes     || integer  || Total RAM on server, in bytes                   ||
-|| disk_pool_size_bytes   || integer  || Total storage pool size, in bytes               ||
-|| disk_installed_images_used_bytes || integer || Storage pool space consumed by images, bytes ||
-|| disk_zone_quota_bytes  || integer  || Storage pool quota for all zone root datasets   ||
-|| disk_kvm_quota_bytes   || integer  || Storage pool quota for all KVM disk zvols       ||
-|| disk_cores_quota_used_bytes      || integer || Storage pool space consumed by corefiles, bytes ||
-|| overprovision_ratios   || object   || Deprecated ||
-|| reservation_ratio      || float    || Fraction of DRAM to reserve for ZFS ARC and OS  ||
-|| reserved               || boolean  || If the server has been reserved by an operator  ||
-|| setup                  || boolean  || If the server has been setup                    ||
-|| sysinfo                || hash     || A description of the system's hardware state provided by sysinfo(1) ||
-|| traits                 || hash     || Operator-supplied traits; these are matched to instance class traits ||
-|| vms                    || hash     || Description of VMs already on server            ||
+| **Attribute**          | **Type** | **Description**                                 |
+| ---------------------- | -------- | ----------------------------------------------- |
+| uuid                   | string   | UUID of server                                  |
+| memory_available_bytes | integer  | RAM available for allocation, in bytes          |
+| memory_total_bytes     | integer  | Total RAM on server, in bytes                   |
+| disk_pool_size_bytes   | integer  | Total storage pool size, in bytes               |
+| disk_installed_images_used_bytes | integer | Storage pool space consumed by images, bytes |
+| disk_zone_quota_bytes  | integer  | Storage pool quota for all zone root datasets   |
+| disk_kvm_quota_bytes   | integer  | Storage pool quota for all KVM disk zvols       |
+| disk_cores_quota_used_bytes      | integer | Storage pool space consumed by corefiles, bytes |
+| overprovision_ratios   | object   | Deprecated |
+| reservation_ratio      | float    | Fraction of DRAM to reserve for ZFS ARC and OS  |
+| reserved               | boolean  | If the server has been reserved by an operator  |
+| setup                  | boolean  | If the server has been setup                    |
+| sysinfo                | hash     | A description of the system's hardware state provided by sysinfo(1) |
+| traits                 | hash     | Operator-supplied traits; these are matched to instance class traits |
+| vms                    | hash     | Description of VMs already on server            |
 
 The ***vms*** attribute is a hash. Each key is a VM UUID, and each value is a
 hash with the following format:
 
-|| **Attribute**       || **Type** || **Description**                         ||
-|| cpu_cap             || integer  || Max CPU allowed, in percent             ||
-|| last_modified       || date     || Time of last instance modification      ||
-|| max_physical_memory || integer  || RAM promised to this VM, in MiB         ||
-|| owner_uuid          || string   || UUID of VM's owner                      ||
-|| quota               || integer  || Disk promised to this VM, in MiB        ||
-|| state               || string   || Current instance liveness               ||
+| **Attribute**       | **Type** | **Description**                         |
+| ------------------- | -------- | --------------------------------------- |
+| cpu_cap             | integer  | Max CPU allowed, in percent             |
+| last_modified       | date     | Time of last instance modification      |
+| max_physical_memory | integer  | RAM promised to this VM, in MiB         |
+| owner_uuid          | string   | UUID of VM's owner                      |
+| quota               | integer  | Disk promised to this VM, in MiB        |
+| state               | string   | Current instance liveness               |
 
 As an example of a valid server payload:
 
@@ -240,18 +245,19 @@ As an example of a valid server payload:
 The package contains details that the VM payload does not provide, like certain
 defaults.
 
-|| **Attribute**         || **Type** || **Description**                                  ||
-|| alloc_server_spread   || string   || Optionally change how VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random) ||
-|| cpu_cap               || integer  || Upper limit on how much CPU a zone can use.      ||
-|| max_physical_memory   || integer  || VM RAM size in MiB                               ||
-|| min_platform          || hash     || Minimum platform on a CN for an SDC version      ||
-|| overprovision_cpu     || float    || Ratio for maximum overprovisioning on CPU        ||
-|| overprovision_memory  || float    || Ratio for maximum overprovisioning on RAM        ||
-|| overprovision_storage || float    || Ratio for maximum overprovisioning on disk space ||
-|| overprovision_io      || float    || Currently ignored                                ||
-|| overprovision_network || float    || Currently ignored                                ||
-|| quota                 || integer  || VM disk size in MiB                              ||
-|| traits                || hash     || Traits that a compute node must match            ||
+| **Attribute**         | **Type** | **Description**                                  |
+| --------------------- | -------- | ------------------------------------------------ |
+| alloc_server_spread   | string   | Optionally change how VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random) |
+| cpu_cap               | integer  | Upper limit on how much CPU a zone can use.      |
+| max_physical_memory   | integer  | VM RAM size in MiB                               |
+| min_platform          | hash     | Minimum platform on a CN for an SDC version      |
+| overprovision_cpu     | float    | Ratio for maximum overprovisioning on CPU        |
+| overprovision_memory  | float    | Ratio for maximum overprovisioning on RAM        |
+| overprovision_storage | float    | Ratio for maximum overprovisioning on disk space |
+| overprovision_io      | float    | Currently ignored                                |
+| overprovision_network | float    | Currently ignored                                |
+| quota                 | integer  | VM disk size in MiB                              |
+| traits                | hash     | Traits that a compute node must match            |
 
 Traits that the package provides can be overridden by traits in the VM payload.
 
@@ -292,16 +298,17 @@ attribute in more depth.
 
 Some default values can be altered upon allocator initialisation.
 
-|| **Attribute**            || **Type** || **Default** || **Description** ||
-|| disable_override_overprovisioning || Boolean || false || Whether the override-overprovisioning plugin should be disabled. ||
-|| filter_headnode          || Boolean  || true    || Whether to remove the headnode from consideration for a new VM.       ||
-|| filter_min_resources     || Boolean  || true    || Whether to filter out CNs which don't have enough space for a new VM. ||
-|| filter_large_servers     || Boolean  || true    || Whether to remove large empty servers as much as possible.            ||
-|| filter_vm_limit          || Integer  || 224     || Maximum number of VMs allowed on one CN.                              ||
-|| overprovision_ratio_cpu  || Float    || 4.0     || How much CPU can be overprovisioned per CN.                           ||
-|| overprovision_ratio_ram  || Float    || 1.0     || How much RAM can be overprovisioned per CN.                           ||
-|| overprovision_ratio_disk || Float    || 1.0     || How much disk space can be overprovisioned per CN.                    ||
-|| server_spread            || String   || min-ram || How VMs are spread across servers.                                    ||
+| **Attribute**            | **Type** | **Default** | **Description** |
+| ------------------------ | -------- | ------------| --------------- |
+| disable_override_overprovisioning | Boolean | false | Whether the override-overprovisioning plugin should be disabled. |
+| filter_headnode          | Boolean  | true    | Whether to remove the headnode from consideration for a new VM.       |
+| filter_min_resources     | Boolean  | true    | Whether to filter out CNs which don't have enough space for a new VM. |
+| filter_large_servers     | Boolean  | true    | Whether to remove large empty servers as much as possible.            |
+| filter_vm_limit          | Integer  | 224     | Maximum number of VMs allowed on one CN.                              |
+| overprovision_ratio_cpu  | Float    | 4.0     | How much CPU can be overprovisioned per CN.                           |
+| overprovision_ratio_ram  | Float    | 1.0     | How much RAM can be overprovisioned per CN.                           |
+| overprovision_ratio_disk | Float    | 1.0     | How much disk space can be overprovisioned per CN.                    |
+| server_spread            | String   | min-ram | How VMs are spread across servers.                                    |
 
 `server_spread` can be one of 'min-ram', 'max-ram', 'random', or 'min-owner'. 
 min-ram tries to place new VMs on the CNs with the least free RAM. max-ram does
@@ -362,38 +369,39 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 *Note: This list may be a little out of date. See
 [lib/algoritms](../lib/alogrithms/) for the authoritative list.*
 
-|| **Name**                        || **Action**                                                  ||
-|| calculate-locality              || Early calculations needed by the soft-filter-locality-hints plugin   ||
-|| calculate-recent-vms            || Adds recent VMs to pipeline if they haven't appeared yet in CNAPI    ||
-|| calculate-server-unreserved     || Does some free-resource calculations that are used by other plugins  ||
-|| hard-filter-headnode            || Removes any headnodes                                       ||
-|| hard-filter-invalid-servers     || Removes any server objects which don't pass validation      ||
-|| hard-filter-large-servers       || Removes the top 15% servers with the most available RAM     ||
-|| hard-filter-min-cpu             || Removes CNs with insufficient CPU                           ||
-|| hard-filter-min-disk            || Removes CNs with insufficient disk                          ||
-|| hard-filter-min-ram             || Removes CNs with insufficient RAM                           ||
-|| hard-filter-overprovision-ratios || Removes CNs with different overprovision ratios than the request    ||
-|| hard-filter-owner-same-racks    || Removes racks already containing an owner's VM(s)           ||
-|| hard-filter-owner-same-servers  || Removes servers already containing an owner's VM(s)         ||
-|| hard-filter-platform-versions   || Removes servers that don't pass image manifest platform requirements ||
-|| hard-filter-reserved            || Removes reserved CNs                                        ||
-|| hard-filter-reservoir           || Removes reservoir CNs                                       ||
-|| hard-filter-running             || Removes CNs which are not running                           ||
-|| hard-filter-setup               || Removes CNs which are not setup                             ||
-|| hard-filter-traits              || Removes CNs with traits that cannot fulfill VM traits       ||
-|| hard-filter-vlans               || Removes CNs which do not have required nic tags             ||
-|| hard-filter-vm-count            || Removes CNs with more than 223 (default) VMs                ||
-|| hard-filter-volumes-from        || Removes CNs which do not contain VMs listed in docker:volumesfrom metadata, if provided ||
-|| identity                        || Returns the same servers it received                        ||
-|| override-overprovisioning       || Substitutes package and server overprovision data for own defaults   ||
-|| pick-random                     || Pick a random CN from a list                                ||
-|| pick-weighted-random            || Pick one of top 20% of CNs so far                           ||
-|| soft-filter-large-servers       || Tries to reserve some servers for large VMs                 ||
-|| soft-filter-locality-hints      || Tries to place VM near or far from other given VMs          ||
-|| soft-filter-recent-servers      || Tries to ignore recently allocated-to CNs, to prevent races ||
-|| sort-2adic                      || Order CNs by 2adic ordering of available RAM                ||
-|| sort-min-ram                    || Order CNs by how little available RAM is left               ||
-|| sort-max-ram                    || Order CNs by available RAM, most RAM first                  ||
+| **Name**                        | **Action**                                                  |
+| ------------------------------- | ----------------------------------------------------------- |
+| calculate-locality              | Early calculations needed by the soft-filter-locality-hints plugin   |
+| calculate-recent-vms            | Adds recent VMs to pipeline if they haven't appeared yet in CNAPI    |
+| calculate-server-unreserved     | Does some free-resource calculations that are used by other plugins  |
+| hard-filter-headnode            | Removes any headnodes                                       |
+| hard-filter-invalid-servers     | Removes any server objects which don't pass validation      |
+| hard-filter-large-servers       | Removes the top 15% servers with the most available RAM     |
+| hard-filter-min-cpu             | Removes CNs with insufficient CPU                           |
+| hard-filter-min-disk            | Removes CNs with insufficient disk                          |
+| hard-filter-min-ram             | Removes CNs with insufficient RAM                           |
+| hard-filter-overprovision-ratios | Removes CNs with different overprovision ratios than the request    |
+| hard-filter-owner-same-racks    | Removes racks already containing an owner's VM(s)           |
+| hard-filter-owner-same-servers  | Removes servers already containing an owner's VM(s)         |
+| hard-filter-platform-versions   | Removes servers that don't pass image manifest platform requirements |
+| hard-filter-reserved            | Removes reserved CNs                                        |
+| hard-filter-reservoir           | Removes reservoir CNs                                       |
+| hard-filter-running             | Removes CNs which are not running                           |
+| hard-filter-setup               | Removes CNs which are not setup                             |
+| hard-filter-traits              | Removes CNs with traits that cannot fulfill VM traits       |
+| hard-filter-vlans               | Removes CNs which do not have required nic tags             |
+| hard-filter-vm-count            | Removes CNs with more than 223 (default) VMs                |
+| hard-filter-volumes-from        | Removes CNs which do not contain VMs listed in docker:volumesfrom metadata, if provided |
+| identity                        | Returns the same servers it received                        |
+| override-overprovisioning       | Substitutes package and server overprovision data for own defaults   |
+| pick-random                     | Pick a random CN from a list                                |
+| pick-weighted-random            | Pick one of top 20% of CNs so far                           |
+| soft-filter-large-servers       | Tries to reserve some servers for large VMs                 |
+| soft-filter-locality-hints      | Tries to place VM near or far from other given VMs          |
+| soft-filter-recent-servers      | Tries to ignore recently allocated-to CNs, to prevent races |
+| sort-2adic                      | Order CNs by 2adic ordering of available RAM                |
+| sort-min-ram                    | Order CNs by how little available RAM is left               |
+| sort-max-ram                    | Order CNs by available RAM, most RAM first                  |
 
 The allocation pipeline typically starts with the hard filters, then soft
 filters, then sorters, and finally a picker.
