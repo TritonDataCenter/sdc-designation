@@ -36,12 +36,12 @@ JSL_FILES_NODE   = $(JS_FILES)
 JSSTYLE_FILES	 = $(JS_FILES)
 JSSTYLE_FLAGS    = -o indent=tab,doxygen,unparenthesized-return=1
 
-NODE		?= /opt/local/bin/node
-NPM_EXEC	?= /opt/local/bin/npm
-NPM		 = $(NPM_EXEC)
+NPM=npm
+NODE=node
+NPM_EXEC=$(shell which npm)
+NODE_EXEC=$(shell which node)
 
 include ./tools/mk/Makefile.defs
-include ./tools/mk/Makefile.node_deps.defs
 
 EXTRA_DOC_DEPS	+= deps/restdown-brand-remora/.git
 
@@ -52,7 +52,7 @@ ROOT            := $(shell pwd)
 #
 .PHONY: all
 all: $(TAP) $(REPO_DEPS)
-	$(NPM) rebuild
+	$(NPM) install
 
 $(TAP): | $(NPM_EXEC)
 	$(NPM) install
@@ -62,5 +62,4 @@ test: $(TAP)
 	$(TAP) test/*.test.js test/algorithms/*.test.js
 
 include ./tools/mk/Makefile.deps
-include ./tools/mk/Makefile.node_deps.targ
 include ./tools/mk/Makefile.targ

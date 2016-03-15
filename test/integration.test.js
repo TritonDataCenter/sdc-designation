@@ -265,9 +265,11 @@ test('allocate 1', function (t) {
 			step: 'Sort servers by maximum unreserved RAM',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
-			/* JSSTYLED */
+			/* BEGIN JSSTYLED */
 			step: 'Sort servers by minimum zones belonging to owner',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: { skip: '"server_spread" is not "min-owner": min-ram' }
+			/* END JSSTYLED */
 		}, {
 			step: 'Sort servers randomly',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
@@ -450,11 +452,13 @@ test('allocate 2', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
-			/* JSSTYLED */
+			/* BEGIN JSSTYLED */
 			step: 'Sort servers by minimum zones belonging to owner',
 			remaining: [
 				'00000000-0000-0000-0000-0025909437d4'
-			]
+			],
+			reasons: { skip: '"server_spread" is not "min-owner": min-ram' }
+			/* END JSSTYLED */
 		}, {
 			step: 'Sort servers randomly',
 			remaining: [
