@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Joyent, Inc. All rights reserved.
+ * Copyright 2016 Joyent, Inc.
  *
  * Runs simulation on DAPI, taking zone data recorded on live production.
  *
@@ -38,7 +38,6 @@ var ALLOC_CHAIN = [
 	        'hard-filter-invalid-servers',
 	        'hard-filter-volumes-from',
 	        'calculate-ticketed-vms',
-	        'calculate-locality',
 	        'hard-filter-reserved',
 	        'hard-filter-headnode',
 //	        'hard-filter-vm-count',

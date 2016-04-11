@@ -310,7 +310,7 @@ Some default values can be altered upon allocator initialisation.
 | overprovision_ratio_disk | Float    | 1.0     | How much disk space can be overprovisioned per CN.                    |
 | server_spread            | String   | min-ram | How VMs are spread across servers.                                    |
 
-`server_spread` can be one of 'min-ram', 'max-ram', 'random', or 'min-owner'. 
+`server_spread` can be one of 'min-ram', 'max-ram', 'random', or 'min-owner'.
 min-ram tries to place new VMs on the CNs with the least free RAM. max-ram does
 the opposite. min-owner tries to place VMs on CNs which have the least other
 VMs belonging to the same owner. And random places VMs randomly across CNs.
@@ -371,7 +371,6 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 
 | **Name**                        | **Action**                                                  |
 | ------------------------------- | ----------------------------------------------------------- |
-| calculate-locality              | Early calculations needed by the soft-filter-locality-hints plugin   |
 | calculate-recent-vms            | Adds recent VMs to pipeline if they haven't appeared yet in CNAPI    |
 | calculate-server-unreserved     | Does some free-resource calculations that are used by other plugins  |
 | hard-filter-headnode            | Removes any headnodes                                       |

@@ -5,7 +5,7 @@
 #
 
 #
-# Copyright (c) 2014, Joyent, Inc.
+# Copyright 2016 Joyent, Inc.
 #
 
 #
@@ -23,7 +23,7 @@
 #
 # Tools
 #
-TAP  := ./node_modules/.bin/tape
+TAPE  := ./node_modules/.bin/tape
 
 #
 # Files
@@ -51,15 +51,15 @@ ROOT            := $(shell pwd)
 # Repo-specific targets
 #
 .PHONY: all
-all: $(TAP) $(REPO_DEPS)
+all: $(TAPE) $(REPO_DEPS)
 	$(NPM) install
 
-$(TAP): | $(NPM_EXEC)
+$(TAPE): | $(NPM_EXEC)
 	$(NPM) install
 
 .PHONY: test
-test: $(TAP)
-	$(TAP) test/*.test.js test/algorithms/*.test.js
+test: $(TAPE)
+	$(TAPE) test/*.test.js test/algorithms/*.test.js
 
 include ./tools/mk/Makefile.deps
 include ./tools/mk/Makefile.targ

@@ -864,7 +864,6 @@ test('load available algorithms', function (t) {
 	var names = Object.keys(algorithms).sort();
 
 	var expectedNames = [
-		'calculate-locality',
 		'calculate-recent-vms',
 		'calculate-server-unreserved',
 		'calculate-ticketed-vms',

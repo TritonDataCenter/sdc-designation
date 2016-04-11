@@ -1,8 +1,9 @@
-node_modules
-build
-docs/*.json
-docs/*.html
-smf/manifests/*.xml
+/node_modules
+/build
+/docs/*.json
+/docs/*.html
+/smf/manifests/*.xml
 config.json
 *.sublime-project
 *.sublime-workspace
+/tmp
