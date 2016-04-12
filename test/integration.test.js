@@ -253,9 +253,9 @@ test('allocate 1', function (t) {
 			step: 'Servers with requested locality considered',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: {
-				'*': 'exclude: inst==' + VM.locality.near
+				'*': 'exclude: inst==~' + VM.locality.near
 					+ ' (ignored b/c non-strict)'
-			},
+			}
 		}, {
 			step: 'Sort servers by minimum unreserved RAM',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
@@ -434,9 +434,9 @@ test('allocate 2', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			],
 			reasons: {
-				'*': 'exclude: inst==' + VM.locality.near
+				'*': 'exclude: inst==~' + VM.locality.near
 					+ ' (ignored b/c non-strict)'
-			},
+			}
 		}, {
 			step: 'Sort servers by minimum unreserved RAM',
 			remaining: [

@@ -95,7 +95,7 @@ test('locality, no servers', function (t) {
 	var servers = [];
 	var constraints = { vm: {
 		owner_uuid: ownerUuid,
-		locality: { near: genUuid() }
+		locality: { near: '468994e6-d53d-c74c-8245-3273a86dc3d9' }
 	}};
 
 	var results = filter.run(log, {}, servers, constraints);
@@ -110,12 +110,17 @@ test('locality, no servers', function (t) {
 
 test('locality scenario A', function (tt) {
 	var servers = [
-		{ hostname: 'cn0', uuid: genUuid(), vms: genVms(3, 2) },
+		{ hostname: 'cn0', uuid: 'cafe0000-14b6-8040-8d36-54a1e5ec2ef9',
+			vms: genVms(3, 2) },
 		// cn1 has no VMs owned by `ownerUuid`.
-		{ hostname: 'cn1', uuid: genUuid(), vms: genVms(3, 0) },
-		{ hostname: 'cn2', uuid: genUuid(), vms: genVms(3, 1) },
-		{ hostname: 'cn3', uuid: genUuid(), vms: genVms(3, 1) },
-		{ hostname: 'cn4', uuid: genUuid(), vms: genVms(3, 2) }
+		{ hostname: 'cn1', uuid: 'cafe1111-14b6-8040-8d36-54a1e5ec2ef9',
+			vms: genVms(3, 0) },
+		{ hostname: 'cn2', uuid: 'cafe2222-14b6-8040-8d36-54a1e5ec2ef9',
+			vms: genVms(3, 1) },
+		{ hostname: 'cn3', uuid: 'cafe3333-14b6-8040-8d36-54a1e5ec2ef9',
+			vms: genVms(3, 1) },
+		{ hostname: 'cn4', uuid: 'cafe4444-14b6-8040-8d36-54a1e5ec2ef9',
+			vms: genVms(3, 2) }
 	];
 
 	function ownerVmOnServer(idx) {
@@ -232,7 +237,7 @@ test('locality scenario A', function (tt) {
 		var expServers = [servers[3]];
 		var expReasons = {};
 		expReasons[servers[3].uuid]
-			= 'include: inst==' + ownerVmOnServer3;
+			= 'include: inst==~' + ownerVmOnServer3;
 		t.deepEqual(filteredServers, expServers);
 		t.deepEqual(reasons, expReasons);
 
@@ -257,9 +262,8 @@ test('locality scenario A', function (tt) {
 		t.end();
 	});
 
-
 	tt.test('  strict near non-existant-VM', function (t) {
-		var nonExistantVm = genUuid();
+		var nonExistantVm = '9c6d1ace-3676-5c4f-9a83-55de5ddb4b55';
 		var results = filter.run(log, {}, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, near: [nonExistantVm] }
@@ -276,8 +280,29 @@ test('locality scenario A', function (tt) {
 		t.end();
 	});
 
+	tt.test('  non-strict near non-existant-VM (gets ignored)',
+	    function (t) {
+		var nonExistantVm = 'ef26f01e-200e-2a43-a056-cab333731e8f';
+		var results = filter.run(log, {}, servers, { vm: {
+			owner_uuid: ownerUuid,
+			locality: { strict: false, near: [nonExistantVm] }
+		}});
+		var filteredServers = results[0];
+		var reasons = results[1];
+
+		var expServers = servers;
+		var expReasons = {
+			'*': 'exclude: inst==~' + nonExistantVm
+				+ ' (ignored b/c non-strict)'
+		};
+		t.deepEqual(filteredServers, expServers);
+		t.deepEqual(reasons, expReasons);
+
+		t.end();
+	});
+
 	tt.test('  strict far non-existant-VM', function (t) {
-		var nonExistantVm = genUuid();
+		var nonExistantVm = 'f795e38f-1fce-3a49-b6e9-a62f07a559fc';
 		var results = filter.run(log, {}, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, far: [nonExistantVm] }
@@ -325,7 +350,8 @@ test('locality scenario A', function (tt) {
 		t.end();
 	});
 
-	tt.test('  non-strict near, that gets ignored', function (t) {
+	// Here we expect to return all the CNs with *any* of the list VMs.
+	tt.test('  non-strict near, VMs on multiple CNs', function (t) {
 		var near = [ownerVmOnServer0, ownerVmOnServer2];
 		var results = filter.run(log, {}, servers, { vm: {
 			owner_uuid: ownerUuid,
@@ -334,9 +360,12 @@ test('locality scenario A', function (tt) {
 		var filteredServers = results[0];
 		var reasons = results[1];
 
-		var expServers = servers;
-		var expReasons = {'*': 'exclude: inst==' + near.join(',')
-			+ ' (ignored b/c non-strict)'};
+		var expServers = [servers[0], servers[2]];
+		var expReasons = {};
+		expReasons[servers[0].uuid]
+			= 'include: inst==~' + ownerVmOnServer0;
+		expReasons[servers[2].uuid]
+			= 'include: inst==~' + ownerVmOnServer2;
 		t.deepEqual(filteredServers, expServers);
 		t.deepEqual(reasons, expReasons);
 
@@ -414,7 +443,8 @@ test('locality scenario B: large set', function (tt) {
 	for (var i = 0; i < 1000; i++) {
 		servers.push({
 			hostname: 'cn' + i,
-			uuid: genUuid(),
+			uuid: 'cafe' + (1000 + i).toString()
+				+ '-dfce-244e-8f98-0f80b53e8971',
 			vms: genVms(250, randInt(1, 10))
 		});
 	}
