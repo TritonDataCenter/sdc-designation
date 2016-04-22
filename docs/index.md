@@ -553,14 +553,14 @@ the resulting traits union is used to match against CN traits.
 
 Under many circumstances it is desirable to have a new VM placed near or far
 from existing VMs. For example, VMs containing two replicating databases
-probably should be kept far from each other, in case a server or rack loses
-power. Or consider a webhead and a cache -- keeping a webapp in the same rack
-as memcache provides better performance.
+probably should be kept far from each other, in case a server loses power. Or
+consider a webhead and a cache -- keeping a webapp in the same rack as memcache
+can provide better performance.
 
-Specifying locality hints is optional. By default DAPI tries to keep a
-customer's VMs on separate racks or servers for high-availability reasons.
-However, an allocation request can specify one or more VMs for DAPI to try to
-allocate near or far from.
+Specifying locality hints is optional. By default sdc-designation tries to keep
+a customer's VMs on separate servers for high-availability reasons. However, an
+allocation request can specify one or more VMs for DAPI to try to allocate near
+or far from.
 
 This hint will try to allocate a server near one VM, and far from the other
 three. Note that allocating a new VM far from other VMs take precedence over
@@ -591,7 +591,3 @@ When `strict` is true, either a server will be found that fulfills all
 requirements, or the allocation will fail. An example is a request that wants to
 guarantee a new database VM does not end up on the same server as a different
 database VM, for HA purposes.
-
-Strict will only work with servers that have had their `rack_identifier`
-correctly set. If the `rack_identifier`s in a DC have not been set, attempts to
-allocate with `strict` true will fail, except in some undefined cases.
