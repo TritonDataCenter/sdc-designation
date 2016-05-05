@@ -25,6 +25,7 @@ test('calculateServerUnreserved()', function (t) {
 		{
 			memory_total_bytes: 2942881792,
 			disk_pool_size_bytes: 2048 * GB,
+			disk_pool_alloc_bytes: 50 * GB,
 			disk_installed_images_used_bytes: 1 * GB,
 			disk_zone_quota_bytes: 0,
 			disk_kvm_quota_bytes: (25 + 5 + 10 + 10) * GB,
@@ -53,6 +54,7 @@ test('calculateServerUnreserved()', function (t) {
 		{
 			memory_total_bytes: 9132881112,
 			disk_pool_size_bytes: 2048 * GB,
+			disk_pool_alloc_bytes: 40 * GB,
 			disk_installed_images_used_bytes: 2 * GB,
 			disk_zone_quota_bytes: 20 * GB,
 			disk_kvm_quota_bytes: (10 + 10) * GB,
@@ -82,6 +84,7 @@ test('calculateServerUnreserved()', function (t) {
 			overprovision_ratios: { ram: 1.5 },
 			memory_total_bytes: 9132881112,
 			disk_pool_size_bytes: 4096 * GB,
+			disk_pool_alloc_bytes: 30 * GB,
 			disk_installed_images_used_bytes: 3 * GB,
 			disk_zone_quota_bytes: (20 + 10) * GB,
 			disk_kvm_quota_bytes: 0,
@@ -111,6 +114,7 @@ test('calculateServerUnreserved()', function (t) {
 			overprovision_ratios: { ram: 1.5, disk: 2.0, cpu: 2.0 },
 			memory_total_bytes: 9132881112,
 			disk_pool_size_bytes: 4096 * GB,
+			disk_pool_alloc_bytes: 50 * GB,
 			disk_installed_images_used_bytes: 4 * GB,
 			disk_zone_quota_bytes: (20 + 30) * GB,
 			disk_kvm_quota_bytes: (10 + 30) * GB,
@@ -144,6 +148,35 @@ test('calculateServerUnreserved()', function (t) {
 					max_physical_memory: 4096
 				}
 			}
+		},
+		{
+			memory_total_bytes: 2942881792,
+			disk_pool_size_bytes: 2048 * GB,
+			disk_pool_alloc_bytes: 1024 * GB,
+			disk_installed_images_used_bytes: 1 * GB,
+			disk_zone_quota_bytes: 0,
+			disk_kvm_quota_bytes: (25 + 5 + 10 + 10) * GB,
+			disk_kvm_zvol_volsize_bytes: (25 + 5) * GB,
+			disk_cores_quota_used_bytes: 1 * GB,
+			reservation_ratio: 0.15,
+			sysinfo: {
+				'Zpool Size in GiB': 2048,
+				'CPU Total Cores': 16
+			},
+			vms: {
+				'372a07dc-6e83-4c5f-b0e3-27e413f4a925': {
+					brand: 'kvm',
+					cpu_cap: 350,
+					quota: 25,
+					max_physical_memory: 2048
+				},
+				'3066c163-31cb-4a2f-87c4-eec9b1aa2218': {
+					brand: 'kvm',
+					cpu_cap: 350,
+					quota: 5,
+					max_physical_memory: 128
+				}
+			}
 		}
 	];
 
@@ -156,21 +189,25 @@ test('calculateServerUnreserved()', function (t) {
 	t.deepEqual(servers, serversInfo);
 	t.deepEqual(reasons, undefined);
 
-	t.equal(servers[0].unreserved_disk, 2043904);
+	t.equal(servers[0].unreserved_disk, 1918074);
 	t.equal(servers[0].unreserved_ram,  209);
 	t.equal(servers[0].unreserved_cpu,  1425);
 
-	t.equal(servers[1].unreserved_disk, 2053120);
+	t.equal(servers[1].unreserved_disk, 1927290);
 	t.equal(servers[1].unreserved_ram,  1924);
 	t.equal(servers[1].unreserved_cpu,  2225);
 
-	t.equal(servers[2].unreserved_disk, 4160512);
+	t.equal(servers[2].unreserved_disk, 3908853);
 	t.equal(servers[2].unreserved_ram,  4331);
 	t.equal(servers[2].unreserved_cpu,  2500);
 
-	t.equal(servers[3].unreserved_disk, 4122624);
+	t.equal(servers[3].unreserved_disk, 3870965);
 	t.equal(servers[3].unreserved_ram,  2965);
 	t.equal(servers[3].unreserved_cpu,  2750);
+
+	t.equal(servers[4].unreserved_disk, 922746);
+	t.equal(servers[4].unreserved_ram,  209);
+	t.equal(servers[4].unreserved_cpu,  1425);
 
 	t.end();
 });
