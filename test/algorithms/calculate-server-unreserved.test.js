@@ -26,6 +26,7 @@ test('calculateServerUnreserved()', function (t) {
 			memory_total_bytes: 2942881792,
 			disk_pool_size_bytes: 2048 * GB,
 			disk_pool_alloc_bytes: 50 * GB,
+			disk_system_used_bytes: 5 * GB,
 			disk_installed_images_used_bytes: 1 * GB,
 			disk_zone_quota_bytes: 0,
 			disk_kvm_quota_bytes: (25 + 5 + 10 + 10) * GB,
@@ -55,6 +56,7 @@ test('calculateServerUnreserved()', function (t) {
 			memory_total_bytes: 9132881112,
 			disk_pool_size_bytes: 2048 * GB,
 			disk_pool_alloc_bytes: 40 * GB,
+			disk_system_used_bytes: 2 * GB,
 			disk_installed_images_used_bytes: 2 * GB,
 			disk_zone_quota_bytes: 20 * GB,
 			disk_kvm_quota_bytes: (10 + 10) * GB,
@@ -85,6 +87,7 @@ test('calculateServerUnreserved()', function (t) {
 			memory_total_bytes: 9132881112,
 			disk_pool_size_bytes: 4096 * GB,
 			disk_pool_alloc_bytes: 30 * GB,
+			disk_system_used_bytes: 2 * GB,
 			disk_installed_images_used_bytes: 3 * GB,
 			disk_zone_quota_bytes: (20 + 10) * GB,
 			disk_kvm_quota_bytes: 0,
@@ -115,6 +118,7 @@ test('calculateServerUnreserved()', function (t) {
 			memory_total_bytes: 9132881112,
 			disk_pool_size_bytes: 4096 * GB,
 			disk_pool_alloc_bytes: 50 * GB,
+			disk_system_used_bytes: 5 * GB,
 			disk_installed_images_used_bytes: 4 * GB,
 			disk_zone_quota_bytes: (20 + 30) * GB,
 			disk_kvm_quota_bytes: (10 + 30) * GB,
@@ -153,6 +157,7 @@ test('calculateServerUnreserved()', function (t) {
 			memory_total_bytes: 2942881792,
 			disk_pool_size_bytes: 2048 * GB,
 			disk_pool_alloc_bytes: 1024 * GB,
+			disk_system_used_bytes: 10 * GB,
 			disk_installed_images_used_bytes: 1 * GB,
 			disk_zone_quota_bytes: 0,
 			disk_kvm_quota_bytes: (25 + 5 + 10 + 10) * GB,
@@ -189,19 +194,19 @@ test('calculateServerUnreserved()', function (t) {
 	t.deepEqual(servers, serversInfo);
 	t.deepEqual(reasons, undefined);
 
-	t.equal(servers[0].unreserved_disk, 1918074);
+	t.equal(servers[0].unreserved_disk, 1912954);
 	t.equal(servers[0].unreserved_ram,  209);
 	t.equal(servers[0].unreserved_cpu,  1425);
 
-	t.equal(servers[1].unreserved_disk, 1927290);
+	t.equal(servers[1].unreserved_disk, 1925242);
 	t.equal(servers[1].unreserved_ram,  1924);
 	t.equal(servers[1].unreserved_cpu,  2225);
 
-	t.equal(servers[2].unreserved_disk, 3908853);
+	t.equal(servers[2].unreserved_disk, 3906805);
 	t.equal(servers[2].unreserved_ram,  4331);
 	t.equal(servers[2].unreserved_cpu,  2500);
 
-	t.equal(servers[3].unreserved_disk, 3870965);
+	t.equal(servers[3].unreserved_disk, 3865845);
 	t.equal(servers[3].unreserved_ram,  2965);
 	t.equal(servers[3].unreserved_cpu,  2750);
 

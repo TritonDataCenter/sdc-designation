@@ -163,6 +163,7 @@
 			"disk_installed_images_used_bytes": 5905771008,
 			"disk_pool_size_bytes": 3582002724864,
 			"disk_pool_alloc_bytes": 107374182400,
+			"disk_system_used_bytes": 10737418240,
 			"disk_cores_quota_used_bytes": 0,
 			"vms": {
 				"736ddef6-8854-4dd5-82a0-2d184bd90cd4": {
@@ -390,6 +391,7 @@
 			"disk_installed_images_used_bytes": 6539030016,
 			"disk_pool_size_bytes": 3582002724864,
 			"disk_pool_alloc_bytes": 107374182400,
+			"disk_system_used_bytes": 10737418240,
 			"disk_cores_quota_used_bytes": 0,
 			"vms": {
 				"0474f238-353f-4cad-90a1-fdde2a3e0c93": {
