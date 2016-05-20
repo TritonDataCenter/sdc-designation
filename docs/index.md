@@ -301,6 +301,7 @@ Some default values can be altered upon allocator initialisation.
 | **Attribute**            | **Type** | **Default** | **Description** |
 | ------------------------ | -------- | ------------| --------------- |
 | disable_override_overprovisioning | Boolean | false | Whether the override-overprovisioning plugin should be disabled. |
+| filter_docker_min_platform        | String  | -     | Minimum platform version allowed for Docker containers.         |
 | filter_headnode          | Boolean  | true    | Whether to remove the headnode from consideration for a new VM.       |
 | filter_min_resources     | Boolean  | true    | Whether to filter out CNs which don't have enough space for a new VM. |
 | filter_large_servers     | Boolean  | true    | Whether to remove large empty servers as much as possible.            |
