@@ -257,23 +257,38 @@ test('allocate 1', function (t) {
 					+ ' (ignored b/c non-strict)'
 			}
 		}, {
-			step: 'Sort servers by minimum unreserved RAM',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
-		}, {
-			step: 'Sort servers by maximum unreserved RAM',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
-		}, {
-			/* BEGIN JSSTYLED */
-			step: 'Sort servers by minimum zones belonging to owner',
+			step: 'Score servers based on unreserved RAM',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
-			reasons: { skip: '"server_spread" is not "min-owner": min-ram' }
-			/* END JSSTYLED */
+			reasons: {
+				'00000000-0000-0000-0000-00259094373c':
+					'increased score by 2'
+			}
 		}, {
-			step: 'Sort servers randomly',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
+			step: 'Score servers based on unreserved disk',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: {
+				'00000000-0000-0000-0000-00259094373c':
+					'increased score by 1'
+			}
 		}, {
-			step: 'Random weighted server',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
+			/* JSSTYLED */
+			step: 'Score servers based on number of zones belonging to owner',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: {
+				skip: 'Resolved score weight to 0; no changes'
+			}
+		}, {
+			/* JSSTYLED */
+			step: 'Score servers running newer platforms more highly',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: { skip: 'One or fewer servers' }
+		}, {
+			step: 'Increase server scores randomly',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: {
+				'00000000-0000-0000-0000-00259094373c':
+					'increased score by 0.5'
+			}
 		}
 	];
 
@@ -283,6 +298,7 @@ test('allocate 1', function (t) {
 		var steps  = res[1];
 
 		t.equal(server.uuid, '00000000-0000-0000-0000-00259094373c');
+		t.equal(server.score, 3.5);
 		t.deepEqual(steps, expectedSteps);
 
 		t.end();
@@ -438,33 +454,38 @@ test('allocate 2', function (t) {
 					+ ' (ignored b/c non-strict)'
 			}
 		}, {
-			step: 'Sort servers by minimum unreserved RAM',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
+			step: 'Score servers based on unreserved RAM',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: {
+				'00000000-0000-0000-0000-0025909437d4':
+					'increased score by 2'
+			}
 		}, {
-			step: 'Sort servers by maximum unreserved RAM',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
+			step: 'Score servers based on unreserved disk',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: {
+				'00000000-0000-0000-0000-0025909437d4':
+					'increased score by 1'
+			}
 		}, {
-			/* BEGIN JSSTYLED */
-			step: 'Sort servers by minimum zones belonging to owner',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			],
-			reasons: { skip: '"server_spread" is not "min-owner": min-ram' }
-			/* END JSSTYLED */
+			/* JSSTYLED */
+			step: 'Score servers based on number of zones belonging to owner',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: {
+				skip: 'Resolved score weight to 0; no changes'
+			}
 		}, {
-			step: 'Sort servers randomly',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
+			/* JSSTYLED */
+			step: 'Score servers running newer platforms more highly',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: { skip: 'One or fewer servers' }
 		}, {
-			step: 'Random weighted server',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
+			step: 'Increase server scores randomly',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: {
+				'00000000-0000-0000-0000-0025909437d4':
+					'increased score by 0.5'
+			}
 		}
 	];
 
@@ -474,6 +495,7 @@ test('allocate 2', function (t) {
 		var steps  = res[1];
 
 		t.equal(server.uuid, '00000000-0000-0000-0000-0025909437d4');
+		t.equal(server.score, 3.5);
 		t.deepEqual(steps, expectedSteps);
 
 		t.end();

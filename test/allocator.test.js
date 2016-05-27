@@ -27,25 +27,40 @@ test('defaults', function (t) {
 
 	allocator = new Allocator(logStub);
 	t.deepEqual(allocator.defaults, {
-		server_spread: 'min-ram',
 		filter_headnode: true,
 		filter_min_resources: true,
-		filter_large_servers: true
+		filter_large_servers: true,
+		weight_current_platform: 1,
+		weight_next_reboot: 0.5,
+		weight_num_owner_zones: 0,
+		weight_uniform_random: 0.5,
+		weight_unreserved_disk: 1,
+		weight_unreserved_ram: 2
 	});
 
 	allocator = new Allocator(logStub, null, {});
 	t.deepEqual(allocator.defaults, {
-		server_spread: 'min-ram',
 		filter_headnode: true,
 		filter_min_resources: true,
-		filter_large_servers: true
+		filter_large_servers: true,
+		weight_current_platform: 1,
+		weight_next_reboot: 0.5,
+		weight_num_owner_zones: 0,
+		weight_uniform_random: 0.5,
+		weight_unreserved_disk: 1,
+		weight_unreserved_ram: 2
 	});
 
 	var defaults = {
-		server_spread: 'random',
 		filter_headnode: false,
 		filter_min_resources: false,
-		filter_large_servers: false
+		filter_large_servers: false,
+		weight_current_platform: 4,
+		weight_next_reboot: 5,
+		weight_num_owner_zones: 6,
+		weight_uniform_random: 7,
+		weight_unreserved_disk: 8,
+		weight_unreserved_ram: 9
 	};
 	allocator = new Allocator(logStub, null, defaults);
 	t.deepEqual(allocator.defaults, defaults);
@@ -892,15 +907,16 @@ test('load available algorithms', function (t) {
 		'override-overprovisioning',
 		'pick-random',
 		'pick-weighted-random',
+		'score-current-platform',
+		'score-next-reboot',
+		'score-num-owner-zones',
+		'score-uniform-random',
+		'score-unreserved-disk',
+		'score-unreserved-ram',
 		'soft-filter-large-servers',
 		'soft-filter-locality-hints',
 		'soft-filter-owner-many-zones',
-		'soft-filter-recent-servers',
-		'sort-2adic',
-		'sort-max-ram',
-		'sort-min-owner',
-		'sort-min-ram',
-		'sort-random'
+		'soft-filter-recent-servers'
 	];
 
 	t.deepEqual(names, expectedNames);

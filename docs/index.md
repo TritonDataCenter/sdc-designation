@@ -24,6 +24,7 @@ Note: In earlier SmartDataCenter releases this was its own service called "DAPI"
 -- the DAPI name lives on in various parts of the code and docs.
 
 
+
 # Allocation
 
 Allocation (the main function of this lib) is exposed via:
@@ -34,6 +35,7 @@ Allocation (the main function of this lib) is exposed via:
     allocator.allocate(servers, vm, img, pkg, tickets, checkCapacity);
 
 Some of the `allocate` arguments are described here:
+
 
 
 ## `vm`
@@ -309,12 +311,26 @@ Some default values can be altered upon allocator initialisation.
 | overprovision_ratio_cpu  | Float    | 4.0     | How much CPU can be overprovisioned per CN.                           |
 | overprovision_ratio_ram  | Float    | 1.0     | How much RAM can be overprovisioned per CN.                           |
 | overprovision_ratio_disk | Float    | 1.0     | How much disk space can be overprovisioned per CN.                    |
-| server_spread            | String   | min-ram | How VMs are spread across servers.                                    |
+| server_spread            | String   | min-ram | **DEPRECATED** How VMs are spread across servers (see weight_* instead). |
+| weight_current_platform  | Float    | 1       | Bias selection towards CNs with newer platforms.                      |
+| weight_next_reboot       | Float    | 0.5     | Bias selection away from CNs with nearer scheduled reboots.           |
+| weight_num_owner_zones   | Float    | 0       | Bias selection away from CNs with more VMs belonging to the current owner. |
+| weight_uniform_random    | Float    | 0.5     | Bias selection towards random CNs.                                    |
+| weight_unreserved_disk   | Float    | 1       | Bias selection towards CNs with more unreserved disk.                 |
+| weight_unreserved_ram    | Float    | 2       | Bias selection towards CNs with more unreserved memory.               |
 
-`server_spread` can be one of 'min-ram', 'max-ram', 'random', or 'min-owner'.
-min-ram tries to place new VMs on the CNs with the least free RAM. max-ram does
-the opposite. min-owner tries to place VMs on CNs which have the least other
-VMs belonging to the same owner. And random places VMs randomly across CNs.
+`server_spread` can be one of 'min-ram', 'max-ram', 'random', or 'min-owner'. 
+This attribute is deprecated, in favour of `weights_*`. min-ram tries to place
+new VMs on the CNs with the least free RAM. max-ram does the opposite. min-owner
+tries to place VMs on CNs which have the least other VMs belonging to the same
+owner. And random places VMs randomly across CNs.
+
+`weight_*` attributes can have negative values, not just positive. Negative
+values have the opposite effect of negative values; e.g. a postive
+`weight_num_owner_zones` biases selection towards CNs with fewer VMs belonging
+to the owner of the current allocation, while a negative value would bias 
+towards CNs with more such VMs.
+
 
 
 # Allocation Algorithms
@@ -399,20 +415,23 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | soft-filter-large-servers       | Tries to reserve some servers for large VMs                 |
 | soft-filter-locality-hints      | Tries to place VM near or far from other given VMs          |
 | soft-filter-recent-servers      | Tries to ignore recently allocated-to CNs, to prevent races |
-| sort-2adic                      | Order CNs by 2adic ordering of available RAM                |
-| sort-min-ram                    | Order CNs by how little available RAM is left               |
-| sort-max-ram                    | Order CNs by available RAM, most RAM first                  |
+| score-current-platform          | Make CNs running more recent platforms more likely to be selected |
+| score-next-reboot               | Make CNs with reboots schedule much further in the future more likely to be selected |
+| score-num-owner-zones           | Make CNs with fewer VMs belonging to current owner more likely to be selected |
+| score-unreserved-ram            | Make CNs with more unreserved RAM more likely to be selected      |
+| score-unreserved-disk           | Make CNs with more unreserved disk more likely to be selected     |
 
 The allocation pipeline typically starts with the hard filters, then soft
-filters, then sorters, and finally a picker.
+filters, then scorers. After the pipeline is run, the allocator uses a remaining
+CN with the highest score.
 
 Hard filters remove CNs from allocation consideration because the compute node
 fails to fulfill some requirement. Soft filters remove some compute nodes from
 consideration if there's still enough compute nodes left afterwards to
-effectively allocate with. Sorters order compute nodes by how desirable they are
-to fulfill this allocation request -- most desirable come first. Lastly, the
-pickers pick one of the compute nodes; some pickers take order into account, and
-some do not.
+effectively allocate with. Scorers increase the score on compute nodes based on
+how desirable that node is along some dimension; higher scores are more
+desirable. Pickers pick one of the compute nodes, but they have been almost
+entirely superceded by scorers.
 
 
 
