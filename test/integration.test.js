@@ -283,6 +283,11 @@ test('allocate 1', function (t) {
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: { skip: 'One or fewer servers' }
 		}, {
+			/* JSSTYLED */
+			step: 'Score servers that will not be rebooted soon more highly',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: { skip: 'One or fewer servers' }
+		}, {
 			step: 'Increase server scores randomly',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: {
@@ -477,6 +482,11 @@ test('allocate 2', function (t) {
 		}, {
 			/* JSSTYLED */
 			step: 'Score servers running newer platforms more highly',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: { skip: 'One or fewer servers' }
+		}, {
+			/* JSSTYLED */
+			step: 'Score servers that will not be rebooted soon more highly',
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
 			reasons: { skip: 'One or fewer servers' }
 		}, {
