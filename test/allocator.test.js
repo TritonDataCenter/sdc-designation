@@ -892,6 +892,7 @@ test('load available algorithms', function (t) {
 		'hard-filter-overprovision-ratios',
 		'hard-filter-owner-same-racks',
 		'hard-filter-owner-same-servers',
+		'hard-filter-owners-servers',
 		'hard-filter-platform-versions',
 		'hard-filter-reserved',
 		'hard-filter-reservoir',

@@ -221,6 +221,12 @@ test('allocate 1', function (t) {
 				'00000000-0000-0000-0000-0025909437d4': 'Combined vm/pkg/img traits require {"cabbages":true} but server has {}'
 			}
 		}, {
+			step: 'Filter CNs based on owner filters',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: {
+				skip: 'No filter_owner_server default to run'
+			}
+		}, {
 			/* JSSTYLED */
 			step: 'Servers that had consecutive failed provisions recently',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
@@ -401,6 +407,14 @@ test('allocate 2', function (t) {
 			reasons: {
 				/* JSSTYLED */
 				'00000000-0000-0000-0000-00259094373c': 'Combined vm/pkg/img require no traits but server has {"cabbages":true}'
+			}
+		}, {
+			step: 'Filter CNs based on owner filters',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			],
+			reasons: {
+				skip: 'No filter_owner_server default to run'
 			}
 		}, {
 			/* JSSTYLED */
