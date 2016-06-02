@@ -250,18 +250,18 @@ test('allocate 1', function (t) {
 			step: 'Servers with enough unreserved CPU',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
-			step: 'Servers which are not in the reservoir',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
-		}, {
-			step: 'Filter out the largest and most empty servers',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
-		}, {
 			step: 'Servers with requested locality considered',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: {
 				'*': 'exclude: inst==~' + VM.locality.near
 					+ ' (ignored b/c non-strict)'
 			}
+		}, {
+			step: 'Servers which are not in the reservoir',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
+		}, {
+			step: 'Filter out the largest and most empty servers',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
 			step: 'Score servers based on unreserved RAM',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
@@ -454,6 +454,15 @@ test('allocate 2', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
+			step: 'Servers with requested locality considered',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			],
+			reasons: {
+				'*': 'exclude: inst==~' + VM.locality.near
+					+ ' (ignored b/c non-strict)'
+			}
+		}, {
 			step: 'Servers which are not in the reservoir',
 			remaining: [
 				'00000000-0000-0000-0000-0025909437d4'
@@ -463,15 +472,6 @@ test('allocate 2', function (t) {
 			remaining: [
 				'00000000-0000-0000-0000-0025909437d4'
 			]
-		}, {
-			step: 'Servers with requested locality considered',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			],
-			reasons: {
-				'*': 'exclude: inst==~' + VM.locality.near
-					+ ' (ignored b/c non-strict)'
-			}
 		}, {
 			step: 'Score servers based on unreserved RAM',
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
