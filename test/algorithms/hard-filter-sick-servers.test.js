@@ -124,14 +124,12 @@ test('filterSickServers()', function (t) {
 	var expectedServers = [ givenServers[0], givenServers[1],
 	    givenServers[3], givenServers[4], givenServers[5],
 	    givenServers[6] ];
-	var state = {};
 
-	var results = filter.run(log, state, givenServers, {});
+	var results = filter.run(log, givenServers, {});
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {
 		/* BEGIN JSSTYLED */
 		'5625eacc-e173-4bb0-9c22-b1a80d8dfa39': 'VMs c9b7d347-7f98-48ee-8b8a-165f749e7ced and 70d46ece-1158-423c-b3a6-e569f688e0b5 failed consecutively the past 24h'
@@ -143,14 +141,11 @@ test('filterSickServers()', function (t) {
 
 
 test('filterSickServers() with no servers', function (t) {
-	var state = {};
-
-	var results = filter.run(log, state, [], {});
+	var results = filter.run(log, [], {});
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();

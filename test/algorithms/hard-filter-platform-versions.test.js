@@ -33,16 +33,14 @@ var testServers = genServers([
 
 
 test('filterPlatformVersions() no platform versions', function (t) {
-	var state = {};
 	var expectedServers = testServers;
 	var constraints = { vm: {}, img: {}, pkg: {}, defaults: {} };
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();
@@ -54,7 +52,6 @@ test('filterPlatformVersions() min platform requirements for images',
 	var expectedServers = testServers.slice(5, 9);
 	expectedServers.unshift(testServers[3]);
 
-	var state = {};
 	var constraints = {
 		vm:  {},
 		img: {
@@ -66,12 +63,11 @@ test('filterPlatformVersions() min platform requirements for images',
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -92,7 +88,6 @@ test('filterPlatformVersions() min platform requirements for packages',
 	var expectedServers = testServers.slice(5, 9);
 	expectedServers.unshift(testServers[3]);
 
-	var state = {};
 	var constraints = {
 		vm:  {},
 		img: {},
@@ -100,12 +95,11 @@ test('filterPlatformVersions() min platform requirements for packages',
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -125,7 +119,6 @@ test('filterPlatformVersions() max platform requirements', function (t) {
 	var expectedServers = testServers.slice(0, 3);
 	expectedServers.push(testServers[4]);
 
-	var state = {};
 	var constraints = {
 		vm:  {},
 		img: {
@@ -137,12 +130,11 @@ test('filterPlatformVersions() max platform requirements', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -162,7 +154,6 @@ test('filterPlatformVersions() max platform requirements', function (t) {
 test('filterPlatformVersions() minmax platform requirements 1', function (t) {
 	var expectedServers = testServers.slice(0, 1);
 
-	var state = {};
 	var constraints = {
 		vm:  {},
 		img: {
@@ -175,12 +166,11 @@ test('filterPlatformVersions() minmax platform requirements 1', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -205,7 +195,6 @@ test('filterPlatformVersions() minmax platform requirements 2', function (t) {
 	expectedServers.unshift(testServers[0]);
 	expectedServers[expectedServers.length] = testServers[7];
 
-	var state = {};
 	var constraints = {
 		vm:  {},
 		img: {
@@ -218,12 +207,11 @@ test('filterPlatformVersions() minmax platform requirements 2', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -243,7 +231,6 @@ test('filterPlatformVersions() minmax platform requirements 3', function (t) {
 	expectedServers.unshift(testServers[0]);
 	expectedServers[expectedServers.length] = testServers[7];
 
-	var state = {};
 	var constraints = {
 		vm:  {},
 		img: {
@@ -259,12 +246,11 @@ test('filterPlatformVersions() minmax platform requirements 3', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -284,7 +270,6 @@ test('filterPlatformVersions() minmax platform requirements 4', function (t) {
 	var expectedServers = testServers.slice(2, 7);
 	expectedServers.unshift(testServers[0]);
 
-	var state = {};
 	var constraints = {
 		vm:  {},
 		img: {
@@ -300,12 +285,11 @@ test('filterPlatformVersions() minmax platform requirements 4', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -325,7 +309,6 @@ test('filterPlatformVersions() minmax platform requirements 5', function (t) {
 	expectedServers.unshift(testServers[0]);
 	expectedServers[expectedServers.length] = testServers[7];
 
-	var state = {};
 	var constraints = {
 		vm: {},
 		img: {
@@ -338,12 +321,11 @@ test('filterPlatformVersions() minmax platform requirements 5', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -363,7 +345,6 @@ test('filterPlatformVersions() ignore non-versions', function (t) {
 	expectedServers.unshift(testServers[0]);
 	expectedServers[expectedServers.length] = testServers[7];
 
-	var state = {};
 	var constraints = {
 		vm:  {},
 		img: {
@@ -382,12 +363,11 @@ test('filterPlatformVersions() ignore non-versions', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -406,7 +386,6 @@ test('filterPlatformVersions() with filter_docker_min_platform, no Docker',
 function (t) {
 	var expectedServers = testServers;
 
-	var state = {};
 	var constraints = {
 		vm: {},
 		img: {},
@@ -416,12 +395,11 @@ function (t) {
 		}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {};
 	t.deepEqual(reasons, expectedReasons);
@@ -440,7 +418,6 @@ function (t) {
 		testServers[8]
 	];
 
-	var state = {};
 	var constraints = {
 		vm: {
 			docker: true
@@ -452,12 +429,11 @@ function (t) {
 		}
 	};
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -474,16 +450,14 @@ function (t) {
 
 
 test('filterPlatformVersions() no pkg', function (t) {
-	var state = {};
 	var expectedServers = testServers;
 	var constraints = { vm: {}, img: {}, defaults: {} };
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();
@@ -492,15 +466,13 @@ test('filterPlatformVersions() no pkg', function (t) {
 
 test('filterPlatformVersions() with no servers', function (t) {
 	var givenServers = [];
-	var state = {};
 	var constraints = { vm: {}, img: {}, pkg: {}, defaults: {} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();

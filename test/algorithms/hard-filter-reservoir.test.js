@@ -26,15 +26,13 @@ test('filterReservoir()', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(0, 2);
-	var state = {};
 	var constraints = {};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();
@@ -42,23 +40,21 @@ test('filterReservoir()', function (t) {
 
 
 test('filterReservoir() with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = {};
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();
 });
 
 
-test('nam,e', function (t) {
+test('name', function (t) {
 	t.equal(typeof (filter.name), 'string');
 	t.end();
 });

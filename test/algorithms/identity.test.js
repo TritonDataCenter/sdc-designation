@@ -26,15 +26,13 @@ test('identity()', function (t) {
 		{ unreserved_ram: 768 }
 	];
 
-	var state = {};
 	var constraints = {};
 
-	var results = identity.run(log, state, givenServers, constraints);
+	var results = identity.run(log, givenServers, constraints);
 	var servers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(servers, givenServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();
@@ -42,16 +40,14 @@ test('identity()', function (t) {
 
 
 test('identity() with no servers', function (t) {
-	var state = {};
 	var givenServers = [];
 	var constraints = {};
 
-	var results = identity.run(log, state, givenServers, constraints);
+	var results = identity.run(log, givenServers, constraints);
 	var servers = results[0];
 	var reasons = results[1];
 
 	t.equal(servers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();

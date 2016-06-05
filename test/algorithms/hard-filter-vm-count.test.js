@@ -47,15 +47,13 @@ var testServers = [ {
 
 test('filterVmCount()', function (t) {
 	var expectedServers = [ testServers[1], testServers[3] ];
-	var state = {};
 	var constraints = { defaults: { filter_vm_limit: 3 } };
 
-	var results = filter.run(log, state, testServers, constraints);
+	var results = filter.run(log, testServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		'33ce31d0-f376-4efd-ad41-f17c430b9782':
@@ -80,24 +78,21 @@ test('filterVmCount() with no limit', function (t) {
 		server.vms[genUuid()] = {};
 	}
 
-	var state = {};
 	var constraints = { defaults: {} };
 
-	var results = filter.run(log, state, [server], constraints);
+	var results = filter.run(log, [server], constraints);
 	var filteredServers = results[0];
 
 	t.deepEqual(filteredServers, [server]);
-	t.deepEqual(state, {});
 
 	// should filter out server with >=224 VMs
 	server.vms[genUuid()] = {};
 
-	results = filter.run(log, state, [server], constraints);
+	results = filter.run(log, [server], constraints);
 	filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, []);
-	t.deepEqual(state, {});
 
 	t.deepEqual(reasons, {
 		'0e07a7a2-92a2-4e59-915a-45ceae9cb75c':
@@ -109,16 +104,14 @@ test('filterVmCount() with no limit', function (t) {
 
 
 test('filterVmCount() with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = { defaults: { filter_vm_limit: 3 } };
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();

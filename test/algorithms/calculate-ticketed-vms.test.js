@@ -200,12 +200,10 @@ var tickets = [ {
 } ];
 
 test('calculate ticketed VMs', function (t) {
-	var state = {};
 	var constraints = { tickets: tickets };
-	var results = filter.run(log, state, serversInfo, constraints);
+	var results = filter.run(log, serversInfo, constraints);
 	var servers = results[0];
 	var reasons = results[1];
-	t.deepEqual(state, {});
 	// t.deepEqual(servers, serversInfo);
 	t.deepEqual(reasons, undefined);
 
@@ -257,30 +255,26 @@ test('calculate ticketed VMs', function (t) {
 });
 
 test('calculate ticketed VMs with no servers', function (t) {
-	var state = {};
 	var constraints = { tickets: tickets };
 
-	var results = filter.run(log, state, [], constraints);
+	var results = filter.run(log, [], constraints);
 	var servers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(servers, []);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();
 });
 
 test('calculate ticketed VMs with no tickets', function (t) {
-	var state = {};
 	var constraints = { tickets: [] };
 
-	var results = filter.run(log, state, serversInfo, constraints);
+	var results = filter.run(log, serversInfo, constraints);
 	var servers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(servers, serversInfo);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();

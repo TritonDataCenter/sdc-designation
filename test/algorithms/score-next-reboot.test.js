@@ -76,17 +76,15 @@ test('scoreNextReboot()', function (t) {
 			'increased score by 2'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: { weight_next_reboot: 3 }
 	};
 
-	var results = scorer.run(LOG, state, clone(givenServers), constraints);
+	var results = scorer.run(LOG, clone(givenServers), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	// now try with a negative weight ---
@@ -117,12 +115,11 @@ test('scoreNextReboot()', function (t) {
 		defaults: { weight_next_reboot: -3 }
 	};
 
-	results = scorer.run(LOG, state, clone(givenServers), constraints);
+	results = scorer.run(LOG, clone(givenServers), constraints);
 	scoredServers = results[0];
 	reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -136,9 +133,7 @@ test('scoreNextReboot() with one server', function (t) {
 		next_reboot: '2016-04-20T14:01:56.447Z'
 	} ];
 
-	var state = {};
-
-	var results = scorer.run(LOG, state, givenServers, {});
+	var results = scorer.run(LOG, givenServers, {});
 	var servers = results[0];
 	var reasons = results[1];
 
@@ -150,9 +145,7 @@ test('scoreNextReboot() with one server', function (t) {
 
 
 test('scoreNextReboot() with no servers', function (t) {
-	var state = {};
-
-	var results = scorer.run(LOG, state, [], {});
+	var results = scorer.run(LOG, [], {});
 	var servers = results[0];
 	var reasons = results[1];
 

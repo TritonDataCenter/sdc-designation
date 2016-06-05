@@ -63,17 +63,15 @@ test('scoreCurrentPlatform()', function (t) {
 		'682de1bd-b409-4c51-affc-c21ad3ba8d81': 'increased score by 0'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: { weight_current_platform: 3 }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -98,17 +96,15 @@ test('scoreCurrentPlatform() with negative weight', function (t) {
 		'682de1bd-b409-4c51-affc-c21ad3ba8d81': 'increased score by 3'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: { weight_current_platform: -3 }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -116,9 +112,7 @@ test('scoreCurrentPlatform() with negative weight', function (t) {
 
 
 test('scoreCurrentPlatform() with one server', function (t) {
-	var state = {};
-
-	var results = scorer.run(LOG, state, [clone(SERVERS[0])], {});
+	var results = scorer.run(LOG, [clone(SERVERS[0])], {});
 	var servers = results[0];
 	var reasons = results[1];
 
@@ -130,9 +124,7 @@ test('scoreCurrentPlatform() with one server', function (t) {
 
 
 test('scoreCurrentPlatform() with no servers', function (t) {
-	var state = {};
-
-	var results = scorer.run(LOG, state, [], {});
+	var results = scorer.run(LOG, [], {});
 	var servers = results[0];
 	var reasons = results[1];
 

@@ -82,7 +82,7 @@ test('no locality, no servers', function (t) {
 	var servers = [];
 	var constraints = { vm: { owner_uuid: ownerUuid } };
 
-	var results = filter.run(log, {}, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
@@ -98,7 +98,7 @@ test('locality, no servers', function (t) {
 		locality: { near: '468994e6-d53d-c74c-8245-3273a86dc3d9' }
 	}};
 
-	var results = filter.run(log, {}, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
@@ -141,7 +141,7 @@ test('locality scenario A', function (tt) {
 	var nonOwnerVmOnServer3 = nonOwnerVmOnServer(3);
 
 	tt.test('  no locality -> owner spread', function (t) {
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid
 		}});
 		var filteredServers = results[0];
@@ -161,7 +161,7 @@ test('locality scenario A', function (tt) {
 
 	tt.test('  no locality -> owner spread (ignored)', function (t) {
 		var subsetServers = [servers[3], servers[4]];
-		var results = filter.run(log, {}, subsetServers, { vm: {
+		var results = filter.run(log, subsetServers, { vm: {
 			owner_uuid: ownerUuid
 		}});
 		var filteredServers = results[0];
@@ -185,7 +185,7 @@ test('locality scenario A', function (tt) {
 			= 'exclude: inst!=' + ownerVmOnServer0;
 
 		// Test with 'far' as a string.
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { far: ownerVmOnServer0 }
 		}});
@@ -195,7 +195,7 @@ test('locality scenario A', function (tt) {
 		t.deepEqual(reasons, expReasons);
 
 		// And test with 'far' as an array.
-		results = filter.run(log, {}, servers, { vm: {
+		results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { far: [ownerVmOnServer0] }
 		}});
@@ -208,7 +208,7 @@ test('locality scenario A', function (tt) {
 	});
 
 	tt.test('  strict far', function (t) {
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, far: [ownerVmOnServer0] }
 		}});
@@ -227,7 +227,7 @@ test('locality scenario A', function (tt) {
 	});
 
 	tt.test('  non-strict near', function (t) {
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: false, near: [ownerVmOnServer3] }
 		}});
@@ -245,7 +245,7 @@ test('locality scenario A', function (tt) {
 	});
 
 	tt.test('  strict near', function (t) {
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, near: [ownerVmOnServer3] }
 		}});
@@ -264,7 +264,7 @@ test('locality scenario A', function (tt) {
 
 	tt.test('  strict near non-existant-VM', function (t) {
 		var nonExistantVm = '9c6d1ace-3676-5c4f-9a83-55de5ddb4b55';
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, near: [nonExistantVm] }
 		}});
@@ -283,7 +283,7 @@ test('locality scenario A', function (tt) {
 	tt.test('  non-strict near non-existant-VM (gets ignored)',
 	    function (t) {
 		var nonExistantVm = 'ef26f01e-200e-2a43-a056-cab333731e8f';
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: false, near: [nonExistantVm] }
 		}});
@@ -303,7 +303,7 @@ test('locality scenario A', function (tt) {
 
 	tt.test('  strict far non-existant-VM', function (t) {
 		var nonExistantVm = 'f795e38f-1fce-3a49-b6e9-a62f07a559fc';
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, far: [nonExistantVm] }
 		}});
@@ -319,7 +319,7 @@ test('locality scenario A', function (tt) {
 	});
 
 	tt.test('  strict near, ignores non-owner VMs', function (t) {
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, near: [nonOwnerVmOnServer3] }
 		}});
@@ -335,7 +335,7 @@ test('locality scenario A', function (tt) {
 	});
 
 	tt.test('  strict far, ignores non-owner VMs', function (t) {
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, far: [nonOwnerVmOnServer3] }
 		}});
@@ -353,7 +353,7 @@ test('locality scenario A', function (tt) {
 	// Here we expect to return all the CNs with *any* of the list VMs.
 	tt.test('  non-strict near, VMs on multiple CNs', function (t) {
 		var near = [ownerVmOnServer0, ownerVmOnServer2];
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: false, near: near }
 		}});
@@ -375,7 +375,7 @@ test('locality scenario A', function (tt) {
 	tt.test('  non-strict far, that gets ignored', function (t) {
 		var far = [ownerVmOnServer3, ownerVmOnServer4];
 		var subsetServers = [servers[3], servers[4]];
-		var results = filter.run(log, {}, subsetServers, { vm: {
+		var results = filter.run(log, subsetServers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: false, far: far }
 		}});
@@ -396,7 +396,7 @@ test('locality scenario A', function (tt) {
 
 	tt.test('  strict near that filters out all servers', function (t) {
 		var near = [ownerVmOnServer3, ownerVmOnServer4];
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, near: near }
 		}});
@@ -412,7 +412,7 @@ test('locality scenario A', function (tt) {
 	});
 
 	tt.test('  far and near', function (t) {
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: {
 				strict: true,
@@ -465,7 +465,7 @@ test('locality scenario B: large set', function (tt) {
 
 	tt.test('  strict near', function (t) {
 		var start = Date.now();
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, near: [ownerVmOnServer997] }
 		}});
@@ -481,7 +481,7 @@ test('locality scenario B: large set', function (tt) {
 
 	tt.test('  strict far', function (t) {
 		var start = Date.now();
-		var results = filter.run(log, {}, servers, { vm: {
+		var results = filter.run(log, servers, { vm: {
 			owner_uuid: ownerUuid,
 			locality: { strict: true, far: [
 				ownerVmOnServer42, ownerVmOnServer997] }

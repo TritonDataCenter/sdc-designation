@@ -51,14 +51,12 @@ test('filterTraits() for VMs', function (t) {
 	var constraints;
 	var filteredServers;
 	var expectedReasons;
-	var state = {};
 
 	constraints = { vm: { traits: { ssd: true } }, img: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
@@ -71,11 +69,10 @@ test('filterTraits() for VMs', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: { traits: { ssd: false } }, img: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(3, 4));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":false} but server has {"ssd":true,"users":"john"}',
@@ -88,11 +85,10 @@ test('filterTraits() for VMs', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: { traits: { users: 'john' } }, img: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(5, 6));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":"john"} but server has {"ssd":true,"users":"john"}',
@@ -105,11 +101,10 @@ test('filterTraits() for VMs', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: { traits: { users: 'jack' } }, img: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(4, 5));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":"jack"} but server has {"ssd":true,"users":"john"}',
@@ -122,11 +117,10 @@ test('filterTraits() for VMs', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: { traits: { ssd: true, users: 'jane' } }, img: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(1, 2));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'users comparison failed: strings did not match',
@@ -144,11 +138,10 @@ test('filterTraits() for VMs', function (t) {
 		},
 		img: {}
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, []);
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'ssd comparison failed: boolean did not match',
@@ -162,11 +155,10 @@ test('filterTraits() for VMs', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: { traits: { users: ['john', 'jane' ] } }, img: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(4, 6));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":["john","jane"]} but server has {"ssd":true,"users":"john"}',
@@ -214,14 +206,12 @@ test('filterTraits() for image manifests', function (t) {
 	var expectedReasons;
 	var constraints;
 	var filteredServers;
-	var state = {};
 
 	constraints = { vm: {}, pkg: {}, img: { traits: { ssd: true } } };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
@@ -234,11 +224,10 @@ test('filterTraits() for image manifests', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: {}, pkg: {}, img: { traits: { ssd: false } } };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(3, 4));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":false} but server has {"ssd":true,"users":"john"}',
@@ -251,11 +240,10 @@ test('filterTraits() for image manifests', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: {}, pkg: {}, img: { traits: { users: 'john' } } };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(5, 6));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":"john"} but server has {"ssd":true,"users":"john"}',
@@ -268,11 +256,10 @@ test('filterTraits() for image manifests', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: {}, pkg: {}, img: { traits: { users: 'jack' } } };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(4, 5));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":"jack"} but server has {"ssd":true,"users":"john"}',
@@ -289,11 +276,10 @@ test('filterTraits() for image manifests', function (t) {
 		pkg: {},
 		img: { traits: { ssd: true, users: 'jane' } }
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(1, 2));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'users comparison failed: strings did not match',
@@ -310,11 +296,10 @@ test('filterTraits() for image manifests', function (t) {
 		pkg: {},
 		img: { traits: { ssd: false, users: 'jane' } }
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, []);
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'ssd comparison failed: boolean did not match',
@@ -332,11 +317,10 @@ test('filterTraits() for image manifests', function (t) {
 		pkg: {},
 		img: { traits: { users: ['john', 'jane'] } }
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(4, 6));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":["john","jane"]} but server has {"ssd":true,"users":"john"}',
@@ -384,7 +368,6 @@ test('filterTraits() for VMs and manifests', function (t) {
 	var expectedReasons;
 	var constraints;
 	var filteredServers;
-	var state = {};
 
 	/* image manifest overrides VM package */
 	constraints = {
@@ -392,7 +375,7 @@ test('filterTraits() for VMs and manifests', function (t) {
 		img: { traits: { ssd: true } },
 		pkg: {}
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(2, 3));
@@ -413,7 +396,7 @@ test('filterTraits() for VMs and manifests', function (t) {
 		img: { traits: { users: 'john' } },
 		pkg: {}
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(0, 2));
@@ -428,7 +411,7 @@ test('filterTraits() for VMs and manifests', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: { traits: { ssd: true } }, img: {}, pkg: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(2, 3));
@@ -444,13 +427,11 @@ test('filterTraits() for VMs and manifests', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: {}, img: { traits: { ssd: true } }, pkg: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(2, 3));
 	t.deepEqual(reasons, expectedReasons);
-
-	t.deepEqual(state, {});
 
 	t.end();
 });
@@ -489,7 +470,6 @@ test('filterTraits() for packages and manifests', function (t) {
 	var expectedReasons;
 	var constraints;
 	var filteredServers;
-	var state = {};
 
 	/* image manifest overrides package */
 	constraints = {
@@ -497,7 +477,7 @@ test('filterTraits() for packages and manifests', function (t) {
 		img: { traits: { ssd: true  } },
 		pkg: { traits: { ssd: false } }
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(2, 3));
@@ -518,7 +498,7 @@ test('filterTraits() for packages and manifests', function (t) {
 		img: {},
 		pkg: { traits: { ssd: false } }
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(2, 3));
@@ -530,7 +510,7 @@ test('filterTraits() for packages and manifests', function (t) {
 		img: { traits: { users: 'john' } },
 		pkg: { traits: { ssd: true	 } }
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(0, 2));
@@ -545,7 +525,7 @@ test('filterTraits() for packages and manifests', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm:  {}, img: {}, pkg: { traits: { ssd: true } } };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(2, 3));
@@ -561,13 +541,11 @@ test('filterTraits() for packages and manifests', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm:  {}, img: { traits: { ssd: true } }, pkg: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(2, 3));
 	t.deepEqual(reasons, expectedReasons);
-
-	t.deepEqual(state, {});
 
 	t.end();
 });
@@ -581,16 +559,14 @@ test('filterTraits() with no traits on server', function (t) {
 		uuid: '097e339f-1a49-48b2-bec7-ae92a037c22a',
 		requested_ram: 256
 	} ];
-	var state = {};
 	var constraints;
 	var filteredServers;
 
 	constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	constraints = {
@@ -598,11 +574,10 @@ test('filterTraits() with no traits on server', function (t) {
 		img: { traits: {} },
 		pkg: {}
 	};
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	expectedReasons = {
 		'097e339f-1a49-48b2-bec7-ae92a037c22a':
 		    'Combined vm/pkg/img traits require {"ssd":false} ' +
@@ -628,14 +603,12 @@ test('filterTraits() with no traits on VM or manifest', function (t) {
 	];
 	var constraints;
 	var filteredServers;
-	var state = {};
 
 	constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(1, 3));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		'636203ab-ae96-4d5c-aaf1-00f030958bee':
 		    'Combined vm/pkg/img require no traits ' +
@@ -644,11 +617,10 @@ test('filterTraits() with no traits on VM or manifest', function (t) {
 	t.deepEqual(reasons, expectedReasons);
 
 	constraints = { vm: {}, img: {}, pkg: {} };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, givenServers.slice(1, 3));
-	t.deepEqual(state, {});
 	expectedReasons = {
 		'636203ab-ae96-4d5c-aaf1-00f030958bee':
 		    'Combined vm/pkg/img require no traits ' +
@@ -661,7 +633,6 @@ test('filterTraits() with no traits on VM or manifest', function (t) {
 
 
 test('filterTraits() with no package', function (t) {
-	var state = {};
 	var givenServers = [
 		{
 			uuid: '636203ab-ae96-4d5c-aaf1-00f030958bee',
@@ -672,12 +643,11 @@ test('filterTraits() with no package', function (t) {
 	];
 	var constraints = { vm: { ram: 512 }, img: {} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, givenServers.slice(1, 3));
-	t.deepEqual(state, {});
 	var expectedReasons = {
 		'636203ab-ae96-4d5c-aaf1-00f030958bee':
 		    'Combined vm/pkg/img require no traits ' +
@@ -690,16 +660,14 @@ test('filterTraits() with no package', function (t) {
 
 
 test('filterTraits() with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = { vm: { ram: 512 }, pkg: {}, img: {} };
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();

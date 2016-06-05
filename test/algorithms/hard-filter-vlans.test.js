@@ -129,17 +129,15 @@ var servers = [
 function
 runTest(t, vlans, expectedUuids, expectedReasons)
 {
-	var state = {};
 	var constraints = { vm: { nic_tags: vlans } };
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	var serverUuids = filteredServers.map(function (s) { return s.uuid; });
 
 	t.deepEqual(serverUuids.sort(), expectedUuids);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 }
 
@@ -296,16 +294,14 @@ test('filterVlans() on multiple vlans', function (t) {
 
 
 test('filterVlans() with no servers', function (t) {
-	var state = {};
 	var emptyServers = [];
 	var constraints = { vm: { nic_tags: ['admin'] } };
 
-	var results = filter.run(log, state, emptyServers, constraints);
+	var results = filter.run(log, emptyServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();

@@ -56,14 +56,11 @@ test('filterVolumesFrom()', function (t) {
 		}
 	};
 
-	var state = {};
-
-	var results = filter.run(log, state, servers, { vm: vm });
+	var results = filter.run(log, servers, { vm: vm });
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, [servers[2]]);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		/* BEGIN JSSTYLED */
@@ -90,15 +87,12 @@ test('filterVolumesFrom() with no servers', function (t) {
 		}
 	};
 
-	var state = {};
-
-	var results = filter.run(log, state, [], { vm: vm });
+	var results = filter.run(log, [], { vm: vm });
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, []);
 	t.deepEqual(reasons, {});
-	t.deepEqual(state, {});
 
 	t.end();
 });
@@ -109,15 +103,12 @@ test('filterVolumesFrom() with no metadata', function (t) {
 		docker: true // just something non-null for this test
 	};
 
-	var state = {};
-
-	var results = filter.run(log, state, servers, { vm: vm });
+	var results = filter.run(log, servers, { vm: vm });
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, servers);
 	t.deepEqual(reasons, {});
-	t.deepEqual(state, {});
 
 	t.end();
 });
@@ -129,15 +120,12 @@ test('filterVolumesFrom() with no volumesfrom', function (t) {
 		internal_metadata: {}
 	};
 
-	var state = {};
-
-	var results = filter.run(log, state, servers, { vm: vm });
+	var results = filter.run(log, servers, { vm: vm });
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, servers);
 	t.deepEqual(reasons, {});
-	t.deepEqual(state, {});
 
 	t.end();
 });

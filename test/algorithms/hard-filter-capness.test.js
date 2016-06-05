@@ -69,18 +69,16 @@ var servers = [ {
 
 test('filterCapness() with package with cpu_cap', function (t) {
 	var expectedServers = [ servers[0], servers[4] ];
-	var state = {};
 	var constraints = {
 		vm: {},
 		pkg: { cpu_cap: 100 }
 	};
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	t.deepEqual(reasons, {
 		/* BEGIN JSSTYLED */
@@ -96,18 +94,16 @@ test('filterCapness() with package with cpu_cap', function (t) {
 
 test('filterCapness() with package without cpu_cap', function (t) {
 	var expectedServers = [ servers[1], servers[4] ];
-	var state = {};
 	var constraints = {
 		vm: {},
 		pkg: {}
 	};
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	t.deepEqual(reasons, {
 		/* BEGIN JSSTYLED */
@@ -122,18 +118,16 @@ test('filterCapness() with package without cpu_cap', function (t) {
 
 
 test('filterCapness() with no servers', function (t) {
-	var state = {};
 	var constraints = {
 		vm: {},
 		pkg: {}
 	};
 
-	var results = filter.run(log, state, [], constraints);
+	var results = filter.run(log, [], constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, []);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();

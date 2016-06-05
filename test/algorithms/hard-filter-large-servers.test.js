@@ -26,19 +26,17 @@ for (var ii = 0; ii < 20; ii++)
 test('filterLargeServers()', function (t) {
 	var expectedServers =
 	    givenServers.slice(0, givenServers.length - 3).reverse();
-	var state = {};
 	var constraints = { defaults: {} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	constraints = { defaults: { filter_large_servers: false } };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	t.deepEqual(results[0], givenServers);
 
 	t.end();
@@ -46,19 +44,17 @@ test('filterLargeServers()', function (t) {
 
 
 test('filterLargeServers with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = {
 		vm: { ram: 34 * 1024 }, // in MiB
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, []);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();

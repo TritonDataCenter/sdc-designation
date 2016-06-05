@@ -60,16 +60,14 @@ test('filterOverprovisionRatios()', function (t) {
 	var filteredServers;
 	var expectedServers;
 	var expectedReasons;
-	var state = {};
 
 	expectedServers = [ givenServers[0], givenServers[2], givenServers[6],
 	    givenServers[7], givenServers[9] ];
 	constraints = { pkg: { overprovision_ram: 1.0 } };
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'f8d517d8-80a3-47e3-a108-b9e4b6f8556a': 'Package over-provision ratio of 1.00 does not match server\'s 1.01',
@@ -83,11 +81,10 @@ test('filterOverprovisionRatios()', function (t) {
 
 	constraints = { pkg: { overprovision_ram: 1.5 } };
 	expectedServers = givenServers.slice(4, 5);
-	results = filter.run(log, state, givenServers, constraints);
+	results = filter.run(log, givenServers, constraints);
 	filteredServers = results[0];
 	reasons = results[1];
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	expectedReasons = {
 		/* BEGIN JSSTYLED */
 		'98b6985f-f102-4c4f-a2e3-eda731a8b0dc': 'Package over-provision ratio of 1.50 does not match server\'s 1.00',
@@ -108,29 +105,25 @@ test('filterOverprovisionRatios()', function (t) {
 
 
 test('filterOverprovisionRatios() without pkg', function (t) {
-	var state = {};
 	var constraints = {};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 
 	t.deepEqual(filteredServers, givenServers);
-	t.deepEqual(state, {});
 
 	t.end();
 });
 
 
 test('filterOverprovisionRatios() with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = { pkg: { overprovision_ram: 1.0 } };
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 
 	t.end();
 });

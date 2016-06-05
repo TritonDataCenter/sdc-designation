@@ -13,6 +13,53 @@ var common = require('./common');
 var Allocator = require('../lib/allocator.js');
 
 
+var ALGO_DESC = [
+	'pipe', 'hard-filter-setup',
+		'hard-filter-running',
+		'hard-filter-invalid-servers',
+		'hard-filter-volumes-from',
+		'calculate-ticketed-vms',
+		'hard-filter-reserved',
+		'hard-filter-headnode',
+		'hard-filter-vm-count',
+		'hard-filter-capness',
+		'hard-filter-vlans',
+		'hard-filter-platform-versions',
+		'hard-filter-traits',
+		'hard-filter-owners-servers',
+		'hard-filter-sick-servers',
+		'calculate-server-unreserved',
+		'hard-filter-overprovision-ratios',
+		'hard-filter-min-ram',
+		'hard-filter-min-disk',
+		'hard-filter-min-cpu',
+		'soft-filter-locality-hints',
+		['or', 'hard-filter-reservoir',
+			'identity'],
+		['or', 'hard-filter-large-servers',
+			'identity' ],
+		'score-unreserved-ram',
+		'score-unreserved-disk',
+		'score-num-owner-zones',
+		'score-current-platform',
+		'score-next-reboot',
+		'score-uniform-random'
+];
+
+
+var DEFAULTS = {
+	weight_current_platform: 1,
+	weight_next_reboot: 0.5,
+	weight_num_owner_zones: 0,
+	weight_uniform_random: 0.5,
+	weight_unreserved_disk: 1,
+	weight_unreserved_ram: 2,
+	filter_headnode: true,
+	filter_min_resources: true,
+	filter_large_servers: true
+};
+
+
 var logStub = {
 	trace: function () { return true; },
 	debug: function () { return true; },
@@ -20,53 +67,6 @@ var logStub = {
 	warn:  function () { return true; },
 	error: function (err) { console.log(err); return true; }
 };
-
-
-test('defaults', function (t) {
-	var allocator;
-
-	allocator = new Allocator(logStub);
-	t.deepEqual(allocator.defaults, {
-		filter_headnode: true,
-		filter_min_resources: true,
-		filter_large_servers: true,
-		weight_current_platform: 1,
-		weight_next_reboot: 0.5,
-		weight_num_owner_zones: 0,
-		weight_uniform_random: 0.5,
-		weight_unreserved_disk: 1,
-		weight_unreserved_ram: 2
-	});
-
-	allocator = new Allocator(logStub, null, {});
-	t.deepEqual(allocator.defaults, {
-		filter_headnode: true,
-		filter_min_resources: true,
-		filter_large_servers: true,
-		weight_current_platform: 1,
-		weight_next_reboot: 0.5,
-		weight_num_owner_zones: 0,
-		weight_uniform_random: 0.5,
-		weight_unreserved_disk: 1,
-		weight_unreserved_ram: 2
-	});
-
-	var defaults = {
-		filter_headnode: false,
-		filter_min_resources: false,
-		filter_large_servers: false,
-		weight_current_platform: 4,
-		weight_next_reboot: 5,
-		weight_num_owner_zones: 6,
-		weight_uniform_random: 7,
-		weight_unreserved_disk: 8,
-		weight_unreserved_ram: 9
-	};
-	allocator = new Allocator(logStub, null, defaults);
-	t.deepEqual(allocator.defaults, defaults);
-
-	t.end();
-});
 
 
 test('algorithms pipeline', function (t) {
@@ -80,9 +80,8 @@ test('algorithms pipeline', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, state, servers) {
+			run: function (log, servers) {
 				t.ok(log.debug);
-				t.deepEqual(state, {});
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(1);
@@ -90,114 +89,32 @@ test('algorithms pipeline', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, state, servers) {
+			run: function (log, servers) {
 				t.ok(log.debug);
-				t.deepEqual(state, {});
 				t.deepEqual(servers, [5, 4, 3, 2]);
 
-				state.bar = [42];
 				executed.push(2);
 				return ([[2, 3]]);
-			},
-			post: function (log, state, server, servers) {
-				t.ok(log.debug);
-				t.deepEqual(state, { bar: [42], baz: 'hi' });
-				t.equal(server, 3);
-				t.deepEqual(servers, serverStubs);
-
-				state.bar.push(24);
-				executed.push(3);
 			}
 		}, {
 			name: 'baz',
-			run: function (log, state, servers) {
+			run: function (log, servers) {
 				t.ok(log.debug);
-				t.deepEqual(state, { bar: [42] });
 				t.deepEqual(servers, [2, 3]);
 
-				state.baz = 'hi';
-				executed.push(4);
+				executed.push(3);
 				return ([[3]]);
 			}
 		}
 	];
 
-	allocator = new Allocator(logStub);
+	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	results = allocator.allocate(serverStubs, {}, {}, {});
 	serverStub = results[0];
 	t.equal(serverStub, 3);
-	t.deepEqual(executed, [1, 2, 4, 3]);
-
-	t.end();
-});
-
-
-/* assumes state from algorithms_pipeline() test */
-test('algorithms state retained', function (t) {
-	var serverStub = { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' };
-	var executed = [];
-	var allocator;
-	var results;
-	var expected;
-
-	var plugins = [
-		'pipe',
-		{
-			name: 'foo',
-			run: function (log, state) {
-				t.deepEqual(state,
-				    { bar: [42, 24], baz: 'hi' });
-				executed.push(1);
-				return ([[serverStub]]);
-			}
-		}, {
-			name: 'bar',
-			run: function (log, state) {
-				t.deepEqual(state,
-				    { bar: [42, 24], baz: 'hi' });
-				executed.push(2);
-				return ([[serverStub]]);
-			}
-		}, {
-			name: 'baz',
-			run: function (log, state) {
-				t.deepEqual(state,
-				    { bar: [42, 24], baz: 'hi' });
-				executed.push(3);
-				return ([[serverStub]]);
-			}
-		}
-	];
-
-	allocator = new Allocator(logStub);
-	allocator.allocServerExpr = plugins;
-
-	results = allocator.allocate([serverStub], {}, {}, {});
 	t.deepEqual(executed, [1, 2, 3]);
-	t.deepEqual(results[0], serverStub);
-
-	expected = [
-		{
-			step: 'Received by DAPI',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
-		},
-		{
-			step: 'foo',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
-		},
-		{
-			step: 'bar',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
-		},
-		{
-			step: 'baz',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
-		}
-	];
-
-	t.deepEqual(results[1], expected);
 
 	t.end();
 });
@@ -217,48 +134,33 @@ test('algorithms shortcuts with no servers', function (t) {
 			run: function () {
 				executed.push(1);
 				return ([[serverStub]]);
-			},
-			post: function (log, state, server) {
-				t.equal(server, undefined);
-				executed.push(2);
 			}
 		}, {
 			name: 'bar',
 			run: function () {
-				executed.push(3);
+				executed.push(2);
 				return ([[serverStub]]);
-			},
-			post: function (log, state, server) {
-				t.equal(server, undefined);
+			}
+		}, {
+			name: 'baz',
+			run: function () {
+				executed.push(3);
+				return ([[]]);
+			}
+		}, {
+			name: 'baz',
+			run: function () {
 				executed.push(4);
-			}
-		}, {
-			name: 'baz',
-			run: function () {
-				executed.push(5);
 				return ([[]]);
-			},
-			post: function (log, state, server) {
-				t.equal(server, undefined);
-				executed.push(6);
-			}
-		}, {
-			name: 'baz',
-			run: function () {
-				executed.push(7);
-				return ([[]]);
-			},
-			post: function () {
-				executed.push(8);
 			}
 		}
 	];
 
-	allocator = new Allocator(logStub);
+	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	results = allocator.allocate([serverStub], {}, {}, {});
-	t.deepEqual(executed, [1, 3, 5, 6, 4, 2]);
+	t.deepEqual(executed, [1, 2, 3]);
 	t.equal(results[0], undefined);
 
 	expected = [
@@ -302,7 +204,7 @@ test('dispatch 1', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, state, servers) {
+			run: function (log, servers) {
 				t.deepEqual(servers, serverStubs);
 				executed.push(1);
 				return ([[serverStubs[0],
@@ -313,7 +215,7 @@ test('dispatch 1', function (t) {
 			'or',
 			{
 				name: 'bar',
-				run: function (log, state, servers) {
+				run: function (log, servers) {
 					t.deepEqual(servers,
 					    [serverStubs[0], serverStubs[2],
 					    serverStubs[3]]);
@@ -322,7 +224,7 @@ test('dispatch 1', function (t) {
 				}
 			}, {
 				name: 'baz',
-				run: function (log, state, servers) {
+				run: function (log, servers) {
 					t.deepEqual(servers,
 					    [serverStubs[0], serverStubs[2],
 					    serverStubs[3]]);
@@ -333,7 +235,7 @@ test('dispatch 1', function (t) {
 		]
 	];
 
-	allocator = new Allocator(logStub);
+	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	results = allocator.allocate(serverStubs, {}, {}, {});
@@ -386,7 +288,7 @@ test('dispatch 2', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, state, servers) {
+			run: function (log, servers) {
 				t.deepEqual(servers, serverStubs);
 				executed.push(1);
 				return ([[serverStubs[0],
@@ -397,7 +299,7 @@ test('dispatch 2', function (t) {
 			'or',
 			{
 				name: 'bar',
-				run: function (log, state, servers) {
+				run: function (log, servers) {
 					t.deepEqual(servers,
 					    [serverStubs[0],
 					    serverStubs[2],
@@ -407,14 +309,14 @@ test('dispatch 2', function (t) {
 				}
 			}, {
 				name: 'baz',
-				run: function (log, state, servers) {
+				run: function (log, servers) {
 					t.ok(false);
 				}
 			}
 		]
 	];
 
-	allocator = new Allocator(logStub);
+	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	results = allocator.allocate(serverStubs, {}, {}, {});
@@ -463,7 +365,7 @@ test('dispatch 3', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, state, servers) {
+			run: function (log, servers) {
 				t.deepEqual(servers, serverStubs);
 				executed.push(1);
 				return ([[]]);
@@ -473,19 +375,19 @@ test('dispatch 3', function (t) {
 			'or',
 			{
 				name: 'bar',
-				run: function (log, state, servers) {
+				run: function (log, servers) {
 					t.ok(false);
 				}
 			}, {
 				name: 'baz',
-				run: function (log, state, servers) {
+				run: function (log, servers) {
 					t.ok(false);
 				}
 			}
 		]
 	];
 
-	allocator = new Allocator(logStub);
+	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	results = allocator.allocate(serverStubs, {}, {}, {});
@@ -529,7 +431,7 @@ test('pipe 1', function (t) {
 	var plugins = [
 		{
 			name: 'foo',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 				executed.push(1);
@@ -537,7 +439,7 @@ test('pipe 1', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs.slice(0, 3));
 				executed.push(2);
@@ -545,7 +447,7 @@ test('pipe 1', function (t) {
 			}
 		}, {
 			name: 'baz',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs.slice(1, 3));
 				executed.push(3);
@@ -554,7 +456,7 @@ test('pipe 1', function (t) {
 		}
 	];
 
-	allocator = new Allocator(logStub);
+	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 
 	results = allocator._pipe(plugins, serverStubs, { vm: { foo: 1 } });
 	serverStub = results[0];
@@ -593,7 +495,7 @@ test('pipe 2', function (t) {
 	var plugins = [
 		{
 			name: 'foo',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 				executed.push(1);
@@ -601,7 +503,7 @@ test('pipe 2', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs.slice(0, 3));
 				executed.push(2);
@@ -609,13 +511,13 @@ test('pipe 2', function (t) {
 			}
 		}, {
 			name: 'baz',
-			run: function (log, state, args) {
+			run: function (log, args) {
 				t.ok(false);
 			}
 		}
 	];
 
-	allocator = new Allocator(logStub);
+	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 
 	results = allocator._pipe(plugins, serverStubs, { vm: { foo: 1 } });
 	serverStub = results[0];
@@ -647,7 +549,7 @@ test('or 1', function (t) {
 	var plugins = [
 		{
 			name: 'foo',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 				executed.push(1);
@@ -655,7 +557,7 @@ test('or 1', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 				executed.push(2);
@@ -663,7 +565,7 @@ test('or 1', function (t) {
 			}
 		}, {
 			name: 'baz',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 				executed.push(3);
@@ -672,7 +574,7 @@ test('or 1', function (t) {
 		}
 	];
 
-	var allocator = new Allocator(logStub);
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 
 	var results = allocator._or(plugins, serverStubs, { vm: { foo: 1 } });
 	var serverStub = results[0];
@@ -700,7 +602,7 @@ test('or 2', function (t) {
 	var plugins = [
 		{
 			name: 'foo',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 				executed.push(1);
@@ -708,7 +610,7 @@ test('or 2', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 				executed.push(2);
@@ -716,13 +618,13 @@ test('or 2', function (t) {
 			}
 		}, {
 			name: 'baz',
-			run: function (log, state, servers, constraints) {
+			run: function (log, servers, constraints) {
 				t.ok(false);
 			}
 		}
 	];
 
-	var allocator = new Allocator(logStub);
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 
 	var results = allocator._or(plugins, serverStubs, { vm: { foo: 1 } });
 	var serverStub		= results[0];
@@ -736,56 +638,6 @@ test('or 2', function (t) {
 	    [ [],
 	    [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
 	    '94d987a9-968e-47ce-a959-4f14324bef7f' ] ]);
-
-	t.end();
-});
-
-
-test('cleanup', function (t) {
-	var executed = [];
-
-	var dup = {
-		name: 'dup',
-		post: function (log, state, server, servers, constraints) {
-			t.deepEqual(constraints, { foo: 1 });
-			t.deepEqual(server, { bar: 2 });
-			t.deepEqual(servers, [1, 2, 3, 4]);
-			executed.push(1);
-		}
-	};
-
-	var plugins = [
-		dup,
-		{
-			name: 'foo',
-			post: function (log, state, server,
-			    servers, constraints) {
-				t.deepEqual(constraints, { foo: 1 });
-				t.deepEqual(server, { bar: 2 });
-				t.deepEqual(servers, [1, 2, 3, 4]);
-				executed.push(2);
-			}
-		}, {
-			name: 'bar'
-		},
-		dup,
-		{
-			name: 'baz',
-			post: function (log, state, server,
-			    servers, constraints) {
-				t.deepEqual(constraints, { foo: 1 });
-				t.deepEqual(server, { bar: 2 });
-				t.deepEqual(servers, [1, 2, 3, 4]);
-				executed.push(3);
-			}
-		}
-	];
-
-	var allocator = new Allocator(logStub);
-
-	allocator._cleanup(plugins, { bar: 2 }, [1, 2, 3, 4], { foo: 1 });
-
-	t.deepEqual(executed, [3, 1, 2]);
 
 	t.end();
 });
@@ -827,7 +679,7 @@ test('create plugin summary', function (t) {
 		}
 	];
 
-	var allocator = new Allocator(logStub);
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	var summary = allocator._createPluginSummary(serverStubs,
 		visitedAlgorithms, remainingServers, reasonsRemoved);
 
@@ -873,13 +725,12 @@ test('create plugin summary', function (t) {
 
 
 test('load available algorithms', function (t) {
-	var allocator = new Allocator(logStub);
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	var algorithms = allocator._loadAvailableAlgorithms();
 
 	var names = Object.keys(algorithms).sort();
 
 	var expectedNames = [
-		'calculate-recent-vms',
 		'calculate-server-unreserved',
 		'calculate-ticketed-vms',
 		'hard-filter-capness',
@@ -890,8 +741,6 @@ test('load available algorithms', function (t) {
 		'hard-filter-min-disk',
 		'hard-filter-min-ram',
 		'hard-filter-overprovision-ratios',
-		'hard-filter-owner-same-racks',
-		'hard-filter-owner-same-servers',
 		'hard-filter-owners-servers',
 		'hard-filter-platform-versions',
 		'hard-filter-reserved',
@@ -899,25 +748,19 @@ test('load available algorithms', function (t) {
 		'hard-filter-running',
 		'hard-filter-setup',
 		'hard-filter-sick-servers',
-		'hard-filter-ticketed-servers',
 		'hard-filter-traits',
 		'hard-filter-vlans',
 		'hard-filter-vm-count',
 		'hard-filter-volumes-from',
 		'identity',
 		'override-overprovisioning',
-		'pick-random',
-		'pick-weighted-random',
 		'score-current-platform',
 		'score-next-reboot',
 		'score-num-owner-zones',
 		'score-uniform-random',
 		'score-unreserved-disk',
 		'score-unreserved-ram',
-		'soft-filter-large-servers',
-		'soft-filter-locality-hints',
-		'soft-filter-owner-many-zones',
-		'soft-filter-recent-servers'
+		'soft-filter-locality-hints'
 	];
 
 	t.deepEqual(names, expectedNames);
@@ -927,7 +770,7 @@ test('load available algorithms', function (t) {
 
 
 test('load algorithms', function (t) {
-	var allocator = new Allocator(logStub);
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	var algorithm = allocator._loadAlgorithm('hard-filter-headnode');
 
 	t.equal(algorithm.name, 'Servers which are not headnodes');
@@ -950,7 +793,7 @@ test('create expression', function (t) {
 		]
 	];
 
-	var allocator = new Allocator(logStub);
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	var availableAlgorithms = allocator._loadAvailableAlgorithms();
 	var expression = allocator._createExpression(description,
 	    availableAlgorithms);
@@ -974,67 +817,8 @@ test('create expression', function (t) {
 });
 
 
-test('deepCopy', function (t) {
-	var allocator = new Allocator(logStub);
-	var original, clone;
-	var frozen;
-
-	original = null;
-	clone = allocator._deepCopy(original);
-	t.equal(original, null);
-	t.equal(clone, null);
-
-	original = 1;
-	clone = allocator._deepCopy(original);
-	t.equal(original, 1);
-	t.equal(clone, 1);
-
-	original = 'foo';
-	clone = allocator._deepCopy(original);
-	t.equal(original, 'foo');
-	t.equal(clone, 'foo');
-
-	original = [1];
-	clone = allocator._deepCopy(original);
-	t.deepEqual(original, [1]);
-	t.deepEqual(clone, [1]);
-	clone.push(2);
-	t.deepEqual(original, [1]);
-
-	original = { a: 1 };
-	clone = allocator._deepCopy(original);
-	t.deepEqual(original, { a: 1 });
-	t.deepEqual(clone, { a: 1 });
-	clone.a = 2;
-	t.deepEqual(original, { a: 1 });
-
-	frozen = new Buffer('lolcats');
-
-	original = new Buffer('lolcats');
-	clone = allocator._deepCopy(original);
-	t.deepEqual(original, frozen);
-	t.deepEqual(clone, frozen);
-	clone.writeUInt8(67, 0);
-	t.deepEqual(original, frozen);
-
-	original = { a: [1, { b: 2 }, frozen, 'foo'] };
-	clone = allocator._deepCopy(original);
-	t.deepEqual(original, { a: [1, { b: 2 }, frozen, 'foo'] });
-	t.deepEqual(clone, { a: [1, { b: 2 }, frozen, 'foo'] });
-	clone.a[3] = 'bar';
-	clone.a[2].writeUInt8(67, 0);
-	clone.a[1].b = 3;
-	clone.a[1].c = 3;
-	clone.a[0] = 2;
-	clone.a.push(null);
-	t.deepEqual(original, { a: [1, { b: 2 }, frozen, 'foo'] });
-
-	t.end();
-});
-
-
 test('server capacity', function (t) {
-	var allocator = new Allocator(logStub);
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	var results = allocator.serverCapacity(common.getExampleServers());
 
 	var expectedResults = [ {

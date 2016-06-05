@@ -111,7 +111,6 @@ test('scoreNumOwnerZones()', function (t) {
 			'increased score by 4; 0 owner zones found'
 	};
 
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		defaults: {
@@ -119,12 +118,11 @@ test('scoreNumOwnerZones()', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -146,7 +144,6 @@ test('scoreNumOwnerZones() with negative default weight', function (t) {
 			'increased score by 0; 0 owner zones found'
 	};
 
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		defaults: {
@@ -154,12 +151,11 @@ test('scoreNumOwnerZones() with negative default weight', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -172,7 +168,6 @@ test('scoreNumOwnerZones() with zero default weight', function (t) {
 		skip: 'Resolved score weight to 0; no changes'
 	};
 
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		defaults: {
@@ -180,12 +175,11 @@ test('scoreNumOwnerZones() with zero default weight', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -207,7 +201,6 @@ test('scoreNumOwnerZones() with min-owner default set', function (t) {
 			'increased score by 2; 0 owner zones found'
 	};
 
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		defaults: {
@@ -216,12 +209,11 @@ test('scoreNumOwnerZones() with min-owner default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -234,7 +226,6 @@ test('scoreNumOwnerZones() with unrelated spread default set', function (t) {
 		skip: 'pkg or default set to spread with: min-ram'
 	};
 
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		defaults: {
@@ -243,12 +234,11 @@ test('scoreNumOwnerZones() with unrelated spread default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -270,19 +260,17 @@ test('scoreNumOwnerZones() with min-owner package attr set', function (t) {
 			'increased score by 2; 0 owner zones found'
 	};
 
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		defaults: { weight_unreserved_ram: 4 },
 		pkg: { alloc_server_spread: 'min-owner' }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -304,7 +292,6 @@ test('scoreNumOwnerZones() with package and default set', function (t) {
 			'increased score by 2; 0 owner zones found'
 	};
 
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		pkg: { alloc_server_spread: 'min-owner' },
@@ -314,12 +301,11 @@ test('scoreNumOwnerZones() with package and default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -332,19 +318,17 @@ test('scoreNumOwnerZones() with unrelated package attr set', function (t) {
 		skip: 'pkg or default set to spread with: max-ram'
 	};
 
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		defaults: { weight_unreserved_ram: 4 },
 		pkg: { alloc_server_spread: 'max-ram' }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -360,18 +344,16 @@ test('scoreNumOwnerZones() with one server', function (t) {
 			'increased score by 4; 12 owner zones found'
 	};
 
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		defaults: { weight_num_owner_zones: 4 }
 	};
 
-	var results = scorer.run(LOG, state, [clone(SERVERS[0])], constraints);
+	var results = scorer.run(LOG, [clone(SERVERS[0])], constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -379,18 +361,16 @@ test('scoreNumOwnerZones() with one server', function (t) {
 
 
 test('scoreNumOwnerZones() without servers', function (t) {
-	var state = {};
 	var constraints = {
 		vm: { owner_uuid: OWNER_UUID },
 		defaults: { weight_num_owner_zones: 4 }
 		};
 
-	var results = scorer.run(LOG, state, [], constraints);
+	var results = scorer.run(LOG, [], constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, []);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();

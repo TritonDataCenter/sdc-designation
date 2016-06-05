@@ -21,10 +21,12 @@ var log = {
 	error: function () {}
 };
 
+
 var SERVERS = common.getExampleServers();
 SERVERS[0].traits = {
 	cabbages: true
 };
+
 
 var IMG = {
 	uuid: '80072e7c-8e53-44d0-8755-2cbef6151c03',
@@ -54,6 +56,7 @@ var IMG = {
 	v: 2
 };
 
+
 var PKG = {
 	name: 'foobarbaz',
 	version: '1.0.0',
@@ -79,6 +82,7 @@ var PKG = {
 	v: 1
 };
 
+
 var VM = {
 	vm_uuid: '6c5ac296-ff76-4581-8d39-4b3c35484082',
 	owner_uuid: 'b4f66289-c30f-4d29-9645-21f8f939bcb2',
@@ -96,6 +100,7 @@ var VM = {
 		]
 	}
 };
+
 
 var TICKETS = [
 	{
@@ -118,9 +123,57 @@ var TICKETS = [
 	}
 ];
 
+
+var ALGO_DESC = [
+	'pipe', 'hard-filter-setup',
+		'hard-filter-running',
+		'hard-filter-invalid-servers',
+		'hard-filter-volumes-from',
+		'calculate-ticketed-vms',
+		'hard-filter-reserved',
+		'hard-filter-headnode',
+		'hard-filter-vm-count',
+		'hard-filter-capness',
+		'hard-filter-vlans',
+		'hard-filter-platform-versions',
+		'hard-filter-traits',
+		'hard-filter-owners-servers',
+		'hard-filter-sick-servers',
+		'calculate-server-unreserved',
+		'hard-filter-overprovision-ratios',
+		'hard-filter-min-ram',
+		'hard-filter-min-disk',
+		'hard-filter-min-cpu',
+		'soft-filter-locality-hints',
+		['or', 'hard-filter-reservoir',
+			'identity'],
+		['or', 'hard-filter-large-servers',
+			'identity' ],
+		'score-unreserved-ram',
+		'score-unreserved-disk',
+		'score-num-owner-zones',
+		'score-current-platform',
+		'score-next-reboot',
+		'score-uniform-random'
+];
+
+
+var DEFAULTS = {
+	weight_current_platform: 1,
+	weight_next_reboot: 0.5,
+	weight_num_owner_zones: 0,
+	weight_uniform_random: 0.5,
+	weight_unreserved_disk: 1,
+	weight_unreserved_ram: 2,
+	filter_headnode: true,
+	filter_min_resources: true,
+	filter_large_servers: true
+};
+
+
 function newAllocator(cb)
 {
-	var allocator = new Allocator(log);
+	var allocator = new Allocator(log, ALGO_DESC, DEFAULTS);
 
 	(function waitTilLoaded() {
 		if (!allocator.serverCapacityExpr)
@@ -229,9 +282,6 @@ test('allocate 1', function (t) {
 		}, {
 			/* JSSTYLED */
 			step: 'Servers that had consecutive failed provisions recently',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
-		}, {
-			step: 'Add VMs which have been allocated to recently',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
 			step: 'Calculate unreserved resources on each server',
@@ -419,11 +469,6 @@ test('allocate 2', function (t) {
 		}, {
 			/* JSSTYLED */
 			step: 'Servers that had consecutive failed provisions recently',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Add VMs which have been allocated to recently',
 			remaining: [
 				'00000000-0000-0000-0000-0025909437d4'
 			]

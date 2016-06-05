@@ -41,15 +41,13 @@ test('filterMinRam()', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(0, 2);
-	var state = {};
 	var constraints = { vm: { ram: 512 }, pkg: {}, defaults: {} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		'7a8c759c-2a82-4d9b-bed4-7049b71197cb':
@@ -90,19 +88,17 @@ test('filterMinRam() with KVM', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(2, 4);
-	var state = {};
 	var constraints = {
 		vm: { ram: 512, brand: 'kvm' },
 		pkg: { overprovision_ram: 2.0 },
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		'f667e0fa-33db-48da-a5d0-9fe837ce93fc':
@@ -141,18 +137,16 @@ test('filterMinRam() without pkg', function (t) {
 	];
 
 	var expectedServers = givenServers;
-	var state = {};
 	var constraints = {
 		vm: { ram: 512 },
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();
@@ -181,17 +175,15 @@ test('filterMinRam() with override', function (t) {
 		}
 	];
 
-	var state = {};
 	var constraints = {
 		vm: { ram: 512 },
 		pkg: {},
 		defaults: { filter_min_resources: false }
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 
 	t.deepEqual(results[0], givenServers);
-	t.deepEqual(state, {});
 
 	t.end();
 });
@@ -218,19 +210,17 @@ test('filterMinRam() with overprovision ratios', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(2, 4);
-	var state = {};
 	var constraints = {
 		vm: { ram: 768 },
 		pkg: { overprovision_ram: 1.5 },
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		'f667e0fa-33db-48da-a5d0-9fe837ce93fc':
@@ -245,7 +235,6 @@ test('filterMinRam() with overprovision ratios', function (t) {
 
 
 test('filterMinRam() with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = {
 		vm: { ram: 512 },
@@ -253,12 +242,11 @@ test('filterMinRam() with no servers', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();

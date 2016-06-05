@@ -45,11 +45,10 @@ test('disable overprovisioning', function (t) {
 		}
 	];
 
-	var state = {};
 	var pkg = {};
 	var constraints = { pkg: pkg, defaults: {} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
@@ -70,7 +69,7 @@ test('disable overprovisioning', function (t) {
 	};
 	constraints = { pkg: pkg, defaults: {} };
 
-	filter.run(log, state, givenServers, constraints);
+	filter.run(log, givenServers, constraints);
 
 	t.deepEqual(pkg, {
 		overprovision_cpu: 4,
@@ -109,10 +108,9 @@ test('disable overprovisioning without pkg', function (t) {
 		}
 	];
 
-	var state = {};
 	var constraints = { defaults: {} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
@@ -135,13 +133,12 @@ function (t) {
 	// deep copy
 	var expectedServers = JSON.parse(JSON.stringify(givenServers));
 
-	var state = {};
 	var pkg = {};
 	var constraints = { pkg: pkg, defaults: {
 		disable_override_overprovisioning: true
 	} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
@@ -180,7 +177,6 @@ test('disable overprovisioning with override_overprovision_*', function (t) {
 		}
 	];
 
-	var state = {};
 	var pkg = {};
 	var constraints = { pkg: pkg, defaults: {
 		overprovision_ratio_cpu: 6,
@@ -188,7 +184,7 @@ test('disable overprovisioning with override_overprovision_*', function (t) {
 		overprovision_ratio_disk: 0.5
 	} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
@@ -213,7 +209,7 @@ test('disable overprovisioning with override_overprovision_*', function (t) {
 		overprovision_ratio_disk: 0.5
 	} };
 
-	filter.run(log, state, givenServers, constraints);
+	filter.run(log, givenServers, constraints);
 
 	t.deepEqual(pkg, {
 		overprovision_cpu: 6,
@@ -252,10 +248,9 @@ test('disable overprovisioning without pkg', function (t) {
 		}
 	];
 
-	var state = {};
 	var constraints = { defaults: {} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
@@ -267,16 +262,14 @@ test('disable overprovisioning without pkg', function (t) {
 
 
 test('disable overprovisioning with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = { pkg: {}, defaults: {} };
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();

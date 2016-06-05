@@ -26,15 +26,13 @@ test('filterReserved()', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(0, 2);
-	var state = {};
 	var constraints = {};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();
@@ -42,16 +40,14 @@ test('filterReserved()', function (t) {
 
 
 test('filterReserved() with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = {};
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();

@@ -45,17 +45,15 @@ test('scoreUnreservedRam()', function (t) {
 		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 2'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: { weight_unreserved_ram: 4 }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -74,17 +72,15 @@ test('scoreUnreservedRam() with negative default weight', function (t) {
 		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 2'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: { weight_unreserved_ram: -4 }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -97,17 +93,15 @@ test('scoreUnreservedRam() with zero default weight', function (t) {
 		skip: 'Resolved score weight to 0; no changes'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: { weight_unreserved_ram: 0 }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -126,7 +120,6 @@ test('scoreUnreservedRam() with min-ram default set', function (t) {
 		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 1'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: {
 			weight_unreserved_ram: 4,
@@ -134,12 +127,11 @@ test('scoreUnreservedRam() with min-ram default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -158,7 +150,6 @@ test('scoreUnreservedRam() with max-ram default set', function (t) {
 		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 1'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: {
 			weight_unreserved_ram: 4,
@@ -166,12 +157,11 @@ test('scoreUnreservedRam() with max-ram default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -184,7 +174,6 @@ test('scoreUnreservedRam() with unrelated spread default set', function (t) {
 		skip: 'pkg or default set to score with other plugin'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: {
 			weight_unreserved_ram: 4,
@@ -192,12 +181,11 @@ test('scoreUnreservedRam() with unrelated spread default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -216,7 +204,6 @@ test('scoreUnreservedRam() with package attr set', function (t) {
 		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 1'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: {
 			weight_unreserved_ram: 4
@@ -224,12 +211,11 @@ test('scoreUnreservedRam() with package attr set', function (t) {
 		pkg: { alloc_server_spread: 'min-ram' }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -248,7 +234,6 @@ test('scoreUnreservedRam() with package and default set', function (t) {
 		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 1'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: {
 			weight_unreserved_ram: 4,
@@ -257,12 +242,11 @@ test('scoreUnreservedRam() with package and default set', function (t) {
 		pkg: { alloc_server_spread: 'min-ram' }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -275,7 +259,6 @@ test('scoreUnreservedRam() with unrelated package attr set', function (t) {
 		skip: 'pkg or default set to score with other plugin'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: {
 			weight_unreserved_ram: 4
@@ -283,12 +266,11 @@ test('scoreUnreservedRam() with unrelated package attr set', function (t) {
 		pkg: { alloc_server_spread: 'min-owner' }
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -303,17 +285,15 @@ test('scoreUnreservedRam() with one server', function (t) {
 		'26888f40-bae2-4b68-9053-c91bc82de296': 'increased score by 4'
 	};
 
-	var state = {};
 	var constraints = {
 		defaults: { weight_unreserved_ram: 4 }
 	};
 
-	var results = scorer.run(LOG, state, clone([SERVERS[0]]), constraints);
+	var results = scorer.run(LOG, clone([SERVERS[0]]), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, expectedReasons);
 
 	t.end();
@@ -321,17 +301,15 @@ test('scoreUnreservedRam() with one server', function (t) {
 
 
 test('scoreUnreservedRam() without servers', function (t) {
-	var state = {};
 	var constraints = {
 		defaults: { weight_unreserved_ram: 4 }
 	};
 
-	var results = scorer.run(LOG, state, [], constraints);
+	var results = scorer.run(LOG, [], constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, []);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();

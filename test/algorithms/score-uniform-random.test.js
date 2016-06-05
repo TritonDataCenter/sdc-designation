@@ -71,7 +71,6 @@ test('scoreUniformRandom() with defaults and package attr', function (t) {
 
 
 test('scoreUniformRandom() skip wrong spread', function (t) {
-	var state = {};
 	var constraints = {
 		defaults: {
 			weight_uniform_random: 4,
@@ -79,18 +78,17 @@ test('scoreUniformRandom() skip wrong spread', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	var results = scorer.run(LOG, clone(SERVERS), constraints);
 	var scoredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(scoredServers, SERVERS);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {
 		skip: 'pkg or default set to spread with: min-owner'
 	});
 
 	constraints = { pkg: {}, defaults: { server_spread: 'min-owner' } };
-	results = scorer.run(LOG, state, clone(SERVERS), constraints);
+	results = scorer.run(LOG, clone(SERVERS), constraints);
 	t.deepEqual(results[0], SERVERS);
 
 	t.end();
@@ -106,16 +104,13 @@ test('name', function (t) {
 function
 checkRandom(t, constraints, expectedMax)
 {
-	var state = {};
 	var scores = SERVERS.map(function () { return ([]); });
 
 	for (var i = 0; i !== 25; i++) {
-		var results = scorer.run(LOG, state, clone(SERVERS),
-			constraints);
+		var results = scorer.run(LOG, clone(SERVERS), constraints);
 		var scored = results[0];
 		var reasons = results[1];
 
-		t.deepEqual(state, {});
 		t.ok(reasons);
 
 		for (var j = 0; j !== SERVERS.length; j++) {

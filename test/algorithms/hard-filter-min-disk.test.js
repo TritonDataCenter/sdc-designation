@@ -46,7 +46,6 @@ test('filterMinDisk()', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(0, 2);
-	var state = {};
 	var constraints = {
 		vm: { quota: 5120 },
 		img: {},
@@ -54,12 +53,11 @@ test('filterMinDisk()', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		'f07f6c2c-8f9c-4b77-89fe-4b777dff5826':
@@ -100,19 +98,17 @@ test('filterMinDisk() without pkg', function (t) {
 	];
 
 	var expectedServers = givenServers;
-	var state = {};
 	var constraints = {
 		vm: { quota: 5120 },
 		img: {},
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();
@@ -143,7 +139,6 @@ test('filterMinDisk() with override', function (t) {
 		}
 	];
 
-	var state = {};
 	var constraints = {
 		vm: { quota: 5120 },
 		img: {},
@@ -151,10 +146,9 @@ test('filterMinDisk() with override', function (t) {
 		defaults: { filter_min_resources: false }
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 
 	t.deepEqual(results[0], givenServers);
-	t.deepEqual(state, {});
 
 	t.end();
 });
@@ -185,7 +179,6 @@ test('filterMinDisk() with overprovision ratios - kvm', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(2, 4);
-	var state = {};
 	var constraints = {
 		vm:  { quota: 10 }, // in GiB
 		img: {
@@ -202,12 +195,11 @@ test('filterMinDisk() with overprovision ratios - kvm', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		'79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf':
@@ -248,7 +240,6 @@ test('filterMinDisk() with overprovision ratios - zone', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(1, 4);
-	var state = {};
 	var constraints = {
 		vm:  { quota: 29 }, // in GiB
 		img: {
@@ -264,12 +255,11 @@ test('filterMinDisk() with overprovision ratios - zone', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		'79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf':
@@ -283,7 +273,6 @@ test('filterMinDisk() with overprovision ratios - zone', function (t) {
 
 
 test('filterMinDisk() with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = {
 		vm: { quota: 5 }, // in GiB
@@ -297,12 +286,11 @@ test('filterMinDisk() with no servers', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();
@@ -328,15 +316,13 @@ test('filterMinDisk() with no disk', function (t) {
 		}
 	];
 
-	var state = {};
 	var constraints = { vm: {}, img: {}, pkg: {}, defaults: {} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, givenServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();

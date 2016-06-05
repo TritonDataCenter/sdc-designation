@@ -43,7 +43,6 @@ test('filterMinCpu()', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(0, 2);
-	var state = {};
 	var constraints = {
 		vm: { cpu_cap: 900 },
 		img: {},
@@ -51,12 +50,11 @@ test('filterMinCpu()', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		'f07f6c2c-8f9c-4b77-89fe-4b777dff5826':
@@ -97,19 +95,17 @@ test('filterMinCpu() without pkg', function (t) {
 	];
 
 	var expectedServers = givenServers;
-	var state = {};
 	var constraints = {
 		vm: { cpu_cap: 900 },
 		img: {},
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();
@@ -140,7 +136,6 @@ test('filterMinCpu() with override', function (t) {
 		}
 	];
 
-	var state = {};
 	var constraints = {
 		vm: { cpu_cap: 900 },
 		img: {},
@@ -148,10 +143,9 @@ test('filterMinCpu() with override', function (t) {
 		defaults: { filter_min_resources: false }
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 
 	t.deepEqual(results[0], givenServers);
-	t.deepEqual(state, {});
 
 	t.end();
 });
@@ -182,7 +176,6 @@ test('filterMinCpu() with overprovision ratios', function (t) {
 	];
 
 	var expectedServers = givenServers.slice(2, 4);
-	var state = {};
 	var constraints = {
 		vm:  { cpu_cap: 900 },
 		img: {},
@@ -190,12 +183,11 @@ test('filterMinCpu() with overprovision ratios', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {
 		'79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf':
@@ -228,15 +220,13 @@ test('filterMinCpu with no cpu', function (t) {
 		}
 	];
 
-	var state = {};
 	var constraints = { vm: {}, img: {}, pkg: {}, defaults: {} };
 
-	var results = filter.run(log, state, givenServers, constraints);
+	var results = filter.run(log, givenServers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(filteredServers, givenServers);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();
@@ -244,7 +234,6 @@ test('filterMinCpu with no cpu', function (t) {
 
 
 test('filterMinCpu() with no servers', function (t) {
-	var state = {};
 	var servers = [];
 	var constraints = {
 		vm:  { cpu_cap: 900 },
@@ -253,12 +242,11 @@ test('filterMinCpu() with no servers', function (t) {
 		defaults: {}
 	};
 
-	var results = filter.run(log, state, servers, constraints);
+	var results = filter.run(log, servers, constraints);
 	var filteredServers = results[0];
 	var reasons = results[1];
 
 	t.equal(filteredServers.length, 0);
-	t.deepEqual(state, {});
 
 	var expectedReasons = {};
 	t.deepEqual(reasons, expectedReasons);

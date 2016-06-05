@@ -185,12 +185,10 @@ test('calculateServerUnreserved()', function (t) {
 		}
 	];
 
-	var state = {};
 	var constraints = {};
-	var results = filter.run(log, state, serversInfo, constraints);
+	var results = filter.run(log, serversInfo, constraints);
 	var servers = results[0];
 	var reasons = results[1];
-	t.deepEqual(state, {});
 	t.deepEqual(servers, serversInfo);
 	t.deepEqual(reasons, undefined);
 
@@ -219,16 +217,14 @@ test('calculateServerUnreserved()', function (t) {
 
 
 test('calculateServerUnreserved() with no servers', function (t) {
-	var state = {};
 	var serversInfo = [];
 	var constraints = {};
 
-	var results = filter.run(log, state, serversInfo, constraints);
+	var results = filter.run(log, serversInfo, constraints);
 	var servers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(servers, []);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, undefined);
 
 	t.end();

@@ -24,14 +24,12 @@ test('filterInvalidServers()', function (t) {
 	var serversInfo = JSON.parse(mod_fs.readFileSync(__dirname +
 	    '/hf-invalid-servers.json'));
 
-	var state = {};
 	var constraints = {};
 
-	var results = filter.run(log, state, serversInfo, constraints);
+	var results = filter.run(log, serversInfo, constraints);
 	var servers = results[0];
 	var reasons = results[1];
 
-	t.deepEqual(state, {});
 	t.equal(servers.length, 1);
 	t.deepEqual(servers[0].uuid, '2bb4c1de-16b5-11e4-8e8e-07469af29312');
 
@@ -53,16 +51,14 @@ test('filterInvalidServers()', function (t) {
 
 
 test('filterInvalidServers() with no servers', function (t) {
-	var state = {};
 	var serversInfo = [];
 	var constraints = {};
 
-	var results = filter.run(log, state, serversInfo, constraints);
+	var results = filter.run(log, serversInfo, constraints);
 	var servers = results[0];
 	var reasons = results[1];
 
 	t.deepEqual(servers, []);
-	t.deepEqual(state, {});
 	t.deepEqual(reasons, {});
 
 	t.end();
