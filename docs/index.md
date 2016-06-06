@@ -397,8 +397,6 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | hard-filter-min-disk            | Removes CNs with insufficient disk                          |
 | hard-filter-min-ram             | Removes CNs with insufficient RAM                           |
 | hard-filter-overprovision-ratios | Removes CNs with different overprovision ratios than the request    |
-| hard-filter-owner-same-racks    | Removes racks already containing an owner's VM(s)           |
-| hard-filter-owner-same-servers  | Removes servers already containing an owner's VM(s)         |
 | hard-filter-platform-versions   | Removes servers that don't pass image manifest platform requirements |
 | hard-filter-reserved            | Removes reserved CNs                                        |
 | hard-filter-reservoir           | Removes reservoir CNs                                       |
@@ -410,11 +408,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | hard-filter-volumes-from        | Removes CNs which do not contain VMs listed in docker:volumesfrom metadata, if provided |
 | identity                        | Returns the same servers it received                        |
 | override-overprovisioning       | Substitutes package and server overprovision data for own defaults   |
-| pick-random                     | Pick a random CN from a list                                |
-| pick-weighted-random            | Pick one of top 20% of CNs so far                           |
-| soft-filter-large-servers       | Tries to reserve some servers for large VMs                 |
 | soft-filter-locality-hints      | Tries to place VM near or far from other given VMs          |
-| soft-filter-recent-servers      | Tries to ignore recently allocated-to CNs, to prevent races |
 | score-current-platform          | Make CNs running more recent platforms more likely to be selected |
 | score-next-reboot               | Make CNs with reboots schedule much further in the future more likely to be selected |
 | score-num-owner-zones           | Make CNs with fewer VMs belonging to current owner more likely to be selected |
@@ -430,8 +424,7 @@ fails to fulfill some requirement. Soft filters remove some compute nodes from
 consideration if there's still enough compute nodes left afterwards to
 effectively allocate with. Scorers increase the score on compute nodes based on
 how desirable that node is along some dimension; higher scores are more
-desirable. Pickers pick one of the compute nodes, but they have been almost
-entirely superceded by scorers.
+desirable.
 
 
 

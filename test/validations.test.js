@@ -183,6 +183,29 @@ var TICKET = {
 	}
 };
 
+var DEFAULTS = {
+	filter_headnode: true,
+	filter_min_resources: true,
+	filter_large_servers: true,
+	filter_docker_min_platform: '20130308T102805Z',
+	filter_vm_limit: true,
+	filter_owner_server: {
+		'ee6ab4fc-2bcd-11e6-a757-28cfe91f7d53':
+			'server.unreserved_ram > 256'
+	},
+	disable_override_overprovisioning: true,
+	overprovision_ratio_cpu:  1.0,
+	overprovision_ratio_ram:  1.0,
+	overprovision_ratio_disk: 1.0,
+	weight_current_platform:  0.5,
+	weight_next_reboot: 0.5,
+	weight_num_owner_zones: 0.5,
+	weight_uniform_random:  0.5,
+	weight_unreserved_disk: 0.5,
+	weight_unreserved_ram:  0.5
+};
+
+
 function deepCopy(obj)
 {
 	return (JSON.parse(JSON.stringify(obj)));
@@ -472,6 +495,19 @@ test('validate tickets', function (t) {
 	var badTicket = deepCopy(TICKET);
 	badTicket.id = 'foo';
 	res = validations.validateTicket([badTicket]);
+	t.ok(res);
+
+	t.end();
+});
+
+
+test('validate defaults', function (t) {
+	var res = validations.validateDefaults(DEFAULTS);
+	t.ifError(res);
+
+	var badDefaults = deepCopy(DEFAULTS);
+	badDefaults.filter_headnode = 'blah';
+	res = validations.validateDefaults(badDefaults);
 	t.ok(res);
 
 	t.end();
