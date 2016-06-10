@@ -320,16 +320,44 @@ Some default values can be altered upon allocator initialisation.
 | weight_unreserved_ram    | Float    | 2       | Bias selection towards CNs with more unreserved memory.               |
 
 `server_spread` can be one of 'min-ram', 'max-ram', 'random', or 'min-owner'. 
-This attribute is deprecated, in favour of `weights_*`. min-ram tries to place
-new VMs on the CNs with the least free RAM. max-ram does the opposite. min-owner
+This attribute is deprecated, in favour of `weights_*`.
+
+'min-ram' (similar to a weight_unreserved_ram with a large negative number)
+tries to place new VMs on the CNs with the least free RAM; this is particularly
+useful if you wish to preserve as much spare capacity in a DC as possible. By
+filling up CNs as quickly as possible, CNs which are (nearly) empty are
+preserved for large allocations.
+
+'max-ram' (similar to a weight_unreserved_ram with a large positive number) does
+the opposite; it tries to use emptier CNs, thus spreads VMs across a DC more
+evenly. If any particular CN goes down, fewer VMs will be impacted, and the
+ability to resize VMs to larger dimensions is better preserved.
+
+'min-owner' (similar to a weight_num_owner_zones with a large positive number)
 tries to place VMs on CNs which have the least other VMs belonging to the same
-owner. And random places VMs randomly across CNs.
+owner. This helps minimize the number of customer VMs impacted by a CN going
+offline.
+
+And 'random' places VMs randomly across CNs. The effect, across a large DC,
+is similar to 'max-ram', trading off some uniformity of free RAM across CNs with
+less contention when allocating to CNs (allocations coming in at the same time
+are less likely to stampede to the same CN or CNs).
+
+As noted above, `server_spread` is deprecated. You are *strongly* recommended to
+not use `server_spread`, and use `weight_*` instead. Weights offer more options,
+and much better flexibility.
 
 `weight_*` attributes can have negative values, not just positive. Negative
 values have the opposite effect of negative values; e.g. a postive
 `weight_num_owner_zones` biases selection towards CNs with fewer VMs belonging
 to the owner of the current allocation, while a negative value would bias 
 towards CNs with more such VMs.
+
+Although weights can be negative, they do not cause CN scores to decrease.
+CN scores are always increased by 0 or more by a plugin. Rather, a negative
+score causes a plugin to increase CN scores in reverse -- e.g. a CN that once
+had the largest score increase would now have the smallest increase, and vise
+versa.
 
 
 
