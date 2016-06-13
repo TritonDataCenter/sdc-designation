@@ -144,11 +144,12 @@ var ALGO_DESC = [
 		'hard-filter-min-ram',
 		'hard-filter-min-disk',
 		'hard-filter-min-cpu',
-		'soft-filter-locality-hints',
+		'hard-filter-locality-hints',
 		['or', 'hard-filter-reservoir',
 			'identity'],
 		['or', 'hard-filter-large-servers',
 			'identity' ],
+		'soft-filter-locality-hints',
 		'score-unreserved-ram',
 		'score-unreserved-disk',
 		'score-num-owner-zones',
@@ -300,12 +301,9 @@ test('allocate 1', function (t) {
 			step: 'Servers with enough unreserved CPU',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
-			step: 'Servers with requested locality considered',
+			step: 'Servers with requested hard locality considered',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
-			reasons: {
-				'*': 'exclude: inst==~' + VM.locality.near
-					+ ' (ignored b/c non-strict)'
-			}
+			reasons: { skip: 'No strict locality requested' }
 		}, {
 			step: 'Servers which are not in the reservoir',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
@@ -313,7 +311,14 @@ test('allocate 1', function (t) {
 			step: 'Filter out the largest and most empty servers',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
-			step: 'Score servers based on unreserved RAM',
+			step: 'Servers with requested soft locality considered',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: {
+				'*': 'exclude: inst==~' + VM.locality.near
+					+ ' (ignored b/c non-strict)'
+			}
+		}, {
+		step: 'Score servers based on unreserved RAM',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: {
 				'00000000-0000-0000-0000-00259094373c':
@@ -499,13 +504,12 @@ test('allocate 2', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
-			step: 'Servers with requested locality considered',
+			step: 'Servers with requested hard locality considered',
 			remaining: [
 				'00000000-0000-0000-0000-0025909437d4'
 			],
 			reasons: {
-				'*': 'exclude: inst==~' + VM.locality.near
-					+ ' (ignored b/c non-strict)'
+				skip: 'No strict locality requested'
 			}
 		}, {
 			step: 'Servers which are not in the reservoir',
@@ -517,6 +521,15 @@ test('allocate 2', function (t) {
 			remaining: [
 				'00000000-0000-0000-0000-0025909437d4'
 			]
+		}, {
+			step: 'Servers with requested soft locality considered',
+			remaining: [
+				'00000000-0000-0000-0000-0025909437d4'
+			],
+			reasons: {
+				'*': 'exclude: inst==~' + VM.locality.near
+					+ ' (ignored b/c non-strict)'
+			}
 		}, {
 			step: 'Score servers based on unreserved RAM',
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],

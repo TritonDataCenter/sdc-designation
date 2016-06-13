@@ -421,6 +421,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | hard-filter-headnode            | Removes any headnodes                                       |
 | hard-filter-invalid-servers     | Removes any server objects which don't pass validation      |
 | hard-filter-large-servers       | Removes the top 15% servers with the most available RAM     |
+| hard-filter-locality-hints      | Tries to place VM near or far from other given VMs, with strict placement |
 | hard-filter-min-cpu             | Removes CNs with insufficient CPU                           |
 | hard-filter-min-disk            | Removes CNs with insufficient disk                          |
 | hard-filter-min-ram             | Removes CNs with insufficient RAM                           |
@@ -436,7 +437,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | hard-filter-volumes-from        | Removes CNs which do not contain VMs listed in docker:volumesfrom metadata, if provided |
 | identity                        | Returns the same servers it received                        |
 | override-overprovisioning       | Substitutes package and server overprovision data for own defaults   |
-| soft-filter-locality-hints      | Tries to place VM near or far from other given VMs          |
+| soft-filter-locality-hints      | Tries to place VM near or far from other given VMs, with non-strict placement |
 | score-current-platform          | Make CNs running more recent platforms more likely to be selected |
 | score-next-reboot               | Make CNs with reboots schedule much further in the future more likely to be selected |
 | score-num-owner-zones           | Make CNs with fewer VMs belonging to current owner more likely to be selected |
