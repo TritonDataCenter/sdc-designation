@@ -15,7 +15,7 @@
     "tape": "4.0.0"
   },
   "scripts": {
-    "test": "./node_modules/.bin/nodeunit test/*.test.js test/algorithms/*.test.js"
+    "test": "./node_modules/.bin/tape test/*.test.js test/algorithms/*.test.js"
   },
   "license": "MPL-2.0"
 }
