@@ -29,7 +29,6 @@ test('filterInvalidServers()', function (t) {
 	var results = filter.run(log, serversInfo, constraints);
 	var servers = results[0];
 	var reasons = results[1];
-
 	t.equal(servers.length, 1);
 	t.deepEqual(servers[0].uuid, '2bb4c1de-16b5-11e4-8e8e-07469af29312');
 
@@ -40,7 +39,8 @@ test('filterInvalidServers()', function (t) {
 		'd0c1bacd-77b2-409a-a629-9ada5cc0eef9': 'property "reserved": string value found, but a boolean is required',
 		'a8da02c2-a294-4f66-bb7d-8a5c6689588d': 'property "sysinfo.Network Interfaces.e1000g0.NIC Names[1]": number value found, but a string is required',
 		'6a6ffadd-e274-4089-a561-ccbdc894ae76': 'property "sysinfo.Live Image": is missing and it is required',
-		'bc19a132-a1d7-408d-a8b3-73453c7d4f0b': 'property "vms.d95e64c8-da45-4b81-a044-89e26db43cbc.state": is missing and it is required'
+		'bc19a132-a1d7-408d-a8b3-73453c7d4f0b': 'property "vms.d95e64c8-da45-4b81-a044-89e26db43cbc.state": is missing and it is required',
+		'e4c4b6ee-3cfa-11e6-9214-28cfe91f7d53': 'property "disk_pool_alloc_bytes": is missing and it is required'
 		/* END JSSTYLED */
 
 	};

@@ -8,7 +8,7 @@
     "assert-plus": "~1.0.0",
     "bunyan": "~1.3.3",
     "node-uuid": "~1.4.0",
-    "joyent-schemas": "git://github.com/joyent/schemas.git#8e19f70",
+    "joyent-schemas": "git://github.com/joyent/schemas.git#c661af34f9fa839aada1ff5c215067d9c86cbe89",
     "jsprim": "~0.6.1"
   },
   "devDependencies": {
