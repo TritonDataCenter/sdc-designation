@@ -10,50 +10,51 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-headnode.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
+var SERVERS = [
+	{ memory_available_bytes: 256 },
+	{ memory_available_bytes: 512, headnode: true },
+	{ memory_available_bytes: 768, headnode: false }
+];
 
-test('filterHeadnode()', function (t) {
-	var givenServers = [
-		{ memory_available_bytes: 256 },
-		{ memory_available_bytes: 512, headnode: true },
-		{ memory_available_bytes: 768, headnode: false }
-	];
 
-	var expectedServers = [ givenServers[0], givenServers[2] ];
+var checkFilter = common.createPluginChecker(filter, LOG);
+
+
+test('filterHeadnode() 1', function (t) {
+	var expectServers = [ SERVERS[0], SERVERS[2] ];
+	var expectReasons = {};
+
 	var constraints = { defaults: {} };
 
-	var results = filter.run(log, givenServers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
 
-	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(reasons, undefined);
 
-	constraints = { defaults: { filter_headnode: false } };
-	results = filter.run(log, givenServers, constraints);
-	t.deepEqual(results[0], givenServers);
+test('filterHeadnode() 2', function (t) {
+	var expectServers = SERVERS;
+	var expectReasons = { skip: 'Do not filter out headnodes' };
 
-	t.end();
+	var constraints = { defaults: { filter_headnode: false } };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('filterHeadnode() with no servers', function (t) {
+	var expectServers = [];
+	var expectReasons = {};
+
 	var constraints = { defaults: {} };
 
-	var results = filter.run(log, [], constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(reasons, undefined);
-
-	t.end();
+	checkFilter(t, [], constraints, expectServers, expectReasons);
 });
 
 

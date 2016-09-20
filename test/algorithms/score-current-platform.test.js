@@ -9,8 +9,10 @@
  */
 
 var test = require('tape');
+var assert = require('assert-plus');
 var scorer = require('../../lib/algorithms/score-current-platform.js');
-var clone = require('./common').clone;
+var common = require('./common');
+var clone  = common.clone;
 
 
 var LOG = {
@@ -46,15 +48,15 @@ var SERVERS = [ {
 
 
 test('scoreCurrentPlatform()', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 3.9999999999999996;
-	expectedServers[1].score = 3.9918032786885242;
-	expectedServers[2].score = 3.9672131147540983;
-	expectedServers[3].score = 3.8196721311475406;
-	expectedServers[4].score = 3.762295081967213;
-	expectedServers[5].score = 1;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 3.9999999999999996;
+	expectServers[1].score = 3.9918032786885242;
+	expectServers[2].score = 3.9672131147540983;
+	expectServers[3].score = 3.8196721311475406;
+	expectServers[4].score = 3.762295081967213;
+	expectServers[5].score = 1;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'8973fb43-29da-474c-97b8-7c513c602a24':
 			'increased score by 3.00 to 4.00',
 		'cc8c8619-21a8-403f-a4db-3061b38d5881':
@@ -73,27 +75,20 @@ test('scoreCurrentPlatform()', function (t) {
 		defaults: { weight_current_platform: 3 }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(fixedScore(scoredServers), fixedScore(expectedServers));
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkFixedScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreCurrentPlatform() with negative weight', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 1;
-	expectedServers[1].score = 1.0081967213114753;
-	expectedServers[2].score = 1.0327868852459017;
-	expectedServers[3].score = 1.180327868852459;
-	expectedServers[4].score = 1.2377049180327868;
-	expectedServers[5].score = 3.9999999999999996;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 1;
+	expectServers[1].score = 1.0081967213114753;
+	expectServers[2].score = 1.0327868852459017;
+	expectServers[3].score = 1.180327868852459;
+	expectServers[4].score = 1.2377049180327868;
+	expectServers[5].score = 3.9999999999999996;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'8973fb43-29da-474c-97b8-7c513c602a24':
 			'increased score by 0.00 to 1.00',
 		'cc8c8619-21a8-403f-a4db-3061b38d5881':
@@ -112,38 +107,27 @@ test('scoreCurrentPlatform() with negative weight', function (t) {
 		defaults: { weight_current_platform: -3 }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(fixedScore(scoredServers), fixedScore(expectedServers));
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkFixedScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreCurrentPlatform() with one server', function (t) {
-	var results = scorer.run(LOG, [clone(SERVERS[0])], {});
-	var servers = results[0];
-	var reasons = results[1];
+	var servers = [ SERVERS[0] ];
 
-	t.deepEqual(servers, [SERVERS[0]]);
-	t.deepEqual(reasons, { skip: 'One or fewer servers' });
+	var expectServers = servers;
+	var expectReasons = { skip: 'One or fewer servers' };
 
-	t.end();
+	var constraints = { defaults: {} };
+
+	checkFixedScorer(t, servers, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreCurrentPlatform() with no servers', function (t) {
-	var results = scorer.run(LOG, [], {});
-	var servers = results[0];
-	var reasons = results[1];
+	var expectReasons = { skip: 'One or fewer servers' };
+	var constraints = { defaults: {} };
 
-	t.deepEqual(servers, []);
-	t.deepEqual(reasons, { skip: 'One or fewer servers' });
-
-	t.end();
+	checkFixedScorer(t, [], constraints, [], expectReasons);
 });
 
 
@@ -151,6 +135,26 @@ test('name', function (t) {
 	t.equal(typeof (scorer.name), 'string');
 	t.end();
 });
+
+
+// helpers ---
+
+
+function checkFixedScorer(t, givenServers, constraints, expectServers,
+		expectReasons) {
+	scorer.run(LOG, clone(givenServers), constraints,
+			function (err, servers, reasons) {
+		assert.arrayOfObject(servers);
+		assert.object(reasons);
+
+		t.ifError(err);
+
+		t.deepEqual(fixedScore(servers), fixedScore(expectServers));
+		t.deepEqual(reasons, expectReasons);
+
+		t.end();
+	});
+}
 
 
 // Comparing floats is troublesome, so we convert the float scores

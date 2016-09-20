@@ -10,13 +10,14 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-volumes-from.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); }
 };
 
-var servers = [
+var SERVERS = [
 	{
 		uuid: 'd8ea612d-7440-411e-8e34-e6bf1adeb008',
 		vms: {
@@ -45,6 +46,9 @@ var servers = [
 ];
 
 
+var checkFilter = common.createPluginChecker(filter, LOG);
+
+
 test('filterVolumesFrom()', function (t) {
 	var vm = {
 		docker: true, // just something non-null for this test
@@ -56,13 +60,8 @@ test('filterVolumesFrom()', function (t) {
 		}
 	};
 
-	var results = filter.run(log, servers, { vm: vm });
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, [servers[2]]);
-
-	var expectedReasons = {
+	var expectServers = [ SERVERS[2] ];
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'd8ea612d-7440-411e-8e34-e6bf1adeb008': 'VM needs volumes from 679c97ea-065b-4a4f-9629-3aabde21cb45, which was not found on server',
 		'07d6d108-f4ed-4f2c-9b09-949f99de2b5d': 'VM needs volumes from 0d0690a2-06a7-41cb-a0a4-55d5e37519e7, which was not found on server',
@@ -70,9 +69,7 @@ test('filterVolumesFrom()', function (t) {
 		/* END JSSTYLED */
 	};
 
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkFilter(t, SERVERS, { vm: vm }, expectServers, expectReasons);
 });
 
 
@@ -87,14 +84,7 @@ test('filterVolumesFrom() with no servers', function (t) {
 		}
 	};
 
-	var results = filter.run(log, [], { vm: vm });
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, []);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkFilter(t, [], { vm: vm }, [], {});
 });
 
 
@@ -103,14 +93,10 @@ test('filterVolumesFrom() with no metadata', function (t) {
 		docker: true // just something non-null for this test
 	};
 
-	var results = filter.run(log, servers, { vm: vm });
-	var filteredServers = results[0];
-	var reasons = results[1];
+	var expectServers = SERVERS;
+	var expectReasons = {};
 
-	t.deepEqual(filteredServers, servers);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkFilter(t, SERVERS, { vm: vm }, expectServers, expectReasons);
 });
 
 
@@ -120,14 +106,10 @@ test('filterVolumesFrom() with no volumesfrom', function (t) {
 		internal_metadata: {}
 	};
 
-	var results = filter.run(log, servers, { vm: vm });
-	var filteredServers = results[0];
-	var reasons = results[1];
+	var expectServers = SERVERS;
+	var expectReasons = {};
 
-	t.deepEqual(filteredServers, servers);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkFilter(t, SERVERS, { vm: vm }, expectServers, expectReasons);
 });
 
 

@@ -11,14 +11,15 @@
 var test = require('tape');
 var genUuid = require('libuuid').create;
 var filter = require('../../lib/algorithms/hard-filter-vm-count.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-var testServers = [ {
+var SERVERS = [ {
 	uuid: '33ce31d0-f376-4efd-ad41-f17c430b9782',
 	vms: {
 		'bb11d2de-a9c4-496a-9203-e9eb433fd906': {},
@@ -45,29 +46,25 @@ var testServers = [ {
 } ];
 
 
+var checkFilter = common.createPluginChecker(filter, LOG);
+
+
 test('filterVmCount()', function (t) {
-	var expectedServers = [ testServers[1], testServers[3] ];
-	var constraints = { defaults: { filter_vm_limit: 3 } };
-
-	var results = filter.run(log, testServers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, expectedServers);
-
-	var expectedReasons = {
+	var expectServers = [ SERVERS[1], SERVERS[3] ];
+	var expectReasons = {
 		'33ce31d0-f376-4efd-ad41-f17c430b9782':
 			'Server has 3 VMs (limit is 3)',
 		'ff962080-5e04-463c-87b7-1f83d5b8c949':
 			'Server has 4 VMs (limit is 3)'
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	t.end();
+	var constraints = { defaults: { filter_vm_limit: 3 } };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
-test('filterVmCount() with no limit', function (t) {
+test('filterVmCount() with no given limit, less than 224 VMs', function (t) {
 	var server = {
 		uuid: '0e07a7a2-92a2-4e59-915a-45ceae9cb75c',
 		vms: {}
@@ -78,43 +75,44 @@ test('filterVmCount() with no limit', function (t) {
 		server.vms[genUuid()] = {};
 	}
 
+	var expectServers = [server];
+	var expectReasons = {};
+
 	var constraints = { defaults: {} };
 
-	var results = filter.run(log, [server], constraints);
-	var filteredServers = results[0];
+	checkFilter(t, [server], constraints, expectServers, expectReasons);
+});
 
-	t.deepEqual(filteredServers, [server]);
 
-	// should filter out server with >=224 VMs
-	server.vms[genUuid()] = {};
 
-	results = filter.run(log, [server], constraints);
-	filteredServers = results[0];
-	var reasons = results[1];
+test('filterVmCount() with no given limit, less than 224 VMs', function (t) {
+	var server = {
+		uuid: '0e07a7a2-92a2-4e59-915a-45ceae9cb75c',
+		vms: {}
+	};
 
-	t.deepEqual(filteredServers, []);
+	// should not filter out server with <224 VMs
+	for (var i = 0; i !== 224; i++) {
+		server.vms[genUuid()] = {};
+	}
 
-	t.deepEqual(reasons, {
+
+	var expectServers = [];
+	var expectReasons = {
 		'0e07a7a2-92a2-4e59-915a-45ceae9cb75c':
 			'Server has 224 VMs (limit is 224)'
-	});
+	};
 
-	t.end();
+	var constraints = { defaults: {} };
+
+	checkFilter(t, [server], constraints, expectServers, expectReasons);
 });
 
 
 test('filterVmCount() with no servers', function (t) {
-	var servers = [];
 	var constraints = { defaults: { filter_vm_limit: 3 } };
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkFilter(t, [], constraints, [], {});
 });
 
 

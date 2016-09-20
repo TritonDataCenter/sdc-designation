@@ -259,7 +259,10 @@ test('allocate 1', function (t) {
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
-			]
+			],
+			reasons: {
+				skip: 'No nic_tags to filter on'
+			}
 		}, {
 			/* JSSTYLED */
 			step: 'Servers which meet image manifest platform requirements',
@@ -360,15 +363,17 @@ test('allocate 1', function (t) {
 	];
 
 	newAllocator(function (allocator) {
-		var res = allocator.allocate(SERVERS, VM, IMG, PKG, TICKETS);
-		var server = res[0];
-		var steps  = res[1];
+		allocator.allocate(SERVERS, VM, IMG, PKG, TICKETS,
+				function (err, server, steps) {
+			t.ifError(err);
 
-		t.equal(server.uuid, '00000000-0000-0000-0000-00259094373c');
-		t.equal(server.score, 3.5);
-		t.deepEqual(steps, expectedSteps);
+			t.equal(server.uuid,
+				'00000000-0000-0000-0000-00259094373c');
+			t.equal(server.score, 3.5);
+			t.deepEqual(steps, expectedSteps);
 
-		t.end();
+			t.end();
+		});
 	});
 });
 
@@ -447,7 +452,10 @@ test('allocate 2', function (t) {
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
-			]
+			],
+			reasons: {
+				skip: 'No nic_tags to filter on'
+			}
 		}, {
 			/* JSSTYLED */
 			step: 'Servers which meet image manifest platform requirements',
@@ -488,7 +496,10 @@ test('allocate 2', function (t) {
 			step: 'Servers with same overprovision ratios as requested VM',
 			remaining: [
 				'00000000-0000-0000-0000-0025909437d4'
-			]
+			],
+			reasons: {
+				skip: 'No pkg provided'
+			}
 		}, {
 			step: 'Servers with enough unreserved RAM',
 			remaining: [
@@ -574,14 +585,16 @@ test('allocate 2', function (t) {
 	];
 
 	newAllocator(function (allocator) {
-		var res = allocator.allocate(SERVERS, VM, IMG, null, TICKETS);
-		var server = res[0];
-		var steps  = res[1];
+		allocator.allocate(SERVERS, VM, IMG, null, TICKETS,
+				function (err, server, steps) {
+			t.ifError(err);
 
-		t.equal(server.uuid, '00000000-0000-0000-0000-0025909437d4');
-		t.equal(server.score, 3.5);
-		t.deepEqual(steps, expectedSteps);
+			t.equal(server.uuid,
+				'00000000-0000-0000-0000-0025909437d4');
+			t.equal(server.score, 3.5);
+			t.deepEqual(steps, expectedSteps);
 
-		t.end();
+			t.end();
+		});
 	});
 });

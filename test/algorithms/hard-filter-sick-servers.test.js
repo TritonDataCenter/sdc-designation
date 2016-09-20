@@ -10,16 +10,20 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-sick-servers.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
 
+var checkFilter = common.createPluginChecker(filter, LOG);
+
+
 test('filterSickServers()', function (t) {
-	var givenServers = [ {
+	var servers = [ {
 		/* should be included because doesn't have two failures */
 		uuid: '647d5e40-bab5-465e-b351-311eec116822',
 		vms: {
@@ -121,34 +125,23 @@ test('filterSickServers()', function (t) {
 		uuid: '4b557554-43ee-4281-86d5-cb6332762d6f'
 	} ];
 
-	var expectedServers = [ givenServers[0], givenServers[1],
-	    givenServers[3], givenServers[4], givenServers[5],
-	    givenServers[6] ];
+	var expectServers = [ servers[0], servers[1], servers[3], servers[4],
+		servers[5], servers[6] ];
 
-	var results = filter.run(log, givenServers, {});
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(reasons, {
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'5625eacc-e173-4bb0-9c22-b1a80d8dfa39': 'VMs c9b7d347-7f98-48ee-8b8a-165f749e7ced and 70d46ece-1158-423c-b3a6-e569f688e0b5 failed consecutively the past 24h'
 		/* END JSSTYLED */
-	});
+	};
 
-	t.end();
+	var constraints = {};
+
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
 });
 
 
 test('filterSickServers() with no servers', function (t) {
-	var results = filter.run(log, [], {});
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkFilter(t, [], {}, [], {});
 });
 
 

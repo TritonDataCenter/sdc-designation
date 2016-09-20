@@ -10,102 +10,81 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-running.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
 
+var checkFilter = common.createPluginChecker(filter, LOG);
+
+
 test('filterRunning()', function (t) {
-	var givenServers = [
-		{ uuid: '2c86607e-7cdd-4d6b-a7db-16d91efe770c' },
-		{
-			uuid: '7ddf3e13-5386-41bd-96b9-a85825013d44',
-			status: 'running'
-		},
-		{
-			uuid: '242ef61f-2b26-42f1-a626-8ccf32738128',
-			status: 'running'
-		},
-		{
-			uuid: 'ac211712-34e6-45ac-b9e9-9165f6af3cfc',
-			status: 'offline'
-		}
-	];
+	var servers = [ {
+		uuid: '2c86607e-7cdd-4d6b-a7db-16d91efe770c'
+	}, {
+		uuid: '7ddf3e13-5386-41bd-96b9-a85825013d44',
+		status: 'running'
+	}, {
+		uuid: '242ef61f-2b26-42f1-a626-8ccf32738128',
+		status: 'running'
+	}, {
+		uuid: 'ac211712-34e6-45ac-b9e9-9165f6af3cfc',
+		status: 'offline'
+	} ];
 
-	var expectedServers = givenServers.slice(1, 3);
-	var constraints = {};
-
-	var results = filter.run(log, givenServers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, expectedServers);
-	var expectedReasons = {
+	var expectServers = servers.slice(1, 3);
+	var expectReasons = {
 		'2c86607e-7cdd-4d6b-a7db-16d91efe770c':
 		    'Server has status: undefined',
 		'ac211712-34e6-45ac-b9e9-9165f6af3cfc':
 		    'Server has status: offline'
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	t.end();
+	var constraints = {};
+
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
 });
 
 
 test('filterRunning() with no servers', function (t) {
-	var servers = [];
+	var expectServers = [];
+	var expectReasons = {};
+
 	var constraints = {};
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkFilter(t, [], constraints, expectServers, expectReasons);
 });
 
 
-test('filterRunning() with malformed servers 1', function (t) {
-	var servers = 'foo';
-	var constraints = {};
-
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers, 'foo');
-	t.deepEqual(reasons, undefined);
-
-	t.end();
-});
-
-
-test('filterRunning() with malformed servers 2', function (t) {
-	var servers = [
-		'foo',
+test('filterRunning() with malformed servers', function (t) {
+	var givenServers = [
 		{ uuid: '2c86607e-7cdd-4d6b-a7db-16d91efe770c',
 		    status: 'running' },
 		{ uuid: '242ef61f-2b26-42f1-a626-8ccf32738128',
 		    status: 'rebooting' }
 	];
-	var constraints = {};
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, servers.slice(1, 2));
-	t.deepEqual(reasons, {
+	var expectServers = [ givenServers[0] ];
+	var expectReasons = {
 		'242ef61f-2b26-42f1-a626-8ccf32738128':
 		    'Server has status: rebooting'
-	});
+	};
 
-	t.end();
+	var constraints = {};
+
+	filter.run(LOG, givenServers, constraints,
+			function (err, servers, reasons) {
+		t.ifError(err);
+
+		t.deepEqual(servers, expectServers);
+		t.deepEqual(reasons, expectReasons);
+
+		t.end();
+	});
 });
 
 

@@ -10,7 +10,8 @@
 
 var test = require('tape');
 var scorer = require('../../lib/algorithms/score-num-owner-zones.js');
-var clone = require('./common').clone;
+var common = require('./common');
+var clone  = common.clone;
 
 
 var OWNER_UUID = 'e6667010-7831-462f-ba1f-e345f8288106';
@@ -96,13 +97,16 @@ var SERVERS = [ {
 } ];
 
 
-test('scoreNumOwnerZones()', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 1;
-	expectedServers[1].score = 3;
-	expectedServers[2].score = 5;
+var checkScorer = common.createPluginChecker(scorer, LOG);
 
-	var expectedReasons = {
+
+test('scoreNumOwnerZones()', function (t) {
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 1;
+	expectServers[1].score = 3;
+	expectServers[2].score = 5;
+
+	var expectReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
 			'increased score by 0.00 to 1.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
@@ -118,24 +122,17 @@ test('scoreNumOwnerZones()', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreNumOwnerZones() with negative default weight', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 5;
-	expectedServers[1].score = 3;
-	expectedServers[2].score = 1;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 5;
+	expectServers[1].score = 3;
+	expectServers[2].score = 1;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
 			'increased score by 4.00 to 5.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
@@ -151,20 +148,13 @@ test('scoreNumOwnerZones() with negative default weight', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreNumOwnerZones() with zero default weight', function (t) {
-	var expectedServers = clone(SERVERS);
-	var expectedReasons = {
+	var expectServers = clone(SERVERS);
+	var expectReasons = {
 		skip: 'Resolved score weight to 0.00; no changes'
 	};
 
@@ -175,24 +165,17 @@ test('scoreNumOwnerZones() with zero default weight', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreNumOwnerZones() with min-owner default set', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 1;
-	expectedServers[1].score = 2;
-	expectedServers[2].score = 3;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 1;
+	expectServers[1].score = 2;
+	expectServers[2].score = 3;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
 			'increased score by 0.00 to 1.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
@@ -209,20 +192,13 @@ test('scoreNumOwnerZones() with min-owner default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreNumOwnerZones() with unrelated spread default set', function (t) {
-	var expectedServers = clone(SERVERS);
-	var expectedReasons = {
+	var expectServers = clone(SERVERS);
+	var expectReasons = {
 		skip: 'pkg or default set to spread with: min-ram'
 	};
 
@@ -234,24 +210,17 @@ test('scoreNumOwnerZones() with unrelated spread default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreNumOwnerZones() with min-owner package attr set', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 1;
-	expectedServers[1].score = 2;
-	expectedServers[2].score = 3;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 1;
+	expectServers[1].score = 2;
+	expectServers[2].score = 3;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
 			'increased score by 0.00 to 1.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
@@ -266,24 +235,17 @@ test('scoreNumOwnerZones() with min-owner package attr set', function (t) {
 		pkg: { alloc_server_spread: 'min-owner' }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreNumOwnerZones() with package and default set', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 1;
-	expectedServers[1].score = 2;
-	expectedServers[2].score = 3;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 1;
+	expectServers[1].score = 2;
+	expectServers[2].score = 3;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
 			'increased score by 0.00 to 1.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
@@ -301,20 +263,13 @@ test('scoreNumOwnerZones() with package and default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreNumOwnerZones() with unrelated package attr set', function (t) {
-	var expectedServers = clone(SERVERS);
-	var expectedReasons = {
+	var expectServers = clone(SERVERS);
+	var expectReasons = {
 		skip: 'pkg or default set to spread with: max-ram'
 	};
 
@@ -324,22 +279,16 @@ test('scoreNumOwnerZones() with unrelated package attr set', function (t) {
 		pkg: { alloc_server_spread: 'max-ram' }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreNumOwnerZones() with one server', function (t) {
-	var expectedServers = [clone(SERVERS[0])];
-	expectedServers[0].score = 5;
+	var servers = [SERVERS[0]];
+	var expectServers = clone(servers);
+	expectServers[0].score = 5;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
 			'increased score by 4.00 to 5.00; 12 owner zones found'
 	};
@@ -349,14 +298,7 @@ test('scoreNumOwnerZones() with one server', function (t) {
 		defaults: { weight_num_owner_zones: 4 }
 	};
 
-	var results = scorer.run(LOG, [clone(SERVERS[0])], constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, servers, constraints, expectServers, expectReasons);
 });
 
 
@@ -366,14 +308,7 @@ test('scoreNumOwnerZones() without servers', function (t) {
 		defaults: { weight_num_owner_zones: 4 }
 		};
 
-	var results = scorer.run(LOG, [], constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, []);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkScorer(t, [], constraints, [], {});
 });
 
 

@@ -10,54 +10,41 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-traits.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
+var SERVERS = [ {
+	uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
+	traits: { ssd: true,  users: 'john' }
+}, {
+	uuid: '56b19a96-bd79-4b0d-bf31-6287500e653c',
+	traits: { ssd: true,  users: ['john', 'jane'] }
+}, {
+	uuid: '11a7ea8e-a9ee-4101-852d-cd47536b9ff0',
+	traits: { ssd: true  }
+}, {
+	uuid: 'c2edd722-16cd-4b2f-9436-5cde12cf0eb0',
+	traits: { ssd: false }
+}, {
+	uuid: 'f459c92d-1b50-4cea-9412-8d7af4acfc31',
+	traits: { users: ['jack', 'jane'] }
+}, {
+	uuid: '70675b48-a989-466a-9cde-8b65fa2df12e',
+	traits: { users: 'john' }
+} ];
 
-test('filterTraits() for VMs', function (t) {
-	var givenServers = [
-		{
-			uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
-			traits: { ssd: true,  users: 'john' }
-		},
-		{
-			uuid: '56b19a96-bd79-4b0d-bf31-6287500e653c',
-			traits: { ssd: true,  users: ['john', 'jane'] }
-		},
-		{
-			uuid: '11a7ea8e-a9ee-4101-852d-cd47536b9ff0',
-			traits: { ssd: true  }
-		},
-		{
-			uuid: 'c2edd722-16cd-4b2f-9436-5cde12cf0eb0',
-			traits: { ssd: false }
-		},
-		{
-			uuid: 'f459c92d-1b50-4cea-9412-8d7af4acfc31',
-			traits: { users: ['jack', 'jane'] }
-		},
-		{
-			uuid: '70675b48-a989-466a-9cde-8b65fa2df12e',
-			traits: { users: 'john' }
-		}
-	];
 
-	var results;
-	var reasons;
-	var constraints;
-	var filteredServers;
-	var expectedReasons;
+var checkFilter = common.createPluginChecker(filter, LOG);
 
-	constraints = { vm: { traits: { ssd: true } }, img: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	expectedReasons = {
+
+test('filterTraits() for VMs 1', function (t) {
+	var expectServers = SERVERS.slice(2, 3);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
@@ -66,14 +53,16 @@ test('filterTraits() for VMs', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: { traits: { ssd: false } }, img: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(3, 4));
-	expectedReasons = {
+	var constraints = { vm: { traits: { ssd: true } }, img: {} };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for VMs 2', function (t) {
+	var expectServers = SERVERS.slice(3, 4);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":false} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":false} but server has {"ssd":true,"users":["john","jane"]}',
@@ -82,14 +71,17 @@ test('filterTraits() for VMs', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: { traits: { users: 'john' } }, img: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(5, 6));
-	expectedReasons = {
+	var constraints = { vm: { traits: { ssd: false } }, img: {} };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+
+test('filterTraits() for VMs 3', function (t) {
+	var expectServers = SERVERS.slice(5, 6);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":"john"} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"users":"john"} but server has {"ssd":true,"users":["john","jane"]}',
@@ -98,14 +90,16 @@ test('filterTraits() for VMs', function (t) {
 		'f459c92d-1b50-4cea-9412-8d7af4acfc31': 'users comparison failed: server trait array did not contain trait'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: { traits: { users: 'jack' } }, img: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(4, 5));
-	expectedReasons = {
+	var constraints = { vm: { traits: { users: 'john' } }, img: {} };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for VMs 4', function (t) {
+	var expectServers = SERVERS.slice(4, 5);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":"jack"} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"users":"jack"} but server has {"ssd":true,"users":["john","jane"]}',
@@ -114,14 +108,16 @@ test('filterTraits() for VMs', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'users comparison failed: strings did not match'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: { traits: { ssd: true, users: 'jane' } }, img: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(1, 2));
-	expectedReasons = {
+	var constraints = { vm: { traits: { users: 'jack' } }, img: {} };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for VMs 5', function (t) {
+	var expectServers = SERVERS.slice(1, 2);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'users comparison failed: strings did not match',
 		'11a7ea8e-a9ee-4101-852d-cd47536b9ff0': 'Combined vm/pkg/img traits require {"ssd":true,"users":"jane"} but server has {"ssd":true}',
@@ -130,19 +126,19 @@ test('filterTraits() for VMs', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'Combined vm/pkg/img traits require {"ssd":true,"users":"jane"} but server has {"users":"john"}'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = {
-		vm: {
-			traits: { ssd: false, users: 'jane' }
-		},
-		img: {}
+	var constraints = {
+		vm: { traits: { ssd: true, users: 'jane' } }, img: {}
 	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, []);
-	expectedReasons = {
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+
+test('filterTraits() for VMs 6', function (t) {
+	var expectServers = [];
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'ssd comparison failed: boolean did not match',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'ssd comparison failed: boolean did not match',
@@ -152,14 +148,18 @@ test('filterTraits() for VMs', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'Combined vm/pkg/img traits require {"ssd":false,"users":"jane"} but server has {"users":"john"}'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: { traits: { users: ['john', 'jane' ] } }, img: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(4, 6));
-	expectedReasons = {
+	var constraints = {
+		vm: { traits: { ssd: false, users: 'jane' } }, img: {}
+	};
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for VMs 7', function (t) {
+	var expectServers = SERVERS.slice(4, 6);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":["john","jane"]} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"users":["john","jane"]} but server has {"ssd":true,"users":["john","jane"]}',
@@ -167,52 +167,18 @@ test('filterTraits() for VMs', function (t) {
 		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'users comparison failed: undefined property'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	t.end();
+	var constraints = {
+		vm: { traits: { users: ['john', 'jane' ] } }, img: {}
+	};
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
-test('filterTraits() for image manifests', function (t) {
-	var givenServers = [
-		{
-			uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
-			traits: { ssd: true,  users: 'john' }
-		},
-		{
-			uuid: '56b19a96-bd79-4b0d-bf31-6287500e653c',
-			traits: { ssd: true,  users: ['john', 'jane'] }
-		},
-		{
-			uuid: '11a7ea8e-a9ee-4101-852d-cd47536b9ff0',
-			traits: { ssd: true  }
-		},
-		{
-			uuid: 'c2edd722-16cd-4b2f-9436-5cde12cf0eb0',
-			traits: { ssd: false }
-		},
-		{
-			uuid: 'f459c92d-1b50-4cea-9412-8d7af4acfc31',
-			traits: { users: ['jack', 'jane'] }
-		},
-		{
-			uuid: '70675b48-a989-466a-9cde-8b65fa2df12e',
-			traits: { users: 'john' }
-		}
-	];
-
-	var results;
-	var reasons;
-	var expectedReasons;
-	var constraints;
-	var filteredServers;
-
-	constraints = { vm: {}, pkg: {}, img: { traits: { ssd: true } } };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	expectedReasons = {
+test('filterTraits() for image manifests 1', function (t) {
+	var expectServers = SERVERS.slice(2, 3);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
@@ -221,14 +187,16 @@ test('filterTraits() for image manifests', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: {}, pkg: {}, img: { traits: { ssd: false } } };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(3, 4));
-	expectedReasons = {
+	var constraints = { vm: {}, pkg: {}, img: { traits: { ssd: true } } };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for image manifests 2', function (t) {
+	var expectServers = SERVERS.slice(3, 4);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":false} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":false} but server has {"ssd":true,"users":["john","jane"]}',
@@ -237,14 +205,16 @@ test('filterTraits() for image manifests', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: {}, pkg: {}, img: { traits: { users: 'john' } } };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(5, 6));
-	expectedReasons = {
+	var constraints = { vm: {}, pkg: {}, img: { traits: { ssd: false } } };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for image manifests 3', function (t) {
+	var expectServers = SERVERS.slice(5, 6);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":"john"} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"users":"john"} but server has {"ssd":true,"users":["john","jane"]}',
@@ -253,14 +223,18 @@ test('filterTraits() for image manifests', function (t) {
 		'f459c92d-1b50-4cea-9412-8d7af4acfc31': 'users comparison failed: server trait array did not contain trait'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: {}, pkg: {}, img: { traits: { users: 'jack' } } };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(4, 5));
-	expectedReasons = {
+	var constraints = {
+		vm: {}, pkg: {}, img: { traits: { users: 'john' } }
+	};
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for image manifests 4', function (t) {
+	var expectServers = SERVERS.slice(4, 5);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":"jack"} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"users":"jack"} but server has {"ssd":true,"users":["john","jane"]}',
@@ -269,18 +243,18 @@ test('filterTraits() for image manifests', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'users comparison failed: strings did not match'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = {
-		vm: {},
-		pkg: {},
-		img: { traits: { ssd: true, users: 'jane' } }
+	var constraints = {
+		vm: {}, pkg: {}, img: { traits: { users: 'jack' } }
 	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(1, 2));
-	expectedReasons = {
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for image manifests 5', function (t) {
+	var expectServers = SERVERS.slice(1, 2);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'users comparison failed: strings did not match',
 		'11a7ea8e-a9ee-4101-852d-cd47536b9ff0': 'Combined vm/pkg/img traits require {"ssd":true,"users":"jane"} but server has {"ssd":true}',
@@ -289,18 +263,18 @@ test('filterTraits() for image manifests', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'Combined vm/pkg/img traits require {"ssd":true,"users":"jane"} but server has {"users":"john"}'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = {
-		vm: {},
-		pkg: {},
-		img: { traits: { ssd: false, users: 'jane' } }
+	var constraints = {
+		vm: {}, pkg: {}, img: { traits: { ssd: true, users: 'jane' } }
 	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, []);
-	expectedReasons = {
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for image manifests 6', function (t) {
+	var expectServers = [];
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'ssd comparison failed: boolean did not match',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'ssd comparison failed: boolean did not match',
@@ -310,18 +284,18 @@ test('filterTraits() for image manifests', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'Combined vm/pkg/img traits require {"ssd":false,"users":"jane"} but server has {"users":"john"}'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = {
-		vm: {},
-		pkg: {},
-		img: { traits: { users: ['john', 'jane'] } }
+	var constraints = {
+		vm: {}, pkg: {}, img: { traits: { ssd: false, users: 'jane' } }
 	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(4, 6));
-	expectedReasons = {
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for image manifests 7', function (t) {
+	var expectServers = SERVERS.slice(4, 6);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"users":["john","jane"]} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"users":["john","jane"]} but server has {"ssd":true,"users":["john","jane"]}',
@@ -329,93 +303,63 @@ test('filterTraits() for image manifests', function (t) {
 		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'users comparison failed: undefined property'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	t.end();
+	var constraints = {
+		vm: {}, pkg: {}, img: { traits: { users: ['john', 'jane'] } }
+	};
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
-test('filterTraits() for VMs and manifests', function (t) {
-	var givenServers = [
-		{
-			uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
-			traits: { ssd: true,  users: 'john' }
-		},
-		{
-			uuid: '56b19a96-bd79-4b0d-bf31-6287500e653c',
-			traits: { ssd: true,  users: ['john', 'jane'] }
-		},
-		{
-			uuid: '11a7ea8e-a9ee-4101-852d-cd47536b9ff0',
-			traits: { ssd: true  }
-		},
-		{
-			uuid: 'c2edd722-16cd-4b2f-9436-5cde12cf0eb0',
-			traits: { ssd: false }
-		},
-		{
-			uuid: 'f459c92d-1b50-4cea-9412-8d7af4acfc31',
-			traits: { users: ['jack', 'jane'] }
-		},
-		{
-			uuid: '70675b48-a989-466a-9cde-8b65fa2df12e',
-			traits: { users: 'john' }
-		}
-	];
-
-	var results;
-	var reasons;
-	var expectedReasons;
-	var constraints;
-	var filteredServers;
+test('filterTraits() for VMs and manifests 1', function (t) {
+	var expectServers = SERVERS.slice(2, 3);
+	var expectReasons = {
+		/* BEGIN JSSTYLED */
+		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
+		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
+		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'ssd comparison failed: boolean did not match',
+		'f459c92d-1b50-4cea-9412-8d7af4acfc31': 'ssd comparison failed: undefined property',
+		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
+		/* END JSSTYLED */
+	};
 
 	/* image manifest overrides VM package */
-	constraints = {
+	var constraints = {
 		vm:  { traits: { ssd: false } },
 		img: { traits: { ssd: true } },
 		pkg: {}
 	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	expectedReasons = {
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for VMs and manifests 2', function (t) {
+	var expectServers = SERVERS.slice(0, 2);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
-		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
-		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
-		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'ssd comparison failed: boolean did not match',
-		'f459c92d-1b50-4cea-9412-8d7af4acfc31': 'ssd comparison failed: undefined property',
-		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
+		'11a7ea8e-a9ee-4101-852d-cd47536b9ff0': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"ssd":true}',
+		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"ssd":false}',
+		'f459c92d-1b50-4cea-9412-8d7af4acfc31': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"users":["jack","jane"]}',
+		'70675b48-a989-466a-9cde-8b65fa2df12e': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"users":"john"}'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
 	/* should merge values between the two */
-	constraints = {
+	var constraints = {
 		vm:  { traits: { ssd: true } },
 		img: { traits: { users: 'john' } },
 		pkg: {}
 	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(0, 2));
-	expectedReasons = {
-		/* BEGIN JSSTYLED */
-		'11a7ea8e-a9ee-4101-852d-cd47536b9ff0': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"ssd":true}',
-		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"ssd":false}',
-		'f459c92d-1b50-4cea-9412-8d7af4acfc31': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"users":["jack","jane"]}',
-		'70675b48-a989-466a-9cde-8b65fa2df12e': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"users":"john"}'
-		/* END JSSTYLED */
-	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: { traits: { ssd: true } }, img: {}, pkg: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	expectedReasons = {
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for VMs and manifests 3', function (t) {
+	var expectServers = SERVERS.slice(2, 3);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
@@ -424,64 +368,57 @@ test('filterTraits() for VMs and manifests', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: {}, img: { traits: { ssd: true } }, pkg: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	t.deepEqual(reasons, expectedReasons);
+	var constraints = { vm: { traits: { ssd: true } }, img: {}, pkg: {} };
 
-	t.end();
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
-test('filterTraits() for packages and manifests', function (t) {
-	var givenServers = [
-		{
-			uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
-			traits: { ssd: true,  users: 'john' }
-		},
-		{
-			uuid: '56b19a96-bd79-4b0d-bf31-6287500e653c',
-			traits: { ssd: true,  users: ['john', 'jane'] }
-		},
-		{
-			uuid: '11a7ea8e-a9ee-4101-852d-cd47536b9ff0',
-			traits: { ssd: true  }
-		},
-		{
-			uuid: 'c2edd722-16cd-4b2f-9436-5cde12cf0eb0',
-			traits: { ssd: false }
-		},
-		{
-			uuid: 'f459c92d-1b50-4cea-9412-8d7af4acfc31',
-			traits: { users: ['jack', 'jane'] }
-		},
-		{
-			uuid: '70675b48-a989-466a-9cde-8b65fa2df12e',
-			traits: { users: 'john' }
-		}
-	];
+test('filterTraits() for VMs and manifests 4', function (t) {
+	var expectServers = SERVERS.slice(2, 3);
+	var expectReasons = {
+		/* BEGIN JSSTYLED */
+		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
+		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
+		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'ssd comparison failed: boolean did not match',
+		'f459c92d-1b50-4cea-9412-8d7af4acfc31': 'ssd comparison failed: undefined property',
+		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
+		/* END JSSTYLED */
+	};
 
-	var results;
-	var reasons;
-	var expectedReasons;
-	var constraints;
-	var filteredServers;
+	var constraints = { vm: {}, img: { traits: { ssd: true } }, pkg: {} };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for packages and manifests 1', function (t) {
+	var expectServers = SERVERS.slice(2, 3);
+	var expectReasons = {
+		/* BEGIN JSSTYLED */
+		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
+		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
+		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'ssd comparison failed: boolean did not match',
+		'f459c92d-1b50-4cea-9412-8d7af4acfc31': 'ssd comparison failed: undefined property',
+		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
+		/* END JSSTYLED */
+	};
 
 	/* image manifest overrides package */
-	constraints = {
+	var constraints = {
 		vm:  {},
 		img: { traits: { ssd: true  } },
 		pkg: { traits: { ssd: false } }
 	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	expectedReasons = {
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for packages and manifests 2', function (t) {
+	var expectServers = SERVERS.slice(2, 3);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
@@ -490,31 +427,21 @@ test('filterTraits() for packages and manifests', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
 	/* VM overrides package */
-	constraints = {
+	var constraints = {
 		vm:  { traits: { ssd: true  } },
 		img: {},
 		pkg: { traits: { ssd: false } }
 	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	t.deepEqual(reasons, expectedReasons);
 
-	/* should merge values between the two */
-	constraints = {
-		vm:  {},
-		img: { traits: { users: 'john' } },
-		pkg: { traits: { ssd: true	 } }
-	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(0, 2));
-	expectedReasons = {
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() for packages and manifests 3', function (t) {
+	var expectServers = SERVERS.slice(0, 2);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'11a7ea8e-a9ee-4101-852d-cd47536b9ff0': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"ssd":true}',
 		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"ssd":false}',
@@ -522,14 +449,22 @@ test('filterTraits() for packages and manifests', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'Combined vm/pkg/img traits require {"ssd":true,"users":"john"} but server has {"users":"john"}'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm:  {}, img: {}, pkg: { traits: { ssd: true } } };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	expectedReasons = {
+	/* should merge values between the two */
+	var constraints = {
+		vm:  {},
+		img: { traits: { users: 'john' } },
+		pkg: { traits: { ssd: true	 } }
+	};
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+
+test('filterTraits() for packages and manifests 4', function (t) {
+	var expectServers = SERVERS.slice(2, 3);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
 		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
@@ -538,62 +473,71 @@ test('filterTraits() for packages and manifests', function (t) {
 		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm:  {}, img: { traits: { ssd: true } }, pkg: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(2, 3));
-	t.deepEqual(reasons, expectedReasons);
+	var constraints = { vm:  {}, img: {}, pkg: { traits: { ssd: true } } };
 
-	t.end();
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
-test('filterTraits() with no traits on server', function (t) {
-	var results;
-	var reasons;
-	var expectedReasons;
-	var givenServers = [ {
+test('filterTraits() for packages and manifests 5', function (t) {
+	var expectServers = SERVERS.slice(2, 3);
+	var expectReasons = {
+		/* BEGIN JSSTYLED */
+		'de52bbab-a12d-4e11-8292-c4141031553c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":"john"}',
+		'56b19a96-bd79-4b0d-bf31-6287500e653c': 'Combined vm/pkg/img traits require {"ssd":true} but server has {"ssd":true,"users":["john","jane"]}',
+		'c2edd722-16cd-4b2f-9436-5cde12cf0eb0': 'ssd comparison failed: boolean did not match',
+		'f459c92d-1b50-4cea-9412-8d7af4acfc31': 'ssd comparison failed: undefined property',
+		'70675b48-a989-466a-9cde-8b65fa2df12e': 'ssd comparison failed: undefined property'
+		/* END JSSTYLED */
+	};
+
+	var constraints = { vm:  {}, img: { traits: { ssd: true } }, pkg: {} };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() with no traits on server 1', function (t) {
+	var servers = [ {
 		uuid: '097e339f-1a49-48b2-bec7-ae92a037c22a',
 		requested_ram: 256
 	} ];
-	var constraints;
-	var filteredServers;
 
-	constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers);
-	t.deepEqual(reasons, {});
+	var expectServers = servers;
+	var expectReasons = {};
 
-	constraints = {
-		vm: { traits: { ssd: false } },
-		img: { traits: {} },
-		pkg: {}
-	};
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.equal(filteredServers.length, 0);
-	expectedReasons = {
+	var constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
+
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
+});
+
+
+test('filterTraits() with no traits on server 2', function (t) {
+	var servers = [ {
+		uuid: '097e339f-1a49-48b2-bec7-ae92a037c22a',
+		requested_ram: 256
+	} ];
+
+	var expectServers = [];
+	var expectReasons = {
 		'097e339f-1a49-48b2-bec7-ae92a037c22a':
 		    'Combined vm/pkg/img traits require {"ssd":false} ' +
 		    'but server has undefined'
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	t.end();
+	var constraints = {
+		vm: { traits: { ssd: false } },
+		img: { traits: {} },
+		pkg: {}
+	};
+
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
 });
 
 
-test('filterTraits() with no traits on VM or manifest', function (t) {
-	var results;
-	var reasons;
-	var expectedReasons;
-	var givenServers = [
+test('filterTraits() with no traits on VM or manifest 1', function (t) {
+	var servers = [
 		{
 			uuid: '636203ab-ae96-4d5c-aaf1-00f030958bee',
 			traits: { ssd: true }
@@ -601,39 +545,46 @@ test('filterTraits() with no traits on VM or manifest', function (t) {
 		{ uuid: 'cc0c7133-2bdd-4f49-93ae-f24350e8c4d2', traits: {} },
 		{ uuid: 'a8c4fc80-9987-4778-9c04-743393c50398' }
 	];
-	var constraints;
-	var filteredServers;
 
-	constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(1, 3));
-	expectedReasons = {
+	var expectServers = servers.slice(1, 3);
+	var expectReasons = {
 		'636203ab-ae96-4d5c-aaf1-00f030958bee':
 		    'Combined vm/pkg/img require no traits ' +
 		    'but server has {"ssd":true}'
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { vm: {}, img: {}, pkg: {} };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, givenServers.slice(1, 3));
-	expectedReasons = {
+	var constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
+
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
+});
+
+
+
+test('filterTraits() with no traits on VM or manifest 2', function (t) {
+	var servers = [
+		{
+			uuid: '636203ab-ae96-4d5c-aaf1-00f030958bee',
+			traits: { ssd: true }
+		},
+		{ uuid: 'cc0c7133-2bdd-4f49-93ae-f24350e8c4d2', traits: {} },
+		{ uuid: 'a8c4fc80-9987-4778-9c04-743393c50398' }
+	];
+
+	var expectServers = servers.slice(1, 3);
+	var expectReasons = {
 		'636203ab-ae96-4d5c-aaf1-00f030958bee':
 		    'Combined vm/pkg/img require no traits ' +
 		    'but server has {"ssd":true}'
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	t.end();
+	var constraints = { vm: {}, img: {}, pkg: {} };
+
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
 });
 
 
 test('filterTraits() with no package', function (t) {
-	var givenServers = [
+	var servers = [
 		{
 			uuid: '636203ab-ae96-4d5c-aaf1-00f030958bee',
 			traits: { ssd: true }
@@ -641,36 +592,24 @@ test('filterTraits() with no package', function (t) {
 		{ uuid: 'cc0c7133-2bdd-4f49-93ae-f24350e8c4d2', traits: {} },
 		{ uuid: 'a8c4fc80-9987-4778-9c04-743393c50398' }
 	];
-	var constraints = { vm: { ram: 512 }, img: {} };
 
-	var results = filter.run(log, givenServers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, givenServers.slice(1, 3));
-	var expectedReasons = {
+	var expectServers = servers.slice(1, 3);
+	var expectReasons = {
 		'636203ab-ae96-4d5c-aaf1-00f030958bee':
 		    'Combined vm/pkg/img require no traits ' +
 		    'but server has {"ssd":true}'
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	t.end();
+	var constraints = { vm: { ram: 512 }, img: {} };
+
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
 });
 
 
 test('filterTraits() with no servers', function (t) {
-	var servers = [];
 	var constraints = { vm: { ram: 512 }, pkg: {}, img: {} };
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkFilter(t, [], constraints, [], {});
 });
 
 

@@ -11,14 +11,15 @@
 var test = require('tape');
 var filter = require('../../lib/algorithms/' +
     'hard-filter-overprovision-ratios.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-var givenServers = [
+var SERVERS = [
 	{
 		uuid: '98b6985f-f102-4c4f-a2e3-eda731a8b0dc',
 		overprovision_ratios: { ram: 1.0 }
@@ -53,22 +54,13 @@ var givenServers = [
 ];
 
 
-test('filterOverprovisionRatios()', function (t) {
-	var results;
-	var reasons;
-	var constraints;
-	var filteredServers;
-	var expectedServers;
-	var expectedReasons;
+var checkFilter = common.createPluginChecker(filter, LOG);
 
-	expectedServers = [ givenServers[0], givenServers[2], givenServers[6],
-	    givenServers[7], givenServers[9] ];
-	constraints = { pkg: { overprovision_ram: 1.0 } };
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, expectedServers);
-	expectedReasons = {
+
+test('filterOverprovisionRatios() 1', function (t) {
+	var expectServers = [ SERVERS[0], SERVERS[2], SERVERS[6], SERVERS[7],
+		SERVERS[9] ];
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'f8d517d8-80a3-47e3-a108-b9e4b6f8556a': 'Package over-provision ratio of 1.00 does not match server\'s 1.01',
 		'd71a3405-25e1-46d0-8906-ad4ffadb00fb': 'Package over-provision ratio of 1.00 does not match server\'s 2.00',
@@ -77,15 +69,16 @@ test('filterOverprovisionRatios()', function (t) {
 		'cfac7af7-22d4-4f85-af3b-ce35c1c41f92': 'Package over-provision ratio of 1.00 does not match server\'s 0.99'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	constraints = { pkg: { overprovision_ram: 1.5 } };
-	expectedServers = givenServers.slice(4, 5);
-	results = filter.run(log, givenServers, constraints);
-	filteredServers = results[0];
-	reasons = results[1];
-	t.deepEqual(filteredServers, expectedServers);
-	expectedReasons = {
+	var constraints = { pkg: { overprovision_ram: 1.0 } };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
+
+
+test('filterOverprovisionRatios() 2', function (t) {
+	var expectServers = SERVERS.slice(4, 5);
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'98b6985f-f102-4c4f-a2e3-eda731a8b0dc': 'Package over-provision ratio of 1.50 does not match server\'s 1.00',
 		'f8d517d8-80a3-47e3-a108-b9e4b6f8556a': 'Package over-provision ratio of 1.50 does not match server\'s 1.01',
@@ -98,34 +91,30 @@ test('filterOverprovisionRatios()', function (t) {
 		'1ce9c2d4-f9ef-436f-81d8-d233a970cd99': 'Package over-provision ratio of 1.50 does not match server\'s 1.00'
 		/* END JSSTYLED */
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	t.end();
+	var constraints = { pkg: { overprovision_ram: 1.5 } };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('filterOverprovisionRatios() without pkg', function (t) {
+	var expectServers = SERVERS;
+	var expectReasons = { skip: 'No pkg provided' };
+
 	var constraints = {};
 
-	var results = filter.run(log, givenServers, constraints);
-	var filteredServers = results[0];
-
-	t.deepEqual(filteredServers, givenServers);
-
-	t.end();
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('filterOverprovisionRatios() with no servers', function (t) {
-	var servers = [];
+	var expectServers = [];
+	var expectReasons = {};
+
 	var constraints = { pkg: { overprovision_ram: 1.0 } };
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-
-	t.equal(filteredServers.length, 0);
-
-	t.end();
+	checkFilter(t, [], constraints, expectServers, expectReasons);
 });
 
 

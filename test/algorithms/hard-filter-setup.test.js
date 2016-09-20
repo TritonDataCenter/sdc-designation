@@ -10,78 +10,62 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-setup.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
 
+var checkFilter = common.createPluginChecker(filter, LOG);
+
+
 test('filterSetup()', function (t) {
-	var givenServers = [
+	var servers = [
 		{ memory_available_bytes: 128 },
 		{ memory_available_bytes: 256, setup: true },
 		{ memory_available_bytes: 512, setup: false },
 		{ memory_available_bytes: 768, setup: true }
 	];
 
-	var expectedServers = [ givenServers[1], givenServers[3] ];
+	var expectServers = [ servers[1], servers[3] ];
+	var expectReasons = {};
+
 	var constraints = {};
 
-	var results = filter.run(log, givenServers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(reasons, undefined);
-
-	t.end();
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
 });
 
 
 test('filterSetup() with no servers', function (t) {
-	var servers = [];
+	var expectServers = [];
+	var expectReasons = {};
+
 	var constraints = {};
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(reasons, undefined);
-
-	t.end();
+	checkFilter(t, [], constraints, expectServers, expectReasons);
 });
 
 
-test('filterSetup() with malformed servers 1', function (t) {
-	var servers = 'foo';
+test('filterSetup() with malformed servers', function (t) {
+	var givenServers = [ { setup: true }, { setup: false } ];
+
+	var expectServers = [ givenServers[0] ];
+	var expectReasons = {};
+
 	var constraints = {};
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
+	filter.run(LOG, givenServers, constraints,
+			function (err, servers, reasons) {
+		t.ifError(err);
 
-	t.equal(filteredServers, 'foo');
-	t.deepEqual(reasons, undefined);
+		t.deepEqual(servers, expectServers);
+		t.deepEqual(reasons, expectReasons);
 
-	t.end();
-});
-
-
-test('filterSetup() with malformed servers 2', function (t) {
-	var servers = [ 'foo', { setup: true }, { setup: false } ];
-	var constraints = {};
-
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, [ { setup: true } ]);
-	t.deepEqual(reasons, undefined);
-
-	t.end();
+		t.end();
+	});
 });
 
 

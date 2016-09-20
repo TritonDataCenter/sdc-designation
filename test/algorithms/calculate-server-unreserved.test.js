@@ -186,33 +186,35 @@ test('calculateServerUnreserved()', function (t) {
 	];
 
 	var constraints = {};
-	var results = filter.run(log, serversInfo, constraints);
-	var servers = results[0];
-	var reasons = results[1];
-	t.deepEqual(servers, serversInfo);
-	t.deepEqual(reasons, undefined);
+	filter.run(log, serversInfo, constraints,
+			function (err, servers, reasons) {
+		t.ifError(err);
 
-	t.equal(servers[0].unreserved_disk, 1912954);
-	t.equal(servers[0].unreserved_ram,  209);
-	t.equal(servers[0].unreserved_cpu,  1425);
+		t.deepEqual(servers, serversInfo);
+		t.deepEqual(reasons, {});
 
-	t.equal(servers[1].unreserved_disk, 1925242);
-	t.equal(servers[1].unreserved_ram,  1924);
-	t.equal(servers[1].unreserved_cpu,  2225);
+		t.equal(servers[0].unreserved_disk, 1912954);
+		t.equal(servers[0].unreserved_ram,  209);
+		t.equal(servers[0].unreserved_cpu,  1425);
 
-	t.equal(servers[2].unreserved_disk, 3906805);
-	t.equal(servers[2].unreserved_ram,  4331);
-	t.equal(servers[2].unreserved_cpu,  2500);
+		t.equal(servers[1].unreserved_disk, 1925242);
+		t.equal(servers[1].unreserved_ram,  1924);
+		t.equal(servers[1].unreserved_cpu,  2225);
 
-	t.equal(servers[3].unreserved_disk, 3865845);
-	t.equal(servers[3].unreserved_ram,  2965);
-	t.equal(servers[3].unreserved_cpu,  2750);
+		t.equal(servers[2].unreserved_disk, 3906805);
+		t.equal(servers[2].unreserved_ram,  4331);
+		t.equal(servers[2].unreserved_cpu,  2500);
 
-	t.equal(servers[4].unreserved_disk, 922746);
-	t.equal(servers[4].unreserved_ram,  209);
-	t.equal(servers[4].unreserved_cpu,  1425);
+		t.equal(servers[3].unreserved_disk, 3865845);
+		t.equal(servers[3].unreserved_ram,  2965);
+		t.equal(servers[3].unreserved_cpu,  2750);
 
-	t.end();
+		t.equal(servers[4].unreserved_disk, 922746);
+		t.equal(servers[4].unreserved_ram,  209);
+		t.equal(servers[4].unreserved_cpu,  1425);
+
+		t.end();
+	});
 });
 
 
@@ -220,14 +222,15 @@ test('calculateServerUnreserved() with no servers', function (t) {
 	var serversInfo = [];
 	var constraints = {};
 
-	var results = filter.run(log, serversInfo, constraints);
-	var servers = results[0];
-	var reasons = results[1];
+	filter.run(log, serversInfo, constraints,
+			function (err, servers, reasons) {
+		t.ifError(err);
 
-	t.deepEqual(servers, []);
-	t.deepEqual(reasons, undefined);
+		t.deepEqual(servers, []);
+		t.deepEqual(reasons, {});
 
-	t.end();
+		t.end();
+	});
 });
 
 

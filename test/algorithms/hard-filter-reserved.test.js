@@ -10,47 +10,41 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-reserved.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
 
+var checkFilter = common.createPluginChecker(filter, LOG);
+
+
 test('filterReserved()', function (t) {
-	var givenServers = [
+	var servers = [
 		{ memory_available_bytes: 128, reserved: false },
 		{ memory_available_bytes: 384 },
 		{ memory_available_bytes: 768, reserved: true }
 	];
 
-	var expectedServers = givenServers.slice(0, 2);
+	var expectServers = servers.slice(0, 2);
+	var expectReasons = {};
+
 	var constraints = {};
 
-	var results = filter.run(log, givenServers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(reasons, undefined);
-
-	t.end();
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
 });
 
 
 test('filterReserved() with no servers', function (t) {
-	var servers = [];
+	var expectServers = [];
+	var expectReasons = {};
+
 	var constraints = {};
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(reasons, undefined);
-
-	t.end();
+	checkFilter(t, [], constraints, expectServers, expectReasons);
 });
 
 

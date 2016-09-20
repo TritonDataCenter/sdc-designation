@@ -10,54 +10,53 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-large-servers.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
 
-var givenServers = [];
+var SERVERS = [];
 for (var ii = 0; ii < 20; ii++)
-	givenServers.push({ unreserved_ram: ii * 8 * 1024 });
+	SERVERS.push({ unreserved_ram: ii * 8 * 1024 });
+
+
+var checkFilter = common.createPluginChecker(filter, LOG);
 
 
 test('filterLargeServers()', function (t) {
-	var expectedServers =
-	    givenServers.slice(0, givenServers.length - 3).reverse();
+	var expectServers = SERVERS.slice(0, SERVERS.length - 3).reverse();
+	var expectReasons = {};
+
 	var constraints = { defaults: {} };
 
-	var results = filter.run(log, givenServers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
 
-	t.deepEqual(filteredServers, expectedServers);
-	t.deepEqual(reasons, undefined);
 
-	constraints = { defaults: { filter_large_servers: false } };
-	results = filter.run(log, givenServers, constraints);
-	t.deepEqual(results[0], givenServers);
+test('filterLargeServers() with override', function (t) {
+	var expectServers = SERVERS;
+	var expectReasons = { skip: 'Do not filter out large servers' };
 
-	t.end();
+	var constraints = { defaults: { filter_large_servers: false } };
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('filterLargeServers with no servers', function (t) {
-	var servers = [];
+	var expectServers = [];
+	var expectReasons = {};
+
 	var constraints = {
 		vm: { ram: 34 * 1024 }, // in MiB
 		defaults: {}
 	};
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, []);
-	t.deepEqual(reasons, undefined);
-
-	t.end();
+	checkFilter(t, [], constraints, expectServers, expectReasons);
 });
 
 

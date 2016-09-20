@@ -11,14 +11,14 @@
 var test = require('tape');
 var filter = require('../../lib/algorithms/calculate-ticketed-vms.js');
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
 var GiB = 1024 * 1024 * 1024;
 
-var serversInfo = [ {
+var SERVERS = [ {
 	uuid: '7f9b1a24-dd28-430e-92ed-604fed51772b',
 	disk_kvm_zvol_volsize_bytes: 25 * GiB,
 	disk_zone_quota_bytes: 5 * GiB,
@@ -81,7 +81,7 @@ var serversInfo = [ {
 	disk_zone_quota_bytes: 0
 } ];
 
-var tickets = [ {
+var TICKETS = [ {
 	// this should be skipped, since it's finished
 	uuid: '2fffa3a4-1dd9-4eab-a324-b49854b169e9',
 	server_uuid: '67e48c2e-45bb-400a-bc7d-3143894aacfa',
@@ -199,85 +199,91 @@ var tickets = [ {
 	}
 } ];
 
+
 test('calculate ticketed VMs', function (t) {
-	var constraints = { tickets: tickets };
-	var results = filter.run(log, serversInfo, constraints);
-	var servers = results[0];
-	var reasons = results[1];
-	// t.deepEqual(servers, serversInfo);
-	t.deepEqual(reasons, undefined);
+	var ownerUuid = '930896af-bf8c-48d4-885c-6573a94b1853';
 
-	t.deepEqual(servers[0], serversInfo[0]);
+	var constraints = { tickets: TICKETS };
+	filter.run(LOG, SERVERS, constraints, function (err, servers, reasons) {
+		t.ifError(err);
 
-	var server = servers[1];
-	delete server.vms['8e54da2f-996f-491c-92ff-1b1d6c48f314'].last_modified;
-	t.deepEqual(server, {
-		uuid: '67e48c2e-45bb-400a-bc7d-3143894aacfa',
-		disk_kvm_zvol_volsize_bytes: 0,
-		disk_zone_quota_bytes: 10 * GiB,
-		vms: {
-			'8e54da2f-996f-491c-92ff-1b1d6c48f314': {
-				uuid: '8e54da2f-996f-491c-92ff-1b1d6c48f314',
-				owner_uuid: '930896af-bf8c-48d4-885c-' +
-					'6573a94b1853',
-				max_physical_memory: 768,
-				cpu_cap: 150,
-				quota: 10,
-				brand: 'smartos',
-				zone_state: 'running',
-				state: 'running'
+		// t.deepEqual(servers, serversInfo);
+		t.deepEqual(reasons, {});
+
+		t.deepEqual(servers[0], SERVERS[0]);
+
+		var vmUuid = '8e54da2f-996f-491c-92ff-1b1d6c48f314';
+		var server = servers[1];
+		delete server.vms[vmUuid].last_modified;
+		t.deepEqual(server, {
+			uuid: '67e48c2e-45bb-400a-bc7d-3143894aacfa',
+			disk_kvm_zvol_volsize_bytes: 0,
+			disk_zone_quota_bytes: 10 * GiB,
+			vms: {
+				'8e54da2f-996f-491c-92ff-1b1d6c48f314': {
+					uuid: vmUuid,
+					owner_uuid: ownerUuid,
+					max_physical_memory: 768,
+					cpu_cap: 150,
+					quota: 10,
+					brand: 'smartos',
+					zone_state: 'running',
+					state: 'running'
+				}
 			}
-		}
-	});
+		});
 
-	server = servers[2];
-	delete server.vms['cbd5b6b3-861d-44d1-a2b7-65ea39ada45a'].last_modified;
-	t.deepEqual(server, {
-		uuid: '0c104a5b-1844-4205-821b-f0c989ccf6e7',
-		disk_kvm_zvol_volsize_bytes: 25 * GiB,
-		disk_zone_quota_bytes: 10 * GiB, // for root kvm dataset
-		vms: {
-			'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a': {
-				uuid: 'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a',
-				owner_uuid: '930896af-bf8c-48d4-885c-' +
-					'6573a94b1853',
-				max_physical_memory: 3072,
-				cpu_cap: 600,
-				quota: 10,
-				brand: 'kvm',
-				zone_state: 'running',
-				state: 'running'
+		vmUuid = 'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a';
+		server = servers[2];
+		delete server.vms[vmUuid].last_modified;
+		t.deepEqual(server, {
+			uuid: '0c104a5b-1844-4205-821b-f0c989ccf6e7',
+			disk_kvm_zvol_volsize_bytes: 25 * GiB,
+			disk_zone_quota_bytes: 10 * GiB, // for root kvm dataset
+			vms: {
+				'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a': {
+					uuid: vmUuid,
+					owner_uuid: ownerUuid,
+					max_physical_memory: 3072,
+					cpu_cap: 600,
+					quota: 10,
+					brand: 'kvm',
+					zone_state: 'running',
+					state: 'running'
+				}
 			}
-		}
-	});
+		});
 
-	t.end();
+		t.end();
+	});
 });
+
 
 test('calculate ticketed VMs with no servers', function (t) {
-	var constraints = { tickets: tickets };
+	var constraints = { tickets: TICKETS };
 
-	var results = filter.run(log, [], constraints);
-	var servers = results[0];
-	var reasons = results[1];
+	filter.run(LOG, [], constraints, function (err, servers, reasons) {
+		t.ifError(err);
 
-	t.deepEqual(servers, []);
-	t.deepEqual(reasons, undefined);
+		t.deepEqual(servers, []);
+		t.deepEqual(reasons, {});
 
-	t.end();
+		t.end();
+	});
 });
+
 
 test('calculate ticketed VMs with no tickets', function (t) {
 	var constraints = { tickets: [] };
 
-	var results = filter.run(log, serversInfo, constraints);
-	var servers = results[0];
-	var reasons = results[1];
+	filter.run(LOG, SERVERS, constraints, function (err, servers, reasons) {
+		t.ifError(err);
 
-	t.deepEqual(servers, serversInfo);
-	t.deepEqual(reasons, undefined);
+		t.deepEqual(servers, SERVERS);
+		t.deepEqual(reasons, {});
 
-	t.end();
+		t.end();
+	});
 });
 
 test('name', function (t) {

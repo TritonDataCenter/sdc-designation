@@ -10,14 +10,15 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-capness.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-var servers = [ {
+var SERVERS = [ {
 	uuid: 'cdfe84c4-f7cc-4104-bc24-45f786bce762',
 	vms : {
 		'e34f6924-59ba-4242-8633-4aad203d060f': {
@@ -67,70 +68,57 @@ var servers = [ {
 } ];
 
 
+var checkFilter = common.createPluginChecker(filter, LOG);
+
+
 test('filterCapness() with package with cpu_cap', function (t) {
-	var expectedServers = [ servers[0], servers[4] ];
-	var constraints = {
-		vm: {},
-		pkg: { cpu_cap: 100 }
-	};
-
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, expectedServers);
-
-	t.deepEqual(reasons, {
+	var expectServers = [ SERVERS[0], SERVERS[4] ];
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'49878ba3-e28e-48c6-83c7-21dca018e69b': 'VM c9e59c1c-555d-4646-8791-606ef9429d93 has no cpu_cap, while the package does',
   		'8564ad6c-bfbc-475e-8b53-46bee1058a58': 'VM 3c8ef669-4a79-4eaa-bb0b-1fd413328844 has no cpu_cap, while the package does',
   		'45808bd4-a66c-400f-b138-4ff3bdd76d4c': 'VM 7650edda-e451-4b51-8168-3dbbcf2e71c1 has no cpu_cap, while the package does'
 		/* END JSSTYLED */
-	});
+	};
 
-	t.end();
+	var constraints = {
+		vm: {},
+		pkg: { cpu_cap: 100 }
+	};
+
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('filterCapness() with package without cpu_cap', function (t) {
-	var expectedServers = [ servers[1], servers[4] ];
-	var constraints = {
-		vm: {},
-		pkg: {}
-	};
-
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(filteredServers, expectedServers);
-
-	t.deepEqual(reasons, {
+	var expectServers = [ SERVERS[1], SERVERS[4] ];
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'cdfe84c4-f7cc-4104-bc24-45f786bce762': 'VM e34f6924-59ba-4242-8633-4aad203d060f has a cpu_cap, while the package does not',
   		'8564ad6c-bfbc-475e-8b53-46bee1058a58': 'VM 56b0465c-97f6-46f1-8d13-e8d87a3de558 has a cpu_cap, while the package does not',
   		'45808bd4-a66c-400f-b138-4ff3bdd76d4c': 'VM acc16d76-42f6-414b-92ce-557e72663c58 has a cpu_cap, while the package does not'
 		/* END JSSTYLED */
-	});
+	};
 
-	t.end();
-});
-
-
-test('filterCapness() with no servers', function (t) {
 	var constraints = {
 		vm: {},
 		pkg: {}
 	};
 
-	var results = filter.run(log, [], constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
+	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+});
 
-	t.deepEqual(filteredServers, []);
-	t.deepEqual(reasons, {});
 
-	t.end();
+test('filterCapness() with no servers', function (t) {
+	var expectServers = [];
+	var expectReasons = {};
+
+	var constraints = {
+		vm: {},
+		pkg: {}
+	};
+
+	checkFilter(t, [], constraints, expectServers, expectReasons);
 });
 
 

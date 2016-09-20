@@ -10,19 +10,18 @@
 
 var genUuid = require('libuuid').create;
 var test = require('tape');
-
 var filter = require('../../lib/algorithms/hard-filter-locality-hints.js');
+var common = require('./common.js');
 
 
 // --- globals
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
-var ownerUuid = 'b0bbbbbb-9172-4c58-964e-fe58a9989708';
-
+var OWNER_UUID = 'b0bbbbbb-9172-4c58-964e-fe58a9989708';
 
 // --- internal support stuff
 
@@ -33,10 +32,10 @@ genVms(numVms, numOwnerVms)
 
 	var data = [];
 	for (var i = 0; i !== numOwnerVms; i++) {
-		data.push([genUuid(), {owner_uuid: ownerUuid}]);
+		data.push([genUuid(), { owner_uuid: OWNER_UUID }]);
 	}
 	for (i = 0; i !== numVms - numOwnerVms; i++) {
-		data.push([genUuid(), {owner_uuid: genUuid()}]);
+		data.push([genUuid(), { owner_uuid: genUuid() }]);
 	}
 
 	shuffleArray(data);
@@ -46,6 +45,9 @@ genVms(numVms, numOwnerVms)
 
 	return (vms);
 }
+
+
+var checkFilter = common.createPluginChecker(filter, LOG);
 
 
 /**
@@ -78,33 +80,27 @@ test('name', function (t) {
 	t.end();
 });
 
+
 test('no locality, no servers', function (t) {
-	var servers = [];
-	var constraints = { vm: { owner_uuid: ownerUuid } };
+	var expectServers = [];
+	var expectReasons = {};
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
+	var constraints = { vm: { owner_uuid: OWNER_UUID } };
 
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(reasons, undefined);
-	t.end();
+	checkFilter(t, [], constraints, expectServers, expectReasons);
 });
 
+
 test('locality, no servers', function (t) {
-	var servers = [];
+	var expectServers = [];
+	var expectReasons = {};
+
 	var constraints = { vm: {
-		owner_uuid: ownerUuid,
+		owner_uuid: OWNER_UUID,
 		locality: { near: '468994e6-d53d-c74c-8245-3273a86dc3d9' }
 	}};
 
-	var results = filter.run(log, servers, constraints);
-	var filteredServers = results[0];
-	var reasons = results[1];
-
-	t.equal(filteredServers.length, 0);
-	t.deepEqual(reasons, undefined);
-	t.end();
+	checkFilter(t, [], constraints, expectServers, expectReasons);
 });
 
 
@@ -112,7 +108,7 @@ test('locality scenario A', function (tt) {
 	var servers = [
 		{ hostname: 'cn0', uuid: 'cafe0000-14b6-8040-8d36-54a1e5ec2ef9',
 			vms: genVms(3, 2) },
-		// cn1 has no VMs owned by `ownerUuid`.
+		// cn1 has no VMs owned by OWNER_UUID.
 		{ hostname: 'cn1', uuid: 'cafe1111-14b6-8040-8d36-54a1e5ec2ef9',
 			vms: genVms(3, 0) },
 		{ hostname: 'cn2', uuid: 'cafe2222-14b6-8040-8d36-54a1e5ec2ef9',
@@ -125,12 +121,12 @@ test('locality scenario A', function (tt) {
 
 	function ownerVmOnServer(idx) {
 		return Object.keys(servers[idx].vms).filter(function (v) {
-			return (servers[idx].vms[v].owner_uuid === ownerUuid);
+			return (servers[idx].vms[v].owner_uuid === OWNER_UUID);
 		})[0];
 	}
 	function nonOwnerVmOnServer(idx) {
 		return Object.keys(servers[idx].vms).filter(function (v) {
-			return (servers[idx].vms[v].owner_uuid !== ownerUuid);
+			return (servers[idx].vms[v].owner_uuid !== OWNER_UUID);
 		})[0];
 	}
 
@@ -142,191 +138,163 @@ test('locality scenario A', function (tt) {
 	tt.test('  non-strict far', function (t) {
 		var expServers = servers;
 		var expReasons = { skip: 'No strict locality requested' };
-
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
 			locality: { far: ownerVmOnServer0 }
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
+		} };
 
-		t.end();
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 
-	tt.test('  strict far', function (t) {
-		// Test with 'far' as a string.
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
-			locality: { strict: true, far: ownerVmOnServer0 }
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
+	tt.test('  strict far (string)', function (t) {
+		var expServers = [
+			servers[1], servers[2], servers[3], servers[4]
+		];
 
-		var expServers = [servers[1], servers[2], servers[3],
-			servers[4]];
 		var expReasons = {};
 		expReasons[servers[0].uuid]
 			= 'exclude: inst!=' + ownerVmOnServer0;
 
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			// test with 'far' as a string.
+			locality: { strict: true, far: ownerVmOnServer0 }
+		} };
 
-		// And test with 'far' as an array.
-		results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
+		checkFilter(t, servers, constraints, expServers, expReasons);
+	});
+
+	tt.test('  strict far (array)', function (t) {
+		var expServers = [
+			servers[1], servers[2], servers[3], servers[4]
+		];
+
+		var expReasons = {};
+		expReasons[servers[0].uuid]
+			= 'exclude: inst!=' + ownerVmOnServer0;
+
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			// test with 'far' as an array
 			locality: { strict: true, far: [ownerVmOnServer0] }
-		}});
-		filteredServers = results[0];
-		reasons = results[1];
+		} };
 
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
-
-		t.end();
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 
 	tt.test('  non-strict near', function (t) {
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
-			locality: { strict: false, near: [ownerVmOnServer3] }
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
-
 		var expServers = servers;
 		var expReasons = { skip: 'No strict locality requested' };
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
 
-		t.end();
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			locality: { strict: false, near: [ownerVmOnServer3] }
+		} };
+
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 
 	tt.test('  strict near', function (t) {
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
-			locality: { strict: true, near: [ownerVmOnServer3] }
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
-
 		var expServers = [servers[3]];
 		var expReasons = {};
 		expReasons[servers[3].uuid]
 			= 'include: inst==' + ownerVmOnServer3;
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
 
-		t.end();
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			locality: { strict: true, near: [ownerVmOnServer3] }
+		} };
+
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 
-	tt.test('  strict near non-existant-VM', function (t) {
-		var nonExistantVm = '9c6d1ace-3676-5c4f-9a83-55de5ddb4b55';
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
-			locality: { strict: true, near: [nonExistantVm] }
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
+	tt.test('  strict near non-existent-VM', function (t) {
+		var nonExistentVm = '9c6d1ace-3676-5c4f-9a83-55de5ddb4b55';
 
 		var expServers = [];
-		var expReasons = {};
-		expReasons['*'] = 'exclude: inst==' + nonExistantVm;
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
+		var expReasons =  { '*' : 'exclude: inst==' + nonExistentVm };
 
-		t.end();
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			locality: { strict: true, near: [nonExistentVm] }
+		} };
+
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 
-	tt.test('  strict far non-existant-VM', function (t) {
-		var nonExistantVm = 'f795e38f-1fce-3a49-b6e9-a62f07a559fc';
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
-			locality: { strict: true, far: [nonExistantVm] }
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
+	tt.test('  strict far non-existent-VM', function (t) {
+		var nonExistentVm = 'f795e38f-1fce-3a49-b6e9-a62f07a559fc';
 
 		var expServers = servers;
 		var expReasons = {};
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
 
-		t.end();
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			locality: { strict: true, far: [nonExistentVm] }
+		} };
+
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 
 	tt.test('  strict near, ignores non-owner VMs', function (t) {
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
-			locality: { strict: true, near: [nonOwnerVmOnServer3] }
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
-
 		var expServers = [];
-		var expReasons = {'*': 'exclude: inst==' + nonOwnerVmOnServer3};
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
+		var expReasons = {
+			'*': 'exclude: inst==' + nonOwnerVmOnServer3
+		};
 
-		t.end();
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			locality: { strict: true, near: [nonOwnerVmOnServer3] }
+		} };
+
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 
 	tt.test('  strict far, ignores non-owner VMs', function (t) {
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
-			locality: { strict: true, far: [nonOwnerVmOnServer3] }
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
-
 		var expServers = servers;
 		var expReasons = {};
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
 
-		t.end();
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			locality: { strict: true, far: [nonOwnerVmOnServer3] }
+		} };
+
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 
 	tt.test('  strict near that filters out all servers', function (t) {
 		var near = [ownerVmOnServer3, ownerVmOnServer4];
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
-			locality: { strict: true, near: near }
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
 
 		var expServers = [];
-		var expReasons = {'*': 'exclude: inst==' + near.join(',')};
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
+		var expReasons = { '*': 'exclude: inst==' + near.join(',') };
 
-		t.end();
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			locality: { strict: true, near: near }
+		} };
+
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 
 	tt.test('  far and near', function (t) {
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
-			locality: {
-				strict: true,
-				near: [ownerVmOnServer4],
-				far: [ownerVmOnServer3]
-			}
-		}});
-		var filteredServers = results[0];
-		var reasons = results[1];
-
 		var expServers = [servers[4]];
+
 		var expReasons = {};
 		expReasons[servers[4].uuid]
 			= 'include: inst==' + ownerVmOnServer4;
 		expReasons[servers[3].uuid]
 			= 'exclude: inst!=' + ownerVmOnServer3;
-		t.deepEqual(filteredServers, expServers);
-		t.deepEqual(reasons, expReasons);
 
-		t.end();
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
+			locality: {
+				strict: true,
+				near: [ownerVmOnServer4],
+				far: [ownerVmOnServer3]
+			}
+		} };
+
+		checkFilter(t, servers, constraints, expServers, expReasons);
 	});
 });
 
@@ -345,12 +313,12 @@ test('locality scenario B: large set', function (tt) {
 
 	function ownerVmOnServer(idx) {
 		return Object.keys(servers[idx].vms).filter(function (v) {
-			return (servers[idx].vms[v].owner_uuid === ownerUuid);
+			return (servers[idx].vms[v].owner_uuid === OWNER_UUID);
 		})[0];
 	}
 	function nonOwnerVmOnServer(idx) {
 		return Object.keys(servers[idx].vms).filter(function (v) {
-			return (servers[idx].vms[v].owner_uuid !== ownerUuid);
+			return (servers[idx].vms[v].owner_uuid !== OWNER_UUID);
 		})[0];
 	}
 
@@ -358,35 +326,45 @@ test('locality scenario B: large set', function (tt) {
 	var ownerVmOnServer997 = ownerVmOnServer(997);
 
 	tt.test('  strict near', function (t) {
-		var start = Date.now();
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
 			locality: { strict: true, near: [ownerVmOnServer997] }
-		}});
-		var end = Date.now();
-		var elapsed = end - start;
-		var filteredServers = results[0];
+		} };
 
-		t.equal(filteredServers.length, 1);
-		t.ok(elapsed < 50, '<50ms elapsed: ' + elapsed + 'ms');
+		var start = Date.now();
+		filter.run(LOG, servers, constraints,
+				function (err, filteredServers, reasons) {
+			t.ifError(err);
 
-		t.end();
+			var end = Date.now();
+			var elapsed = end - start;
+
+			t.equal(filteredServers.length, 1);
+			t.ok(elapsed < 50, '<50ms elapsed: ' + elapsed + 'ms');
+
+			t.end();
+		});
 	});
 
 	tt.test('  strict far', function (t) {
-		var start = Date.now();
-		var results = filter.run(log, servers, { vm: {
-			owner_uuid: ownerUuid,
+		var constraints = { vm: {
+			owner_uuid: OWNER_UUID,
 			locality: { strict: true, far: [
 				ownerVmOnServer42, ownerVmOnServer997] }
-		}});
-		var end = Date.now();
-		var elapsed = end - start;
-		var filteredServers = results[0];
+		} };
 
-		t.equal(filteredServers.length, 998);
-		t.ok(elapsed < 50, '<50ms elapsed: ' + elapsed + 'ms');
+		var start = Date.now();
+		filter.run(LOG, servers, constraints,
+				function (err, filteredServers, reasons) {
+			t.ifError(err);
 
-		t.end();
+			var end = Date.now();
+			var elapsed = end - start;
+
+			t.equal(filteredServers.length, 998);
+			t.ok(elapsed < 50, '<50ms elapsed: ' + elapsed + 'ms');
+
+			t.end();
+		});
 	});
 });

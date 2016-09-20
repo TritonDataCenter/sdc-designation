@@ -9,8 +9,9 @@
  */
 
 var test = require('tape');
-var clone = require('./common').clone;
 var scorer = require('../../lib/algorithms/score-unreserved-ram.js');
+var common = require('./common');
+var clone  = common.clone;
 
 
 var LOG = {
@@ -33,13 +34,16 @@ var SERVERS = [ {
 } ];
 
 
-test('scoreUnreservedRam()', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 5;
-	expectedServers[1].score = 1;
-	expectedServers[2].score = 3;
+var checkScorer = common.createPluginChecker(scorer, LOG);
 
-	var expectedReasons = {
+
+test('scoreUnreservedRam()', function (t) {
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 5;
+	expectServers[1].score = 1;
+	expectServers[2].score = 3;
+
+	var expectReasons = {
 		'26888f40-bae2-4b68-9053-c91bc82de296':
 			'increased score by 4.00 to 5.00',
 		'55d40d4b-296c-42c5-b8f2-295d094b7206':
@@ -52,24 +56,17 @@ test('scoreUnreservedRam()', function (t) {
 		defaults: { weight_unreserved_ram: 4 }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() with negative default weight', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 1;
-	expectedServers[1].score = 5;
-	expectedServers[2].score = 3;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 1;
+	expectServers[1].score = 5;
+	expectServers[2].score = 3;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'26888f40-bae2-4b68-9053-c91bc82de296':
 			'increased score by 0.00 to 1.00',
 		'55d40d4b-296c-42c5-b8f2-295d094b7206':
@@ -82,20 +79,13 @@ test('scoreUnreservedRam() with negative default weight', function (t) {
 		defaults: { weight_unreserved_ram: -4 }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() with zero default weight', function (t) {
-	var expectedServers = SERVERS;
- 	var expectedReasons = {
+	var expectServers = SERVERS;
+ 	var expectReasons = {
 		skip: 'Resolved score weight to 0.00; no changes'
 	};
 
@@ -103,24 +93,17 @@ test('scoreUnreservedRam() with zero default weight', function (t) {
 		defaults: { weight_unreserved_ram: 0 }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() with min-ram default set', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 3;
-	expectedServers[1].score = 1;
-	expectedServers[2].score = 2;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 3;
+	expectServers[1].score = 1;
+	expectServers[2].score = 2;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'26888f40-bae2-4b68-9053-c91bc82de296':
 			'increased score by 2.00 to 3.00',
 		'55d40d4b-296c-42c5-b8f2-295d094b7206':
@@ -136,24 +119,17 @@ test('scoreUnreservedRam() with min-ram default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() with max-ram default set', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 1;
-	expectedServers[1].score = 3;
-	expectedServers[2].score = 2;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 1;
+	expectServers[1].score = 3;
+	expectServers[2].score = 2;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'26888f40-bae2-4b68-9053-c91bc82de296':
 			'increased score by 0.00 to 1.00',
 		'55d40d4b-296c-42c5-b8f2-295d094b7206':
@@ -169,20 +145,13 @@ test('scoreUnreservedRam() with max-ram default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() with unrelated spread default set', function (t) {
-	var expectedServers = clone(SERVERS);
-	var expectedReasons = {
+	var expectServers = SERVERS;
+	var expectReasons = {
 		skip: 'pkg or default set to score with other plugin'
 	};
 
@@ -193,24 +162,17 @@ test('scoreUnreservedRam() with unrelated spread default set', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() with package attr set', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 3;
-	expectedServers[1].score = 1;
-	expectedServers[2].score = 2;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 3;
+	expectServers[1].score = 1;
+	expectServers[2].score = 2;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'26888f40-bae2-4b68-9053-c91bc82de296':
 			'increased score by 2.00 to 3.00',
 		'55d40d4b-296c-42c5-b8f2-295d094b7206':
@@ -226,24 +188,17 @@ test('scoreUnreservedRam() with package attr set', function (t) {
 		pkg: { alloc_server_spread: 'min-ram' }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() with package and default set', function (t) {
-	var expectedServers = clone(SERVERS);
-	expectedServers[0].score = 3;
-	expectedServers[1].score = 1;
-	expectedServers[2].score = 2;
+	var expectServers = clone(SERVERS);
+	expectServers[0].score = 3;
+	expectServers[1].score = 1;
+	expectServers[2].score = 2;
 
-	var expectedReasons = {
+	var expectReasons = {
 		'26888f40-bae2-4b68-9053-c91bc82de296':
 			'increased score by 2.00 to 3.00',
 		'55d40d4b-296c-42c5-b8f2-295d094b7206':
@@ -260,20 +215,13 @@ test('scoreUnreservedRam() with package and default set', function (t) {
 		pkg: { alloc_server_spread: 'min-ram' }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() with unrelated package attr set', function (t) {
-	var expectedServers = clone(SERVERS);
-	var expectedReasons = {
+	var expectServers = SERVERS;
+	var expectReasons = {
 		skip: 'pkg or default set to score with other plugin'
 	};
 
@@ -284,22 +232,17 @@ test('scoreUnreservedRam() with unrelated package attr set', function (t) {
 		pkg: { alloc_server_spread: 'min-owner' }
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() with one server', function (t) {
-	var expectedServers = [ clone(SERVERS[0]) ];
-	expectedServers[0].score = 5;
+	var servers = [ SERVERS[0] ];
 
-	var expectedReasons = {
+	var expectServers = clone(servers);
+	expectServers[0].score = 5;
+
+	var expectReasons = {
 		'26888f40-bae2-4b68-9053-c91bc82de296':
 			'increased score by 4.00 to 5.00'
 	};
@@ -308,14 +251,7 @@ test('scoreUnreservedRam() with one server', function (t) {
 		defaults: { weight_unreserved_ram: 4 }
 	};
 
-	var results = scorer.run(LOG, clone([SERVERS[0]]), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, expectedServers);
-	t.deepEqual(reasons, expectedReasons);
-
-	t.end();
+	checkScorer(t, servers, constraints, expectServers, expectReasons);
 });
 
 
@@ -324,14 +260,7 @@ test('scoreUnreservedRam() without servers', function (t) {
 		defaults: { weight_unreserved_ram: 4 }
 	};
 
-	var results = scorer.run(LOG, [], constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(scoredServers, []);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkScorer(t, [], constraints, [], {});
 });
 
 

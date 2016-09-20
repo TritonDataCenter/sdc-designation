@@ -8,6 +8,7 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+var assert = require('assert-plus');
 var test = require('tape');
 var common = require('./common');
 var Allocator = require('../lib/allocator.js');
@@ -72,120 +73,142 @@ var logStub = {
 
 test('algorithms pipeline', function (t) {
 	var serverStubs = [1, 2, 3, 4, 5];
-	var executed = [];
-	var allocator;
-	var results;
-	var serverStub;
 
 	var plugins = [
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers) {
-				t.ok(log.debug);
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(1);
-				return ([[5, 4, 3, 2]]);
+				cb(null, [5, 4, 3, 2], {});
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers) {
-				t.ok(log.debug);
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(servers, [5, 4, 3, 2]);
 
 				executed.push(2);
-				return ([[2, 3]]);
+				cb(null, [2, 3], {});
 			}
 		}, {
 			name: 'baz',
-			run: function (log, servers) {
-				t.ok(log.debug);
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(servers, [2, 3]);
 
 				executed.push(3);
-				return ([[3]]);
+				cb(null, [3], {});
 			}
 		}
 	];
 
-	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var executed = [];
+
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
-	results = allocator.allocate(serverStubs, {}, {}, {});
-	serverStub = results[0];
-	t.equal(serverStub, 3);
-	t.deepEqual(executed, [1, 2, 3]);
+	allocator.allocate(serverStubs, {}, {}, {}, [], function (err, stub) {
+		t.ifError(err);
 
-	t.end();
+		t.equal(stub, 3);
+		t.deepEqual(executed, [1, 2, 3]);
+
+		t.end();
+	});
 });
 
 
 test('algorithms shortcuts with no servers', function (t) {
 	var serverStub = { uuid: '66e94ea4-6b6b-4b62-a886-799c227e6ae6' };
-	var executed = [];
-	var allocator;
-	var results;
-	var expected;
+
+	var expected = [ {
+		step: 'Received by DAPI',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
+	}, {
+		step: 'foo',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
+	}, {
+		step: 'bar',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
+	}, {
+		step: 'baz',
+		remaining: []
+	} ];
 
 	var plugins = [
 		'pipe',
 		{
 			name: 'foo',
-			run: function () {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				executed.push(1);
-				return ([[serverStub]]);
+				cb(null, [serverStub], {});
 			}
 		}, {
 			name: 'bar',
-			run: function () {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				executed.push(2);
-				return ([[serverStub]]);
+				cb(null, [serverStub], {});
 			}
 		}, {
 			name: 'baz',
-			run: function () {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				executed.push(3);
-				return ([[]]);
+				cb(null, [], {});
 			}
 		}, {
-			name: 'baz',
+			name: 'quux',
 			run: function () {
-				executed.push(4);
-				return ([[]]);
+				t.ok(false);
 			}
 		}
 	];
 
-	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var executed = [];
+
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
-	results = allocator.allocate([serverStub], {}, {}, {});
-	t.deepEqual(executed, [1, 2, 3]);
-	t.equal(results[0], undefined);
+	allocator.allocate([serverStub], {}, {}, {}, [],
+			function (err, stub, reasons) {
+		t.ifError(err);
+		t.deepEqual(executed, [1, 2, 3]);
+		t.equal(stub, undefined);
 
-	expected = [
-		{
-			step: 'Received by DAPI',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
-		},
-		{
-			step: 'foo',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
-		},
-		{
-			step: 'bar',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
-		},
-		{
-			step: 'baz',
-			remaining: []
-		}
-	];
+		t.deepEqual(reasons, expected);
 
-	t.deepEqual(results[1], expected);
-
-	t.end();
+		t.end();
+	});
 });
 
 
@@ -196,80 +219,95 @@ test('dispatch 1', function (t) {
 		{ uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
 		{ uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }
 	];
-	var executed = [];
-	var allocator;
-	var results;
-	var expected;
+
+	var expected = [ {
+		step: 'Received by DAPI',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+			'94d987a9-968e-47ce-a959-4f14324bef7f',
+			'1727e98c-50b0-46de-96dd-3b360f522ce7',
+			'32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
+	}, {
+		step: 'foo',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+			'1727e98c-50b0-46de-96dd-3b360f522ce7',
+			'32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
+	}, {
+		step: 'bar',
+		remaining: []
+	}, {
+		step: 'baz',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
+	} ];
 
 	var plugins = [
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(servers, serverStubs);
 				executed.push(1);
-				return ([[serverStubs[0],
-				    serverStubs[2], serverStubs[3]]]);
+				cb(null, [serverStubs[0], serverStubs[2],
+					serverStubs[3]], {});
 			}
 		},
 		[
 			'or',
 			{
 				name: 'bar',
-				run: function (log, servers) {
+				run: function (log, servers, constraints, cb) {
+					assert.object(log);
+					assert.array(servers);
+					assert.object(constraints);
+					assert.func(cb);
+
 					t.deepEqual(servers,
 					    [serverStubs[0], serverStubs[2],
 					    serverStubs[3]]);
+
 					executed.push(2);
-					return ([[]]);
+
+					cb(null, [], {});
 				}
 			}, {
 				name: 'baz',
-				run: function (log, servers) {
+				run: function (log, servers, constraints, cb) {
+					assert.object(log);
+					assert.array(servers);
+					assert.object(constraints);
+					assert.func(cb);
+
 					t.deepEqual(servers,
 					    [serverStubs[0], serverStubs[2],
 					    serverStubs[3]]);
+
 					executed.push(3);
-					return ([serverStubs.slice(0, 1)]);
+
+					cb(null, serverStubs.slice(0, 1), {});
 				}
 			}
 		]
 	];
 
-	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var executed = [];
+
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
-	results = allocator.allocate(serverStubs, {}, {}, {});
-	t.deepEqual(executed, [1, 2, 3]);
-	t.deepEqual(results[0], serverStubs[0]);
+	allocator.allocate(serverStubs, {}, {}, {}, [],
+			function (err, stub, reasons) {
+		t.ifError(err);
 
-	expected = [
-		{
-			step: 'Received by DAPI',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-			    '94d987a9-968e-47ce-a959-4f14324bef7f',
-			    '1727e98c-50b0-46de-96dd-3b360f522ce7',
-			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
-		},
-		{
-			step: 'foo',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-			    '1727e98c-50b0-46de-96dd-3b360f522ce7',
-			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
-		},
-		{
-			step: 'bar',
-			remaining: []
-		},
-		{
-			step: 'baz',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
-		}
-	];
+		t.deepEqual(executed, [1, 2, 3]);
+		t.deepEqual(stub, serverStubs[0]);
+		t.deepEqual(reasons, expected);
 
-	t.deepEqual(results[1], expected);
-
-	t.end();
+		t.end();
+	});
 });
 
 
@@ -280,73 +318,83 @@ test('dispatch 2', function (t) {
 		{ uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
 		{ uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }
 	];
-	var executed = [];
-	var allocator;
-	var results;
-	var expected;
+
+	var expected = [ {
+		step: 'Received by DAPI',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+			'94d987a9-968e-47ce-a959-4f14324bef7f',
+			'1727e98c-50b0-46de-96dd-3b360f522ce7',
+			'32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
+	}, {
+		step: 'foo',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+			'1727e98c-50b0-46de-96dd-3b360f522ce7',
+			'32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
+	}, {
+		step: 'bar',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
+	} ];
 
 	var plugins = [
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(servers, serverStubs);
 				executed.push(1);
-				return ([[serverStubs[0],
-				    serverStubs[2], serverStubs[3]]]);
+
+				cb(null, [serverStubs[0], serverStubs[2],
+					serverStubs[3]], {});
 			}
 		},
 		[
 			'or',
 			{
 				name: 'bar',
-				run: function (log, servers) {
+				run: function (log, servers, constraints, cb) {
+					assert.object(log);
+					assert.array(servers);
+					assert.object(constraints);
+					assert.func(cb);
+
 					t.deepEqual(servers,
 					    [serverStubs[0],
 					    serverStubs[2],
 					    serverStubs[3]]);
+
 					executed.push(2);
-					return ([serverStubs.slice(0, 1)]);
+
+					cb(null, serverStubs.slice(0, 1), {});
 				}
 			}, {
 				name: 'baz',
-				run: function (log, servers) {
+				run: function () {
 					t.ok(false);
 				}
 			}
 		]
 	];
 
-	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var executed = [];
+
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
-	results = allocator.allocate(serverStubs, {}, {}, {});
-	t.deepEqual(executed, [1, 2]);
-	t.deepEqual(results[0], serverStubs[0]);
+	allocator.allocate(serverStubs, {}, {}, {}, [],
+			function (err, stub, reasons) {
+		t.ifError(err);
 
-	expected = [
-		{
-			step: 'Received by DAPI',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-			    '94d987a9-968e-47ce-a959-4f14324bef7f',
-			    '1727e98c-50b0-46de-96dd-3b360f522ce7',
-			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
-		},
-		{
-			step: 'foo',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-			    '1727e98c-50b0-46de-96dd-3b360f522ce7',
-			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
-		},
-		{
-			step: 'bar',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6' ]
-		}
-	];
+		t.deepEqual(executed, [1, 2]);
+		t.deepEqual(stub, serverStubs[0]);
+		t.deepEqual(reasons, expected);
 
-	t.deepEqual(results[1], expected);
-
-	t.end();
+		t.end();
+	});
 });
 
 
@@ -357,45 +405,8 @@ test('dispatch 3', function (t) {
 		{ uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
 		{ uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }
 	];
-	var executed = [];
-	var allocator;
-	var results;
-	var expected;
 
-	var plugins = [
-		'pipe',
-		{
-			name: 'foo',
-			run: function (log, servers) {
-				t.deepEqual(servers, serverStubs);
-				executed.push(1);
-				return ([[]]);
-			}
-		},
-		[
-			'or',
-			{
-				name: 'bar',
-				run: function (log, servers) {
-					t.ok(false);
-				}
-			}, {
-				name: 'baz',
-				run: function (log, servers) {
-					t.ok(false);
-				}
-			}
-		]
-	];
-
-	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
-	allocator.allocServerExpr = plugins;
-
-	results = allocator.allocate(serverStubs, {}, {}, {});
-	t.deepEqual(executed, [1]);
-	t.equal(results[0], undefined);
-
-	expected = [
+	var expected = [
 		{
 			step: 'Received by DAPI',
 			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
@@ -409,9 +420,53 @@ test('dispatch 3', function (t) {
 		}
 	];
 
-	t.deepEqual(results[1], expected);
+	var plugins = [
+		'pipe',
+		{
+			name: 'foo',
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
 
-	t.end();
+				t.deepEqual(servers, serverStubs);
+				executed.push(1);
+
+				cb(null, [], {});
+			}
+		},
+		[
+			'or',
+			{
+				name: 'bar',
+				run: function () {
+					t.ok(false);
+				}
+			}, {
+				name: 'baz',
+				run: function () {
+					t.ok(false);
+				}
+			}
+		]
+	];
+
+	var executed = [];
+
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	allocator.allocServerExpr = plugins;
+
+	allocator.allocate(serverStubs, {}, {}, {}, [],
+			function (err, stub, reasons) {
+		t.ifError(err);
+
+		t.deepEqual(executed, [1]);
+		t.equal(stub, undefined);
+		t.deepEqual(reasons, expected);
+
+		t.end();
+	});
 });
 
 
@@ -422,60 +477,82 @@ test('pipe 1', function (t) {
 		{ uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
 		{ uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }
 	];
-	var executed = [];
-	var allocator;
-	var results;
-	var serverStub;
-	var visitedAlgorithms;
-	var remainingServers;
 
 	var plugins = [
+		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
+
 				executed.push(1);
-				return ([serverStubs.slice(0, 3)]);
+
+				cb(null, serverStubs.slice(0, 3), {});
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs.slice(0, 3));
+
 				executed.push(2);
-				return ([serverStubs.slice(1, 3)]);
+
+				cb(null, serverStubs.slice(1, 3), {});
 			}
 		}, {
 			name: 'baz',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs.slice(1, 3));
+
 				executed.push(3);
-				return ([serverStubs.slice(2, 3)]);
+
+				cb(null, serverStubs.slice(2, 3), {});
 			}
 		}
 	];
 
-	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var executed = [];
 
-	results = allocator._pipe(plugins, serverStubs, { vm: { foo: 1 } });
-	serverStub = results[0];
-	visitedAlgorithms = results[1];
-	remainingServers  = results[2];
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 
-	t.deepEqual(serverStub, serverStubs.slice(2, 3));
-	t.deepEqual(executed, [1, 2, 3]);
-	t.deepEqual(visitedAlgorithms, plugins);
-	t.deepEqual(remainingServers,
-	    [ [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-	    '94d987a9-968e-47ce-a959-4f14324bef7f',
-	    '1727e98c-50b0-46de-96dd-3b360f522ce7' ],
-	    [ '94d987a9-968e-47ce-a959-4f14324bef7f',
-	    '1727e98c-50b0-46de-96dd-3b360f522ce7' ],
-	    [ '1727e98c-50b0-46de-96dd-3b360f522ce7' ] ]);
+	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
+			function (err, serverStub, visitedAlgorithms,
+			remainingServers, reasons) {
+		t.ifError(err);
 
-	t.end();
+		t.deepEqual(serverStub, serverStubs.slice(2, 3));
+		t.deepEqual(executed, [1, 2, 3]);
+		t.deepEqual(visitedAlgorithms, plugins.slice(1, 4));
+		t.deepEqual(remainingServers, [ [
+			'66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+			'94d987a9-968e-47ce-a959-4f14324bef7f',
+			'1727e98c-50b0-46de-96dd-3b360f522ce7'
+		], [
+			'94d987a9-968e-47ce-a959-4f14324bef7f',
+			'1727e98c-50b0-46de-96dd-3b360f522ce7'
+		], [
+			'1727e98c-50b0-46de-96dd-3b360f522ce7'
+		] ]);
+
+		t.end();
+	});
 });
 
 
@@ -486,55 +563,67 @@ test('pipe 2', function (t) {
 		{ uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
 		{ uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }
 	];
-	var executed = [];
-	var allocator;
-	var results;
-	var serverStub;
-	var visitedAlgorithms;
-	var remainingServers;
 
 	var plugins = [
+		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
+
 				executed.push(1);
-				return ([serverStubs.slice(0, 3)]);
+
+				cb(null, serverStubs.slice(0, 3), {});
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs.slice(0, 3));
+
 				executed.push(2);
-				return ([[]]);
+
+				cb(null, [], {});
 			}
 		}, {
 			name: 'baz',
-			run: function (log, args) {
+			run: function () {
 				t.ok(false);
 			}
 		}
 	];
 
-	allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var executed = [];
 
-	results = allocator._pipe(plugins, serverStubs, { vm: { foo: 1 } });
-	serverStub = results[0];
-	visitedAlgorithms = results[1];
-	remainingServers = results[2];
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 
-	t.deepEqual(serverStub, []);
-	t.deepEqual(executed, [1, 2]);
-	t.deepEqual(visitedAlgorithms, plugins.slice(0, 2));
-	t.deepEqual(remainingServers,
-	    [ [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-	    '94d987a9-968e-47ce-a959-4f14324bef7f',
-	    '1727e98c-50b0-46de-96dd-3b360f522ce7' ],
-	    [] ]);
+	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
+			function (err, serverStub, visitedAlgorithms,
+			remainingServers, reasons) {
+		t.ifError(err);
 
-	t.end();
+		t.deepEqual(serverStub, []);
+		t.deepEqual(executed, [1, 2]);
+		t.deepEqual(visitedAlgorithms, plugins.slice(1, 3));
+		t.deepEqual(remainingServers, [ [
+			'66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+			'94d987a9-968e-47ce-a959-4f14324bef7f',
+			'1727e98c-50b0-46de-96dd-3b360f522ce7'
+		], [] ]);
+
+		t.end();
+	});
 });
 
 
@@ -545,50 +634,75 @@ test('or 1', function (t) {
 		{ uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
 		{ uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }
 	];
-	var executed = [];
 
 	var plugins = [
+		'or',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
+
 				executed.push(1);
-				return ([[]]);
+
+				cb(null, [], {});
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
+
 				executed.push(2);
-				return ([[]]);
+
+				cb(null, [], {});
 			}
 		}, {
 			name: 'baz',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
+
 				executed.push(3);
-				return ([[]]);
+
+				cb(null, [], {});
 			}
 		}
 	];
 
+	var executed = [];
+
 	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 
-	var results = allocator._or(plugins, serverStubs, { vm: { foo: 1 } });
-	var serverStub = results[0];
-	var visitedAlgorithms = results[1];
-	var remainingServers = results[2];
+	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
+			function (err, serverStub, visitedAlgorithms,
+			remainingServers, reasons) {
+		t.ifError(err);
 
-	t.deepEqual(serverStub, []);
-	t.deepEqual(executed, [1, 2, 3]);
-	t.deepEqual(visitedAlgorithms, plugins);
-	t.deepEqual(remainingServers, [ [], [], [] ]);
+		t.deepEqual(serverStub, []);
+		t.deepEqual(executed, [1, 2, 3]);
+		t.deepEqual(visitedAlgorithms, plugins.slice(1, 4));
+		t.deepEqual(remainingServers, [ [], [], [] ]);
 
-	t.end();
+		t.end();
+	});
 });
+
 
 
 test('or 2', function (t) {
@@ -598,49 +712,66 @@ test('or 2', function (t) {
 		{ uuid: '1727e98c-50b0-46de-96dd-3b360f522ce7' },
 		{ uuid: '32f7e58c-3be8-4530-851a-2606bb8bc53f' }
 	];
-	var executed = [];
 
 	var plugins = [
+		'or',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
+
 				executed.push(1);
-				return ([[]]);
+
+				cb(null, [], {});
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints) {
+			run: function (log, servers, constraints, cb) {
+				assert.object(log);
+				assert.array(servers);
+				assert.object(constraints);
+				assert.func(cb);
+
 				t.deepEqual(constraints.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
+
 				executed.push(2);
-				return ([serverStubs.slice(0, 2)]);
+
+				cb(null, serverStubs.slice(0, 2), {});
 			}
 		}, {
 			name: 'baz',
-			run: function (log, servers, constraints) {
+			run: function () {
 				t.ok(false);
 			}
 		}
 	];
 
+	var executed = [];
+
 	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 
-	var results = allocator._or(plugins, serverStubs, { vm: { foo: 1 } });
-	var serverStub		= results[0];
-	var visitedAlgorithms = results[1];
-	var remainingServers  = results[2];
+	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
+			function (err, serverStub, visitedAlgorithms,
+			remainingServers, reasons) {
+		t.ifError(err);
 
-	t.deepEqual(serverStub, serverStubs.slice(0, 2));
-	t.deepEqual(executed, [1, 2]);
-	t.deepEqual(visitedAlgorithms, plugins.slice(0, 2));
-	t.deepEqual(remainingServers,
-	    [ [],
-	    [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-	    '94d987a9-968e-47ce-a959-4f14324bef7f' ] ]);
+		t.deepEqual(serverStub, serverStubs.slice(0, 2));
+		t.deepEqual(executed, [1, 2]);
+		t.deepEqual(visitedAlgorithms, plugins.slice(1, 3));
+		t.deepEqual(remainingServers, [ [], [
+			'66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+			'94d987a9-968e-47ce-a959-4f14324bef7f'
+		] ]);
 
-	t.end();
+		t.end();
+	});
 });
 
 
@@ -671,6 +802,36 @@ test('create plugin summary', function (t) {
 		[]
 	];
 
+	var expected = [ {
+		step: 'Received by DAPI',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+			    '94d987a9-968e-47ce-a959-4f14324bef7f',
+			    '1727e98c-50b0-46de-96dd-3b360f522ce7',
+			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
+	}, {
+		step: 'foo',
+		remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
+			    '94d987a9-968e-47ce-a959-4f14324bef7f',
+			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
+		reasons: {
+			'1727e98c-50b0-46de-96dd-3b360f522ce7': 'quux'
+		}
+	}, {
+		step: 'bar',
+		remaining: [ '94d987a9-968e-47ce-a959-4f14324bef7f',
+			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
+		reasons: {
+			'66e94ea4-6b6b-4b62-a886-799c227e6ae6': 'foo'
+		}
+	}, {
+		step: 'baz',
+		remaining: [],
+		reasons: {
+			'94d987a9-968e-47ce-a959-4f14324bef7f': 'bar',
+			'32f7e58c-3be8-4530-851a-2606bb8bc53f': 'baz'
+		}
+	} ];
+
 	var reasonsRemoved = [
 		{ '1727e98c-50b0-46de-96dd-3b360f522ce7': 'quux' },
 		{ '66e94ea4-6b6b-4b62-a886-799c227e6ae6': 'foo' },
@@ -683,41 +844,6 @@ test('create plugin summary', function (t) {
 	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
 	var summary = allocator._createPluginSummary(serverStubs,
 		visitedAlgorithms, remainingServers, reasonsRemoved);
-
-	var expected = [
-		{
-			step: 'Received by DAPI',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-			    '94d987a9-968e-47ce-a959-4f14324bef7f',
-			    '1727e98c-50b0-46de-96dd-3b360f522ce7',
-			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ]
-		},
-		{
-			step: 'foo',
-			remaining: [ '66e94ea4-6b6b-4b62-a886-799c227e6ae6',
-			    '94d987a9-968e-47ce-a959-4f14324bef7f',
-			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
-			reasons: {
-				'1727e98c-50b0-46de-96dd-3b360f522ce7': 'quux'
-			}
-		},
-		{
-			step: 'bar',
-			remaining: [ '94d987a9-968e-47ce-a959-4f14324bef7f',
-			    '32f7e58c-3be8-4530-851a-2606bb8bc53f' ],
-			reasons: {
-				'66e94ea4-6b6b-4b62-a886-799c227e6ae6': 'foo'
-			}
-		},
-		{
-			step: 'baz',
-			remaining: [],
-			reasons: {
-				'94d987a9-968e-47ce-a959-4f14324bef7f': 'bar',
-				'32f7e58c-3be8-4530-851a-2606bb8bc53f': 'baz'
-			}
-		}
-	];
 
 	t.deepEqual(summary, expected);
 
@@ -820,10 +946,7 @@ test('create expression', function (t) {
 
 
 test('server capacity', function (t) {
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
-	var results = allocator.serverCapacity(common.getExampleServers());
-
-	var expectedResults = [ {
+	var expectedServers = {
 		'00000000-0000-0000-0000-00259094373c': {
 			cpu: 6100,
 			ram: 100627,
@@ -834,12 +957,18 @@ test('server capacity', function (t) {
 			ram: 105619,
 			disk: -27904
 		}
-	},
-	{
+	};
+
+	var expectedReasons = {
 		asdsa: 'Server has status: undefined'
-	} ];
+	};
 
-	t.deepEqual(results, expectedResults);
-
-	t.end();
+	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	allocator.serverCapacity(common.getExampleServers(),
+			function (err, servers, reasons) {
+		t.ifError(err);
+		t.deepEqual(servers, expectedServers);
+		t.deepEqual(reasons, expectedReasons);
+		t.end();
+	});
 });

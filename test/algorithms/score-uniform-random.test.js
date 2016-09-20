@@ -10,7 +10,8 @@
 
 var test = require('tape');
 var scorer = require('../../lib/algorithms/score-uniform-random.js');
-var clone = require('./common').clone;
+var common = require('./common');
+var clone  = common.clone;
 
 
 var LOG = {
@@ -30,10 +31,14 @@ var SERVERS = [ {
 } ];
 
 
+var checkScorer = common.createPluginChecker(scorer, LOG);
+
+
 test('scoreUniformRandom()', function (t) {
 	var constraints = { defaults: { weight_uniform_random: 4 } };
 	checkRandom(t, constraints, 5);
 });
+
 
 test('scoreUniformRandom() with pkg set spread', function (t) {
 	var constraints = {
@@ -71,6 +76,11 @@ test('scoreUniformRandom() with defaults and package attr', function (t) {
 
 
 test('scoreUniformRandom() skip wrong spread', function (t) {
+	var expectServers = SERVERS;
+	var expectReasons = {
+		skip: 'pkg or default set to spread with: min-owner'
+	};
+
 	var constraints = {
 		defaults: {
 			weight_uniform_random: 4,
@@ -78,20 +88,19 @@ test('scoreUniformRandom() skip wrong spread', function (t) {
 		}
 	};
 
-	var results = scorer.run(LOG, clone(SERVERS), constraints);
-	var scoredServers = results[0];
-	var reasons = results[1];
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+});
 
-	t.deepEqual(scoredServers, SERVERS);
-	t.deepEqual(reasons, {
+
+test('scoreUniformRandom() skip wrong spread', function (t) {
+	var expectServers = SERVERS;
+	var expectReasons = {
 		skip: 'pkg or default set to spread with: min-owner'
-	});
+	};
 
-	constraints = { pkg: {}, defaults: { server_spread: 'min-owner' } };
-	results = scorer.run(LOG, clone(SERVERS), constraints);
-	t.deepEqual(results[0], SERVERS);
+	var constraints = { pkg: {}, defaults: { server_spread: 'min-owner' } };
 
-	t.end();
+	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
 });
 
 
@@ -106,26 +115,37 @@ checkRandom(t, constraints, expectedMax)
 {
 	var scores = SERVERS.map(function () { return ([]); });
 
-	for (var i = 0; i !== 25; i++) {
-		var results = scorer.run(LOG, clone(SERVERS), constraints);
-		var scored = results[0];
-		var reasons = results[1];
-
-		t.ok(reasons);
-
-		for (var j = 0; j !== SERVERS.length; j++) {
-			t.equal(scored[j].uuid, SERVERS[j].uuid);
-			scores[j].push(scored[j].score);
+	function iter(num) {
+		if (num === 0) {
+			return (checkScores());
 		}
+
+		return scorer.run(LOG, clone(SERVERS), constraints,
+				function (err, servers, reasons) {
+			t.ifError(err);
+
+			t.ok(reasons);
+
+			for (var j = 0; j !== SERVERS.length; j++) {
+				t.equal(servers[j].uuid, SERVERS[j].uuid);
+				scores[j].push(servers[j].score);
+			}
+
+			iter(num - 1);
+		});
 	}
 
-	for (var k = 0; k !== SERVERS.length; k++) {
-		var min = Math.min.apply(Math, scores[k]);
-		var max = Math.max.apply(Math, scores[k]);
+	function checkScores() {
+		for (var k = 0; k !== SERVERS.length; k++) {
+			var min = Math.min.apply(Math, scores[k]);
+			var max = Math.max.apply(Math, scores[k]);
 
-		t.equal(min, 1);
-		t.equal(max, expectedMax);
+			t.equal(min, 1);
+			t.equal(max, expectedMax);
+		}
+
+		t.end();
 	}
 
-	t.end();
+	iter(25);
 }

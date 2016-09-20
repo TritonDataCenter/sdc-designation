@@ -10,47 +10,37 @@
 
 var test = require('tape');
 var identity = require('../../lib/algorithms/identity.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); }
 };
 
 
+var checkPlugin = common.createPluginChecker(identity, LOG);
+
+
 test('identity()', function (t) {
-	var givenServers = [
+	var servers = [
 		{ unreserved_ram: 256 },
 		{ unreserved_ram: 511 },
 		{ unreserved_ram: 512 },
 		{ unreserved_ram: 768 }
 	];
 
+	var expectServers = servers;
+	var expectReasons = {};
+
 	var constraints = {};
 
-	var results = identity.run(log, givenServers, constraints);
-	var servers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(servers, givenServers);
-	t.deepEqual(reasons, undefined);
-
-	t.end();
+	checkPlugin(t, servers, constraints, expectServers, expectReasons);
 });
 
 
 test('identity() with no servers', function (t) {
-	var givenServers = [];
-	var constraints = {};
-
-	var results = identity.run(log, givenServers, constraints);
-	var servers = results[0];
-	var reasons = results[1];
-
-	t.equal(servers.length, 0);
-	t.deepEqual(reasons, undefined);
-
-	t.end();
+	checkPlugin(t, [], {}, [], {});
 });
 
 

@@ -11,28 +11,27 @@
 var test = require('tape');
 var mod_fs = require('fs');
 var filter = require('../../lib/algorithms/hard-filter-invalid-servers.js');
+var common = require('./common.js');
 
 
-var log = {
+var LOG = {
 	trace: function () { return (true); },
 	debug: function () { return (true); },
 	warn:  function () { return (true); }
 };
 
 
+var checkFilter = common.createPluginChecker(filter, LOG);
+
+
 test('filterInvalidServers()', function (t) {
-	var serversInfo = JSON.parse(mod_fs.readFileSync(__dirname +
-	    '/hf-invalid-servers.json'));
+	var servers = JSON.parse(mod_fs.readFileSync(__dirname +
+		'/hf-invalid-servers.json'));
 
-	var constraints = {};
-
-	var results = filter.run(log, serversInfo, constraints);
-	var servers = results[0];
-	var reasons = results[1];
-	t.equal(servers.length, 1);
-	t.deepEqual(servers[0].uuid, '2bb4c1de-16b5-11e4-8e8e-07469af29312');
-
-	var expectedReasons = {
+	var expectServers = servers.filter(function (server) {
+		return (server.uuid === '2bb4c1de-16b5-11e4-8e8e-07469af29312');
+	});
+	var expectReasons = {
 		/* BEGIN JSSTYLED */
 		'dd5dac66-b4be-4b75-859b-b375bc577e90': 'property "vms.b3d04682-536f-4f09-8170-1954e45e9e1c.owner_uuid": is missing and it is required',
 		'390d2a35-8b54-449a-a82d-6c0c623afc8c': 'property "memory_total_bytes": is missing and it is required',
@@ -42,26 +41,22 @@ test('filterInvalidServers()', function (t) {
 		'bc19a132-a1d7-408d-a8b3-73453c7d4f0b': 'property "vms.d95e64c8-da45-4b81-a044-89e26db43cbc.state": is missing and it is required',
 		'e4c4b6ee-3cfa-11e6-9214-28cfe91f7d53': 'property "disk_pool_alloc_bytes": is missing and it is required'
 		/* END JSSTYLED */
-
 	};
-	t.deepEqual(reasons, expectedReasons);
 
-	t.end();
+	var constraints = {};
+
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
 });
 
 
 test('filterInvalidServers() with no servers', function (t) {
-	var serversInfo = [];
+	var expectServers = [];
+	var expectReasons = {};
+
+	var servers = [];
 	var constraints = {};
 
-	var results = filter.run(log, serversInfo, constraints);
-	var servers = results[0];
-	var reasons = results[1];
-
-	t.deepEqual(servers, []);
-	t.deepEqual(reasons, {});
-
-	t.end();
+	checkFilter(t, servers, constraints, expectServers, expectReasons);
 });
 
 
