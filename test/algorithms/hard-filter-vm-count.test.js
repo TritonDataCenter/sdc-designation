@@ -14,11 +14,6 @@ var filter = require('../../lib/algorithms/hard-filter-vm-count.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [ {
 	uuid: '33ce31d0-f376-4efd-ad41-f17c430b9782',
 	vms: {
@@ -46,7 +41,7 @@ var SERVERS = [ {
 } ];
 
 
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterVmCount()', function (t) {
@@ -58,9 +53,9 @@ test('filterVmCount()', function (t) {
 			'Server has 4 VMs (limit is 3)'
 	};
 
-	var constraints = { defaults: { filter_vm_limit: 3 } };
+	var opts = { defaults: { filter_vm_limit: 3 } };
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -77,10 +72,9 @@ test('filterVmCount() with no given limit, less than 224 VMs', function (t) {
 
 	var expectServers = [server];
 	var expectReasons = {};
+	var opts = { defaults: {} };
 
-	var constraints = { defaults: {} };
-
-	checkFilter(t, [server], constraints, expectServers, expectReasons);
+	checkFilter(t, [server], opts, expectServers, expectReasons);
 });
 
 
@@ -103,16 +97,16 @@ test('filterVmCount() with no given limit, less than 224 VMs', function (t) {
 			'Server has 224 VMs (limit is 224)'
 	};
 
-	var constraints = { defaults: {} };
+	var opts = { defaults: {} };
 
-	checkFilter(t, [server], constraints, expectServers, expectReasons);
+	checkFilter(t, [server], opts, expectServers, expectReasons);
 });
 
 
 test('filterVmCount() with no servers', function (t) {
-	var constraints = { defaults: { filter_vm_limit: 3 } };
+	var opts = { defaults: { filter_vm_limit: 3 } };
 
-	checkFilter(t, [], constraints, [], {});
+	checkFilter(t, [], opts, [], {});
 });
 
 

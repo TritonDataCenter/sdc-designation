@@ -11,27 +11,50 @@
 var assert = require('assert-plus');
 
 
+var OPTS = {
+	log: {
+		debug: function () { return (true); },
+		error: function (err) { console.log(err); return true; },
+		info:  function () { return (true); },
+		trace: function () { return (true); },
+		warn:  function () { return (true); }
+	}
+};
+
+
 function clone(obj) {
 	return (JSON.parse(JSON.stringify(obj)));
 }
 
 
-function createPluginChecker(plugin, log) {
-	assert.object(plugin);
-	assert.object(log);
+function addCommonOpts(opts) {
+	assert.object(opts, 'opts');
 
-	return function checkPlugin(t, givenServers, constraints, expectServers,
+	Object.keys(OPTS).forEach(function (key) {
+		opts[key] = opts[key] || OPTS[key];
+	});
+
+	return (opts);
+}
+
+
+function createPluginChecker(plugin) {
+	assert.object(plugin, 'plugin');
+
+	return function checkPlugin(t, givenServers, opts, expectServers,
 			expectReasons) {
-		assert.object(t);
-		assert.object(constraints);
-		assert.object(expectReasons);
-		assert.arrayOfObject(givenServers);
-		assert.arrayOfObject(expectServers);
+		assert.object(t, 't');
+		assert.object(opts, 'opts');
+		assert.object(expectReasons, 'expectReasons');
+		assert.arrayOfObject(givenServers, 'givenServers');
+		assert.arrayOfObject(expectServers, 'expectServers');
 
-		plugin.run(log, clone(givenServers), constraints,
+		opts = addCommonOpts(opts);
+
+		plugin.run(clone(givenServers), opts,
 				function (err, servers, reasons) {
-			assert.arrayOfObject(servers);
-			assert.object(reasons);
+			assert.arrayOfObject(servers, 'servers');
+			assert.object(reasons, 'reasons');
 
 			t.ifError(err);
 
@@ -45,6 +68,7 @@ function createPluginChecker(plugin, log) {
 
 
 module.exports = {
+	addCommonOpts: addCommonOpts,
 	createPluginChecker: createPluginChecker,
 	clone: clone
 };

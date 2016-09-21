@@ -13,13 +13,7 @@ var filter = require('../../lib/algorithms/hard-filter-setup.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterSetup()', function (t) {
@@ -32,20 +26,18 @@ test('filterSetup()', function (t) {
 
 	var expectServers = [ servers[1], servers[3] ];
 	var expectReasons = {};
+	var opts = {};
 
-	var constraints = {};
-
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
 test('filterSetup() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
+	var opts = {};
 
-	var constraints = {};
-
-	checkFilter(t, [], constraints, expectServers, expectReasons);
+	checkFilter(t, [], opts, expectServers, expectReasons);
 });
 
 
@@ -54,11 +46,9 @@ test('filterSetup() with malformed servers', function (t) {
 
 	var expectServers = [ givenServers[0] ];
 	var expectReasons = {};
+	var opts = {};
 
-	var constraints = {};
-
-	filter.run(LOG, givenServers, constraints,
-			function (err, servers, reasons) {
+	filter.run(givenServers, opts, function (err, servers, reasons) {
 		t.ifError(err);
 
 		t.deepEqual(servers, expectServers);

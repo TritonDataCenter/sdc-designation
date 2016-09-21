@@ -11,12 +11,8 @@
 var assert = require('assert-plus');
 var test = require('tape');
 var filter = require('../../lib/algorithms/hard-filter-vlans.js');
+var common = require('./common.js');
 
-
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
 
 var SERVERS = [
 	{
@@ -130,9 +126,9 @@ var SERVERS = [
 function
 runTest(t, vlans, expectedUuids, expectedReasons)
 {
-	var constraints = { vm: { nic_tags: vlans } };
+	var opts = common.addCommonOpts({ vm: { nic_tags: vlans }});
 
-	filter.run(LOG, SERVERS, constraints, function (err, servers, reasons) {
+	filter.run(SERVERS, opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
 
@@ -343,10 +339,9 @@ test('filterVlans() on multiple vlans 4', function (t) {
 
 test('filterVlans() with no servers', function (t) {
 	var emptyServers = [];
-	var constraints = { vm: { nic_tags: ['admin'] } };
+	var opts = common.addCommonOpts({ vm: { nic_tags: ['admin'] }});
 
-	filter.run(LOG, emptyServers, constraints,
-			function (err, servers, reasons) {
+	filter.run(emptyServers, opts, function (err, servers, reasons) {
 		t.ifError(err);
 
 		t.deepEqual(servers, []);

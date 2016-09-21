@@ -13,12 +13,6 @@ var filter = require('../../lib/algorithms/hard-filter-owners-servers.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	error: function () { return (true); },
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [ {
 	uuid: '33ce31d0-f376-4efd-ad41-f17c430b9782',
 	unreserved_ram: 1024
@@ -31,7 +25,7 @@ var SERVERS = [ {
 } ];
 
 
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterServersByOwners() with owner', function (t) {
@@ -41,7 +35,7 @@ test('filterServersByOwners() with owner', function (t) {
 			'*': 'Servers pass filter for owner 2316e149-1562-47ff-abea-00bda80d0e7f: server.uuid === "b8ab34e9-2914-48c4-af75-5c6440240ce1"'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			filter_owner_server: {
 				/* BEGIN JSSTYLED */
@@ -53,7 +47,7 @@ test('filterServersByOwners() with owner', function (t) {
 		vm: { owner_uuid: '2316e149-1562-47ff-abea-00bda80d0e7f' }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -66,7 +60,7 @@ test('filterServersByOwners() without owner', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			filter_owner_server: {
 				/* BEGIN JSSTYLED */
@@ -78,7 +72,7 @@ test('filterServersByOwners() without owner', function (t) {
 		vm: { owner_uuid: '9094b92e-26e9-11e6-b476-28cfe91f7d53' }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -89,7 +83,7 @@ test('filterServersByOwners() with owner and bad code', function (t) {
 			'2316e149-1562-47ff-abea-00bda80d0e7f: sdasd ++'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			filter_owner_server: {
 				'2316e149-1562-47ff-abea-00bda80d0e7f':
@@ -101,7 +95,7 @@ test('filterServersByOwners() with owner and bad code', function (t) {
 		vm: { owner_uuid: '2316e149-1562-47ff-abea-00bda80d0e7f' }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -112,7 +106,7 @@ test('filterServersByOwners() without owner and bad code', function (t) {
 			'2316e149-1562-47ff-abea-00bda80d0e7f: sdasd ++'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			filter_owner_server: {
 				'2316e149-1562-47ff-abea-00bda80d0e7f':
@@ -124,7 +118,7 @@ test('filterServersByOwners() without owner and bad code', function (t) {
 		vm: { owner_uuid: 'cce25c36-26eb-11e6-a8f3-28cfe91f7d53' }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -134,12 +128,12 @@ test('filterServersByOwners() with no default', function (t) {
 		skip: 'No filter_owner_server default to run'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {},
 		vm: { owner_uuid: 'cce25c36-26eb-11e6-a8f3-28cfe91f7d53' }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -150,7 +144,7 @@ test('filterServersByOwners() with no servers', function (t) {
 			'6d6d49a9-f190-41d9-8077-d6b67b55a55b: server.ram > 128'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			filter_owner_server: {
 				'6d6d49a9-f190-41d9-8077-d6b67b55a55b':
@@ -162,7 +156,7 @@ test('filterServersByOwners() with no servers', function (t) {
 		}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 

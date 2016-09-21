@@ -14,14 +14,7 @@ var filter = require('../../lib/algorithms/hard-filter-invalid-servers.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); },
-	warn:  function () { return (true); }
-};
-
-
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterInvalidServers()', function (t) {
@@ -43,20 +36,19 @@ test('filterInvalidServers()', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {};
+	var opts = {};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
 test('filterInvalidServers() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
-
 	var servers = [];
-	var constraints = {};
+	var opts = {};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 

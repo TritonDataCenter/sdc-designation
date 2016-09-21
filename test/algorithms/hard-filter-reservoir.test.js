@@ -13,13 +13,7 @@ var filter = require('../../lib/algorithms/hard-filter-reservoir.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterReservoir()', function (t) {
@@ -31,20 +25,18 @@ test('filterReservoir()', function (t) {
 
 	var expectServers = servers.slice(0, 2);
 	var expectReasons = {};
+	var opts = {};
 
-	var constraints = {};
-
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
 test('filterReservoir() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
+	var opts = {};
 
-	var constraints = {};
-
-	checkFilter(t, [], constraints, expectServers, expectReasons);
+	checkFilter(t, [], opts, expectServers, expectReasons);
 });
 
 

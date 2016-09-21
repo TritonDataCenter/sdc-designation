@@ -14,11 +14,6 @@ var common = require('./common');
 var clone  = common.clone;
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [ {
 	uuid: 'ef23ad0e-1802-4929-af61-387e9071d39f',
 	score: 1,
@@ -34,7 +29,7 @@ var SERVERS = [ {
 } ];
 
 
-var checkScorer = common.createPluginChecker(scorer, LOG);
+var checkScorer = common.createPluginChecker(scorer);
 
 
 test('scoreUnreservedDisk()', function (t) {
@@ -52,11 +47,9 @@ test('scoreUnreservedDisk()', function (t) {
 			'increased score by 2.00 to 3.00'
 	};
 
-	var constraints = {
-		defaults: { weight_unreserved_disk: 4 }
-	};
+	var opts = { defaults: { weight_unreserved_disk: 4 } };
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -75,11 +68,9 @@ test('scoreUnreservedDisk() with negative default weight', function (t) {
 			'increased score by 2.00 to 3.00'
 	};
 
-	var constraints = {
-		defaults: { weight_unreserved_disk: -4 }
-	};
+	var opts = { defaults: { weight_unreserved_disk: -4 } };
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -89,11 +80,9 @@ test('scoreUnreservedDisk() with zero default weight', function (t) {
 		'skip': 'Resolved score weight to 0.00; no changes'
 	};
 
-	var constraints = {
-		defaults: { weight_unreserved_disk: 0 }
-	};
+	var opts = { defaults: { weight_unreserved_disk: 0 } };
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -103,14 +92,14 @@ test('scoreUnreservedDisk() with any spread default set', function (t) {
 		skip: 'pkg or default set to spread with: min-owner'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_unreserved_disk: 4,
 			server_spread: 'min-owner'
 		}
 	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -120,14 +109,14 @@ test('scoreUnreservedDisk() with any package attr set', function (t) {
 		skip: 'pkg or default set to spread with: min-ram'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_unreserved_disk: 4
 		},
 		pkg: { alloc_server_spread: 'min-ram' }
 	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -141,20 +130,16 @@ test('scoreUnreservedDisk() with one server', function (t) {
 			'increased score by 4.00 to 5.00'
 	};
 
-	var constraints = {
-		defaults: { weight_unreserved_disk: 4 }
-	};
+	var opts = { defaults: { weight_unreserved_disk: 4 } };
 
-	checkScorer(t, servers, constraints, expectServers, expectReasons);
+	checkScorer(t, servers, opts, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedDisk() without servers', function (t) {
-	var constraints = {
-		defaults: { weight_unreserved_disk: 4 }
-	};
+	var opts = { defaults: { weight_unreserved_disk: 4 } };
 
-	checkScorer(t, [], constraints, [], {});
+	checkScorer(t, [], opts, [], {});
 });
 
 

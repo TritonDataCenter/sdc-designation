@@ -14,11 +14,6 @@ var common = require('./common');
 var clone  = common.clone;
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [ {
 	uuid: '26888f40-bae2-4b68-9053-c91bc82de296',
 	score: 1,
@@ -34,7 +29,7 @@ var SERVERS = [ {
 } ];
 
 
-var checkScorer = common.createPluginChecker(scorer, LOG);
+var checkScorer = common.createPluginChecker(scorer);
 
 
 test('scoreUnreservedRam()', function (t) {
@@ -52,11 +47,9 @@ test('scoreUnreservedRam()', function (t) {
 			'increased score by 2.00 to 3.00'
 	};
 
-	var constraints = {
-		defaults: { weight_unreserved_ram: 4 }
-	};
+	var opts = { defaults: { weight_unreserved_ram: 4 } };
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -75,11 +68,9 @@ test('scoreUnreservedRam() with negative default weight', function (t) {
 			'increased score by 2.00 to 3.00'
 	};
 
-	var constraints = {
-		defaults: { weight_unreserved_ram: -4 }
-	};
+	var opts = { defaults: { weight_unreserved_ram: -4 } };
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -89,11 +80,9 @@ test('scoreUnreservedRam() with zero default weight', function (t) {
 		skip: 'Resolved score weight to 0.00; no changes'
 	};
 
-	var constraints = {
-		defaults: { weight_unreserved_ram: 0 }
-	};
+	var opts = { defaults: { weight_unreserved_ram: 0 } };
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -112,14 +101,14 @@ test('scoreUnreservedRam() with min-ram default set', function (t) {
 			'increased score by 1.00 to 2.00'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_unreserved_ram: 4,
 			server_spread: 'min-ram'
 		}
 	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -138,14 +127,14 @@ test('scoreUnreservedRam() with max-ram default set', function (t) {
 			'increased score by 1.00 to 2.00'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_unreserved_ram: 4,
 			server_spread: 'max-ram'
 		}
 	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -155,14 +144,14 @@ test('scoreUnreservedRam() with unrelated spread default set', function (t) {
 		skip: 'pkg or default set to score with other plugin'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_unreserved_ram: 4,
 			server_spread: 'min-owner'
 		}
 	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -181,14 +170,14 @@ test('scoreUnreservedRam() with package attr set', function (t) {
 			'increased score by 1.00 to 2.00'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_unreserved_ram: 4
 		},
 		pkg: { alloc_server_spread: 'min-ram' }
 	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -207,7 +196,7 @@ test('scoreUnreservedRam() with package and default set', function (t) {
 			'increased score by 1.00 to 2.00'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_unreserved_ram: 4,
 			server_spread: 'max-ram'
@@ -215,7 +204,7 @@ test('scoreUnreservedRam() with package and default set', function (t) {
 		pkg: { alloc_server_spread: 'min-ram' }
 	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -225,14 +214,14 @@ test('scoreUnreservedRam() with unrelated package attr set', function (t) {
 		skip: 'pkg or default set to score with other plugin'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_unreserved_ram: 4
 		},
 		pkg: { alloc_server_spread: 'min-owner' }
 	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -247,20 +236,16 @@ test('scoreUnreservedRam() with one server', function (t) {
 			'increased score by 4.00 to 5.00'
 	};
 
-	var constraints = {
-		defaults: { weight_unreserved_ram: 4 }
-	};
+	var opts = { defaults: { weight_unreserved_ram: 4 } };
 
-	checkScorer(t, servers, constraints, expectServers, expectReasons);
+	checkScorer(t, servers, opts, expectServers, expectReasons);
 });
 
 
 test('scoreUnreservedRam() without servers', function (t) {
-	var constraints = {
-		defaults: { weight_unreserved_ram: 4 }
-	};
+	var opts = { defaults: { weight_unreserved_ram: 4 } };
 
-	checkScorer(t, [], constraints, [], {});
+	checkScorer(t, [], opts, [], {});
 });
 
 

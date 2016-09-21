@@ -15,11 +15,6 @@ var common = require('./common');
 var clone  = common.clone;
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [ {
 	uuid: '8973fb43-29da-474c-97b8-7c513c602a24',
 	score: 1,
@@ -71,11 +66,9 @@ test('scoreCurrentPlatform()', function (t) {
 			'increased score by 0.00 to 1.00'
 	};
 
-	var constraints = {
-		defaults: { weight_current_platform: 3 }
-	};
+	var opts = { defaults: { weight_current_platform: 3 } };
 
-	checkFixedScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFixedScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -103,31 +96,27 @@ test('scoreCurrentPlatform() with negative weight', function (t) {
 			'increased score by 3.00 to 4.00'
 	};
 
-	var constraints = {
-		defaults: { weight_current_platform: -3 }
-	};
+	var opts = { defaults: { weight_current_platform: -3 } };
 
-	checkFixedScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFixedScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
 test('scoreCurrentPlatform() with one server', function (t) {
 	var servers = [ SERVERS[0] ];
-
 	var expectServers = servers;
 	var expectReasons = { skip: 'One or fewer servers' };
+	var opts = { defaults: {} };
 
-	var constraints = { defaults: {} };
-
-	checkFixedScorer(t, servers, constraints, expectServers, expectReasons);
+	checkFixedScorer(t, servers, opts, expectServers, expectReasons);
 });
 
 
 test('scoreCurrentPlatform() with no servers', function (t) {
 	var expectReasons = { skip: 'One or fewer servers' };
-	var constraints = { defaults: {} };
+	var opts = { defaults: {} };
 
-	checkFixedScorer(t, [], constraints, [], expectReasons);
+	checkFixedScorer(t, [], opts, [], expectReasons);
 });
 
 
@@ -140,10 +129,16 @@ test('name', function (t) {
 // helpers ---
 
 
-function checkFixedScorer(t, givenServers, constraints, expectServers,
-		expectReasons) {
-	scorer.run(LOG, clone(givenServers), constraints,
-			function (err, servers, reasons) {
+function checkFixedScorer(t, givenServers, opts, expectServers, expectReasons) {
+	assert.object(t, 't');
+	assert.arrayOfObject(givenServers, 'givenServers');
+	assert.object(opts, 'opts');
+	assert.arrayOfObject(expectServers, 'expectServers');
+	assert.object(expectReasons, 'expectReasons');
+
+	opts = common.addCommonOpts(opts);
+
+	scorer.run(clone(givenServers), opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
 

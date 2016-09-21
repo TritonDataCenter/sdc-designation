@@ -10,12 +10,7 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/calculate-server-unreserved.js');
-
-
-var log = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
+var common = require('./common.js');
 
 
 test('calculateServerUnreserved()', function (t) {
@@ -185,9 +180,8 @@ test('calculateServerUnreserved()', function (t) {
 		}
 	];
 
-	var constraints = {};
-	filter.run(log, serversInfo, constraints,
-			function (err, servers, reasons) {
+	var opts = common.addCommonOpts({});
+	filter.run(serversInfo, opts, function (err, servers, reasons) {
 		t.ifError(err);
 
 		t.deepEqual(servers, serversInfo);
@@ -220,10 +214,9 @@ test('calculateServerUnreserved()', function (t) {
 
 test('calculateServerUnreserved() with no servers', function (t) {
 	var serversInfo = [];
-	var constraints = {};
+	var opts = common.addCommonOpts({});
 
-	filter.run(log, serversInfo, constraints,
-			function (err, servers, reasons) {
+	filter.run(serversInfo, opts, function (err, servers, reasons) {
 		t.ifError(err);
 
 		t.deepEqual(servers, []);

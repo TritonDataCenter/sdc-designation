@@ -11,15 +11,10 @@
 var test = require('tape');
 var Allocator = require('../lib/allocator.js');
 var common = require('./common');
+var addCommonOpts = require('./algorithms/common.js').addCommonOpts;
 
 
-var log = {
-	trace: function () {},
-	debug: function () {},
-	info:  function () {},
-	warn:  function () {},
-	error: function () {}
-};
+var OPTS = addCommonOpts({});
 
 
 var SERVERS = common.getExampleServers();
@@ -124,57 +119,9 @@ var TICKETS = [
 ];
 
 
-var ALGO_DESC = [
-	'pipe', 'hard-filter-setup',
-		'hard-filter-running',
-		'hard-filter-invalid-servers',
-		'hard-filter-volumes-from',
-		'calculate-ticketed-vms',
-		'hard-filter-reserved',
-		'hard-filter-headnode',
-		'hard-filter-vm-count',
-		'hard-filter-capness',
-		'hard-filter-vlans',
-		'hard-filter-platform-versions',
-		'hard-filter-traits',
-		'hard-filter-owners-servers',
-		'hard-filter-sick-servers',
-		'calculate-server-unreserved',
-		'hard-filter-overprovision-ratios',
-		'hard-filter-min-ram',
-		'hard-filter-min-disk',
-		'hard-filter-min-cpu',
-		'hard-filter-locality-hints',
-		['or', 'hard-filter-reservoir',
-			'identity'],
-		['or', 'hard-filter-large-servers',
-			'identity' ],
-		'soft-filter-locality-hints',
-		'score-unreserved-ram',
-		'score-unreserved-disk',
-		'score-num-owner-zones',
-		'score-current-platform',
-		'score-next-reboot',
-		'score-uniform-random'
-];
-
-
-var DEFAULTS = {
-	weight_current_platform: 1,
-	weight_next_reboot: 0.5,
-	weight_num_owner_zones: 0,
-	weight_uniform_random: 0.5,
-	weight_unreserved_disk: 1,
-	weight_unreserved_ram: 2,
-	filter_headnode: true,
-	filter_min_resources: true,
-	filter_large_servers: true
-};
-
-
 function newAllocator(cb)
 {
-	var allocator = new Allocator(log, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 
 	(function waitTilLoaded() {
 		if (!allocator.serverCapacityExpr)
@@ -298,10 +245,10 @@ test('allocate 1', function (t) {
 			step: 'Servers with enough unreserved RAM',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
-			step: 'Servers with enough unreserved disk',
+			step: 'Servers with enough unreserved CPU',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
-			step: 'Servers with enough unreserved CPU',
+			step: 'Servers with enough unreserved disk',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
 			step: 'Servers with requested hard locality considered',
@@ -506,12 +453,12 @@ test('allocate 2', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
-			step: 'Servers with enough unreserved disk',
+			step: 'Servers with enough unreserved CPU',
 			remaining: [
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
-			step: 'Servers with enough unreserved CPU',
+			step: 'Servers with enough unreserved disk',
 			remaining: [
 				'00000000-0000-0000-0000-0025909437d4'
 			]

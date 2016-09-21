@@ -13,13 +13,7 @@ var filter = require('../../lib/algorithms/hard-filter-min-ram.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterMinRam()', function (t) {
@@ -49,9 +43,13 @@ test('filterMinRam()', function (t) {
 			'has ratio 1'
 	};
 
-	var constraints = { vm: { ram: 512 }, pkg: {}, defaults: {} };
+	var opts = {
+		vm:  { ram: 512 },
+		pkg: {},
+		defaults: {}
+	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -84,13 +82,13 @@ test('filterMinRam() with KVM', function (t) {
 	};
 
 	var expectServers = servers.slice(2, 4);
-	var constraints = {
-		vm: { ram: 512, brand: 'kvm' },
+	var opts = {
+		vm:  { ram: 512, brand: 'kvm' },
 		pkg: { overprovision_ram: 2.0 },
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -114,12 +112,12 @@ test('filterMinRam() without pkg', function (t) {
 	var expectServers = servers;
 	var expectReasons = {};
 
-	var constraints = {
+	var opts = {
 		vm: { ram: 512 },
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -145,13 +143,13 @@ test('filterMinRam() with override', function (t) {
 		skip: 'Do not filter out based on minimum free RAM'
 	};
 
-	var constraints = {
-		vm: { ram: 512 },
+	var opts = {
+		vm:  { ram: 512 },
 		pkg: {},
 		defaults: { filter_min_resources: false }
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -178,13 +176,13 @@ test('filterMinRam() with overprovision ratios', function (t) {
 		    'VM\'s calculated 512 RAM is less than server\'s spare 511'
 	};
 
-	var constraints = {
-		vm: { ram: 768 },
+	var opts = {
+		vm:  { ram: 768 },
 		pkg: { overprovision_ram: 1.5 },
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -194,13 +192,13 @@ test('filterMinRam() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
 
-	var constraints = {
-		vm: { ram: 512 },
+	var opts = {
+		vm:  { ram: 512 },
 		pkg: { overprovision_ram: 1.0 },
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 

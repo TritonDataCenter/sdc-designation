@@ -12,63 +12,9 @@ var assert = require('assert-plus');
 var test = require('tape');
 var common = require('./common');
 var Allocator = require('../lib/allocator.js');
+var addCommonOpts = require('./algorithms/common.js').addCommonOpts;
 
-
-var ALGO_DESC = [
-	'pipe', 'hard-filter-setup',
-		'hard-filter-running',
-		'hard-filter-invalid-servers',
-		'hard-filter-volumes-from',
-		'calculate-ticketed-vms',
-		'hard-filter-reserved',
-		'hard-filter-headnode',
-		'hard-filter-vm-count',
-		'hard-filter-capness',
-		'hard-filter-vlans',
-		'hard-filter-platform-versions',
-		'hard-filter-traits',
-		'hard-filter-owners-servers',
-		'hard-filter-sick-servers',
-		'calculate-server-unreserved',
-		'hard-filter-overprovision-ratios',
-		'hard-filter-min-ram',
-		'hard-filter-min-disk',
-		'hard-filter-min-cpu',
-		'hard-filter-locality-hints',
-		['or', 'hard-filter-reservoir',
-			'identity'],
-		['or', 'hard-filter-large-servers',
-			'identity' ],
-		'soft-filter-locality-hints',
-		'score-unreserved-ram',
-		'score-unreserved-disk',
-		'score-num-owner-zones',
-		'score-current-platform',
-		'score-next-reboot',
-		'score-uniform-random'
-];
-
-
-var DEFAULTS = {
-	weight_current_platform: 1,
-	weight_next_reboot: 0.5,
-	weight_num_owner_zones: 0,
-	weight_uniform_random: 0.5,
-	weight_unreserved_disk: 1,
-	weight_unreserved_ram: 2,
-	filter_headnode: true,
-	filter_min_resources: true,
-	filter_large_servers: true
-};
-
-
-var logStub = {
-	trace: function () { return true; },
-	debug: function () { return true; },
-	info:  function () { return true; },
-	warn:  function () { return true; },
-	error: function (err) { console.log(err); return true; }
-};
+var OPTS = addCommonOpts({});
 
 
 test('algorithms pipeline', function (t) {
@@ -78,10 +24,9 @@ test('algorithms pipeline', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
 				t.deepEqual(servers, serverStubs);
@@ -91,10 +36,9 @@ test('algorithms pipeline', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
 				t.deepEqual(servers, [5, 4, 3, 2]);
@@ -104,10 +48,9 @@ test('algorithms pipeline', function (t) {
 			}
 		}, {
 			name: 'baz',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
 				t.deepEqual(servers, [2, 3]);
@@ -120,7 +63,7 @@ test('algorithms pipeline', function (t) {
 
 	var executed = [];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	allocator.allocate(serverStubs, {}, {}, {}, [], function (err, stub) {
@@ -155,10 +98,9 @@ test('algorithms shortcuts with no servers', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
 				executed.push(1);
@@ -166,10 +108,9 @@ test('algorithms shortcuts with no servers', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
 				executed.push(2);
@@ -177,10 +118,9 @@ test('algorithms shortcuts with no servers', function (t) {
 			}
 		}, {
 			name: 'baz',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
 				executed.push(3);
@@ -196,7 +136,7 @@ test('algorithms shortcuts with no servers', function (t) {
 
 	var executed = [];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	allocator.allocate([serverStub], {}, {}, {}, [],
@@ -243,10 +183,9 @@ test('dispatch 1', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
 				t.deepEqual(servers, serverStubs);
@@ -259,10 +198,9 @@ test('dispatch 1', function (t) {
 			'or',
 			{
 				name: 'bar',
-				run: function (log, servers, constraints, cb) {
-					assert.object(log);
+				run: function (servers, opts, cb) {
 					assert.array(servers);
-					assert.object(constraints);
+					assert.object(opts);
 					assert.func(cb);
 
 					t.deepEqual(servers,
@@ -275,10 +213,9 @@ test('dispatch 1', function (t) {
 				}
 			}, {
 				name: 'baz',
-				run: function (log, servers, constraints, cb) {
-					assert.object(log);
+				run: function (servers, opts, cb) {
 					assert.array(servers);
-					assert.object(constraints);
+					assert.object(opts);
 					assert.func(cb);
 
 					t.deepEqual(servers,
@@ -295,7 +232,7 @@ test('dispatch 1', function (t) {
 
 	var executed = [];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	allocator.allocate(serverStubs, {}, {}, {}, [],
@@ -339,10 +276,9 @@ test('dispatch 2', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
 				t.deepEqual(servers, serverStubs);
@@ -356,10 +292,9 @@ test('dispatch 2', function (t) {
 			'or',
 			{
 				name: 'bar',
-				run: function (log, servers, constraints, cb) {
-					assert.object(log);
+				run: function (servers, opts, cb) {
 					assert.array(servers);
-					assert.object(constraints);
+					assert.object(opts);
 					assert.func(cb);
 
 					t.deepEqual(servers,
@@ -382,7 +317,7 @@ test('dispatch 2', function (t) {
 
 	var executed = [];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	allocator.allocate(serverStubs, {}, {}, {}, [],
@@ -424,10 +359,9 @@ test('dispatch 3', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
 				t.deepEqual(servers, serverStubs);
@@ -454,7 +388,7 @@ test('dispatch 3', function (t) {
 
 	var executed = [];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	allocator.allocServerExpr = plugins;
 
 	allocator.allocate(serverStubs, {}, {}, {}, [],
@@ -482,13 +416,12 @@ test('pipe 1', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(1);
@@ -497,13 +430,12 @@ test('pipe 1', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs.slice(0, 3));
 
 				executed.push(2);
@@ -512,13 +444,12 @@ test('pipe 1', function (t) {
 			}
 		}, {
 			name: 'baz',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs.slice(1, 3));
 
 				executed.push(3);
@@ -530,7 +461,7 @@ test('pipe 1', function (t) {
 
 	var executed = [];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 
 	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
 			function (err, serverStub, visitedAlgorithms,
@@ -568,13 +499,12 @@ test('pipe 2', function (t) {
 		'pipe',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(1);
@@ -583,13 +513,12 @@ test('pipe 2', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs.slice(0, 3));
 
 				executed.push(2);
@@ -606,7 +535,7 @@ test('pipe 2', function (t) {
 
 	var executed = [];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 
 	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
 			function (err, serverStub, visitedAlgorithms,
@@ -639,13 +568,12 @@ test('or 1', function (t) {
 		'or',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(1);
@@ -654,13 +582,12 @@ test('or 1', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(2);
@@ -669,13 +596,12 @@ test('or 1', function (t) {
 			}
 		}, {
 			name: 'baz',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(3);
@@ -687,7 +613,7 @@ test('or 1', function (t) {
 
 	var executed = [];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 
 	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
 			function (err, serverStub, visitedAlgorithms,
@@ -717,13 +643,12 @@ test('or 2', function (t) {
 		'or',
 		{
 			name: 'foo',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(1);
@@ -732,13 +657,12 @@ test('or 2', function (t) {
 			}
 		}, {
 			name: 'bar',
-			run: function (log, servers, constraints, cb) {
-				assert.object(log);
+			run: function (servers, opts, cb) {
 				assert.array(servers);
-				assert.object(constraints);
+				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(constraints.vm, { foo: 1 });
+				t.deepEqual(opts.vm, { foo: 1 });
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(2);
@@ -755,7 +679,7 @@ test('or 2', function (t) {
 
 	var executed = [];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 
 	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
 			function (err, serverStub, visitedAlgorithms,
@@ -841,7 +765,7 @@ test('create plugin summary', function (t) {
 		}
 	];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	var summary = allocator._createPluginSummary(serverStubs,
 		visitedAlgorithms, remainingServers, reasonsRemoved);
 
@@ -852,7 +776,7 @@ test('create plugin summary', function (t) {
 
 
 test('load available algorithms', function (t) {
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	var algorithms = allocator._loadAvailableAlgorithms();
 
 	var names = Object.keys(algorithms).sort();
@@ -898,7 +822,7 @@ test('load available algorithms', function (t) {
 
 
 test('load algorithms', function (t) {
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	var algorithm = allocator._loadAlgorithm('hard-filter-headnode');
 
 	t.equal(algorithm.name, 'Servers which are not headnodes');
@@ -921,7 +845,7 @@ test('create expression', function (t) {
 		]
 	];
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	var availableAlgorithms = allocator._loadAvailableAlgorithms();
 	var expression = allocator._createExpression(description,
 	    availableAlgorithms);
@@ -963,7 +887,7 @@ test('server capacity', function (t) {
 		asdsa: 'Server has status: undefined'
 	};
 
-	var allocator = new Allocator(logStub, ALGO_DESC, DEFAULTS);
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
 	allocator.serverCapacity(common.getExampleServers(),
 			function (err, servers, reasons) {
 		t.ifError(err);

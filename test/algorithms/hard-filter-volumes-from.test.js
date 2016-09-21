@@ -13,10 +13,6 @@ var filter = require('../../lib/algorithms/hard-filter-volumes-from.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); }
-};
-
 var SERVERS = [
 	{
 		uuid: 'd8ea612d-7440-411e-8e34-e6bf1adeb008',
@@ -46,7 +42,7 @@ var SERVERS = [
 ];
 
 
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterVolumesFrom()', function (t) {
@@ -69,7 +65,9 @@ test('filterVolumesFrom()', function (t) {
 		/* END JSSTYLED */
 	};
 
-	checkFilter(t, SERVERS, { vm: vm }, expectServers, expectReasons);
+	var opts = { vm: vm };
+
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -84,7 +82,9 @@ test('filterVolumesFrom() with no servers', function (t) {
 		}
 	};
 
-	checkFilter(t, [], { vm: vm }, [], {});
+	var opts = { vm: vm };
+
+	checkFilter(t, [], opts, [], {});
 });
 
 
@@ -95,8 +95,9 @@ test('filterVolumesFrom() with no metadata', function (t) {
 
 	var expectServers = SERVERS;
 	var expectReasons = {};
+	var opts = { vm: vm };
 
-	checkFilter(t, SERVERS, { vm: vm }, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -108,8 +109,9 @@ test('filterVolumesFrom() with no volumesfrom', function (t) {
 
 	var expectServers = SERVERS;
 	var expectReasons = {};
+	var opts = { vm: vm };
 
-	checkFilter(t, SERVERS, { vm: vm }, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 

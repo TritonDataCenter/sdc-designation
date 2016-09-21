@@ -13,37 +13,29 @@ var filter = require('../../lib/algorithms/hard-filter-large-servers.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
 var SERVERS = [];
 for (var ii = 0; ii < 20; ii++)
 	SERVERS.push({ unreserved_ram: ii * 8 * 1024 });
 
 
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterLargeServers()', function (t) {
 	var expectServers = SERVERS.slice(0, SERVERS.length - 3).reverse();
 	var expectReasons = {};
+	var opts = { defaults: {} };
 
-	var constraints = { defaults: {} };
-
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
 test('filterLargeServers() with override', function (t) {
 	var expectServers = SERVERS;
 	var expectReasons = { skip: 'Do not filter out large servers' };
+	var opts = { defaults: { filter_large_servers: false } };
 
-	var constraints = { defaults: { filter_large_servers: false } };
-
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -51,12 +43,12 @@ test('filterLargeServers with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
 
-	var constraints = {
+	var opts = {
 		vm: { ram: 34 * 1024 }, // in MiB
 		defaults: {}
 	};
 
-	checkFilter(t, [], constraints, expectServers, expectReasons);
+	checkFilter(t, [], opts, expectServers, expectReasons);
 });
 
 

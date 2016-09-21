@@ -13,12 +13,6 @@ var filter = require('../../lib/algorithms/hard-filter-platform-versions.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
 var SERVERS = genServers([
 	['b6d9d432-16bd-41b5-b3ac-7e3986380c37', '6.5', '20121218T203452Z'],
 	['aa652df0-7954-4cbb-9243-3cbb2c99b7be', '6.5', '20121210T203034Z'],
@@ -33,16 +27,15 @@ var SERVERS = genServers([
 ]);
 
 
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterPlatformVersions() no platform versions', function (t) {
 	var expectServers = SERVERS;
 	var expectReasons = {};
+	var opts = { vm: {}, img: {}, pkg: {}, defaults: {} };
 
-	var constraints = { vm: {}, img: {}, pkg: {}, defaults: {} };
-
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -60,7 +53,7 @@ test('filterPlatformVersions() min platform requirements for images',
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: {
 			requirements: {
@@ -71,7 +64,7 @@ test('filterPlatformVersions() min platform requirements for images',
 		defaults: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -89,14 +82,14 @@ test('filterPlatformVersions() min platform requirements for packages',
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: {},
 		pkg: { min_platform: {'7.0': '20121211T203034Z'} },
 		defaults: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -114,7 +107,7 @@ test('filterPlatformVersions() max platform requirements', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: {
 			requirements: {
@@ -125,7 +118,7 @@ test('filterPlatformVersions() max platform requirements', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -145,7 +138,7 @@ test('filterPlatformVersions() minmax platform requirements 1', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: {
 			requirements: {
@@ -157,7 +150,7 @@ test('filterPlatformVersions() minmax platform requirements 1', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -174,7 +167,7 @@ test('filterPlatformVersions() minmax platform requirements 2', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: {
 			requirements: {
@@ -186,7 +179,7 @@ test('filterPlatformVersions() minmax platform requirements 2', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -204,7 +197,7 @@ test('filterPlatformVersions() minmax platform requirements 3', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: {
 			requirements: {
@@ -219,7 +212,7 @@ test('filterPlatformVersions() minmax platform requirements 3', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -235,7 +228,7 @@ test('filterPlatformVersions() minmax platform requirements 4', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: {
 			requirements: {
@@ -250,7 +243,7 @@ test('filterPlatformVersions() minmax platform requirements 4', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -267,7 +260,7 @@ test('filterPlatformVersions() minmax platform requirements 5', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		vm: {},
 		img: {
 			requirements: {
@@ -279,7 +272,7 @@ test('filterPlatformVersions() minmax platform requirements 5', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -296,7 +289,7 @@ test('filterPlatformVersions() ignore non-versions', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: {
 			requirements: {
@@ -314,7 +307,7 @@ test('filterPlatformVersions() ignore non-versions', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -323,7 +316,7 @@ function (t) {
 	var expectServers = SERVERS;
 	var expectReasons = {};
 
-	var constraints = {
+	var opts = {
 		vm: {},
 		img: {},
 		pkg: {},
@@ -332,7 +325,7 @@ function (t) {
 		}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -355,38 +348,32 @@ function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: {
-			docker: true
-		},
+	var opts = {
+		vm: { docker: true },
 		img: {},
 		pkg: {},
-		defaults: {
-			filter_docker_min_platform: '20121218T203452Z'
-		}
+		defaults: { filter_docker_min_platform: '20121218T203452Z' }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
 test('filterPlatformVersions() no pkg', function (t) {
 	var expectServers = SERVERS;
 	var expectReasons = {};
+	var opts = { vm: {}, img: {}, defaults: {} };
 
-	var constraints = { vm: {}, img: {}, defaults: {} };
-
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
 test('filterPlatformVersions() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
+	var opts = { vm: {}, img: {}, pkg: {}, defaults: {} };
 
-	var constraints = { vm: {}, img: {}, pkg: {}, defaults: {} };
-
-	checkFilter(t, [], constraints, expectServers, expectReasons);
+	checkFilter(t, [], opts, expectServers, expectReasons);
 });
 
 

@@ -13,13 +13,7 @@ var filter = require('../../lib/algorithms/hard-filter-min-cpu.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterMinCpu()', function (t) {
@@ -51,14 +45,14 @@ test('filterMinCpu()', function (t) {
 			'but server has ratio 1'
 	};
 
-	var constraints = {
+	var opts = {
 		vm: { cpu_cap: 900 },
 		img: {},
 		pkg: {},
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -84,13 +78,13 @@ test('filterMinCpu() without pkg', function (t) {
 	var expectServers = servers;
 	var expectReasons = {};
 
-	var constraints = {
+	var opts = {
 		vm: { cpu_cap: 900 },
 		img: {},
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -118,14 +112,14 @@ test('filterMinCpu() with override', function (t) {
 		skip: 'Do not filter out based on minimum free CPU'
 	};
 
-	var constraints = {
+	var opts = {
 		vm: { cpu_cap: 900 },
 		img: {},
 		pkg: {},
 		defaults: { filter_min_resources: false }
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -158,14 +152,14 @@ test('filterMinCpu() with overprovision ratios', function (t) {
 			'server\'s spare 590'
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  { cpu_cap: 900 },
 		img: {},
 		pkg: { overprovision_cpu: 1.5 },
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -187,9 +181,14 @@ test('filterMinCpu with no cpu', function (t) {
 	var expectServers = servers;
 	var expectReasons = {};
 
-	var constraints = { vm: {}, img: {}, pkg: {}, defaults: {} };
+	var opts = {
+		vm: {},
+		img: {},
+		pkg: {},
+		defaults: {}
+	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -199,14 +198,14 @@ test('filterMinCpu() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
 
-	var constraints = {
+	var opts = {
 		vm:  { cpu_cap: 900 },
 		img: {},
 		pkg: { overprovision_cpu: 1.0 },
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 

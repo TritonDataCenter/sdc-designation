@@ -10,11 +10,8 @@
 
 var test = require('tape');
 var filter = require('../../lib/algorithms/calculate-ticketed-vms.js');
+var common = require('./common.js');
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
 
 var GiB = 1024 * 1024 * 1024;
 
@@ -202,9 +199,9 @@ var TICKETS = [ {
 
 test('calculate ticketed VMs', function (t) {
 	var ownerUuid = '930896af-bf8c-48d4-885c-6573a94b1853';
+	var opts = common.addCommonOpts({ tickets: TICKETS });
 
-	var constraints = { tickets: TICKETS };
-	filter.run(LOG, SERVERS, constraints, function (err, servers, reasons) {
+	filter.run(SERVERS, opts, function (err, servers, reasons) {
 		t.ifError(err);
 
 		// t.deepEqual(servers, serversInfo);
@@ -260,9 +257,9 @@ test('calculate ticketed VMs', function (t) {
 
 
 test('calculate ticketed VMs with no servers', function (t) {
-	var constraints = { tickets: TICKETS };
+	var opts = common.addCommonOpts({ tickets: TICKETS });
 
-	filter.run(LOG, [], constraints, function (err, servers, reasons) {
+	filter.run([], opts, function (err, servers, reasons) {
 		t.ifError(err);
 
 		t.deepEqual(servers, []);
@@ -274,9 +271,9 @@ test('calculate ticketed VMs with no servers', function (t) {
 
 
 test('calculate ticketed VMs with no tickets', function (t) {
-	var constraints = { tickets: [] };
+	var opts = common.addCommonOpts({ tickets: [] });
 
-	filter.run(LOG, SERVERS, constraints, function (err, servers, reasons) {
+	filter.run(SERVERS, opts, function (err, servers, reasons) {
 		t.ifError(err);
 
 		t.deepEqual(servers, SERVERS);

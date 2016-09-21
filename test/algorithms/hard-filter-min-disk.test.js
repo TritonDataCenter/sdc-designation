@@ -16,13 +16,7 @@ var common = require('./common.js');
 var MiB = 1024 * 1024;
 var GiB = 1024 * MiB;
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterMinDisk()', function (t) {
@@ -54,14 +48,14 @@ test('filterMinDisk()', function (t) {
 			'server has ratio 1'
 	};
 
-	var constraints = {
-		vm: { quota: 5120 },
+	var opts = {
+		vm:  { quota: 5120 },
 		img: {},
 		pkg: {},
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -87,13 +81,13 @@ test('filterMinDisk() without pkg', function (t) {
 	var expectServers = servers;
 	var expectReasons = {};
 
-	var constraints = {
-		vm: { quota: 5120 },
+	var opts = {
+		vm:  { quota: 5120 },
 		img: {},
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -121,14 +115,14 @@ test('filterMinDisk() with override', function (t) {
 		skip: 'Do not filter out based on minimum free disk'
 	};
 
-	var constraints = {
-		vm: { quota: 5120 },
+	var opts = {
+		vm:  { quota: 5120 },
 		img: {},
 		pkg: {},
 		defaults: { filter_min_resources: false }
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -161,7 +155,7 @@ test('filterMinDisk() with overprovision ratios - kvm', function (t) {
 			'server\'s spare 50000 MiB'
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  { quota: 10 }, // in GiB
 		img: {
 			type: 'zvol',
@@ -177,7 +171,7 @@ test('filterMinDisk() with overprovision ratios - kvm', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -207,7 +201,7 @@ test('filterMinDisk() with overprovision ratios - zone', function (t) {
 			'server\'s spare 25600 MiB'
 	};
 
-	var constraints = {
+	var opts = {
 		vm:  { quota: 29 }, // in GiB
 		img: {
 			image_size: 10 * 1024, // in MiB
@@ -222,7 +216,7 @@ test('filterMinDisk() with overprovision ratios - zone', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -232,7 +226,7 @@ test('filterMinDisk() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
 
-	var constraints = {
+	var opts = {
 		vm: { quota: 5 }, // in GiB
 		img: {
 			image_size: 1 * 1024, // in MiB
@@ -244,7 +238,7 @@ test('filterMinDisk() with no servers', function (t) {
 		defaults: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -266,9 +260,14 @@ test('filterMinDisk() with no disk', function (t) {
 	var expectServers = servers;
 	var expectReasons = { skip: 'Vm and pkg have no quota' };
 
-	var constraints = { vm: {}, img: {}, pkg: {}, defaults: {} };
+	var opts = {
+		vm: {},
+		img: {},
+		pkg: {},
+		defaults: {}
+	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 

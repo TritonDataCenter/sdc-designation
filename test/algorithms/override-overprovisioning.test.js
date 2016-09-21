@@ -14,11 +14,6 @@ var plugin = require('../../lib/algorithms/override-overprovisioning.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [
 	{ unreserved_cpu: 1 },
 	{ unreserved_cpu: 2, overprovision_ratios: {} },
@@ -45,10 +40,12 @@ var EXPECT_REASONS = {};
 
 test('disable overprovisioning 1', function (t) {
 	var pkg = {};
-	var constraints = { pkg: pkg, defaults: {} };
+	var opts = common.addCommonOpts({
+		pkg: pkg,
+		defaults: {}
+	});
 
-	plugin.run(LOG, SERVERS, constraints,
-			function (err, servers, reasons) {
+	plugin.run(SERVERS, opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
 
@@ -77,10 +74,12 @@ test('disable overprovisioning 2', function (t) {
 		overprovision_net: 1
 	};
 
-	var constraints = { pkg: pkg, defaults: {} };
+	var opts = common.addCommonOpts({
+		pkg: pkg,
+		defaults: {}
+	});
 
-	plugin.run(LOG, SERVERS, constraints,
-			function (err, servers, reasons) {
+	plugin.run(SERVERS, opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
 
@@ -101,12 +100,11 @@ test('disable overprovisioning 2', function (t) {
 
 
 test('disable overprovisioning without pkg', function (t) {
-	var constraints = { defaults: {} };
-	var expectConstraints = common.clone(constraints);
+	var opts = common.addCommonOpts({ defaults: {} });
+	var expectOpts = common.clone(opts);
 	var expectReasons = {};
 
-	plugin.run(LOG, SERVERS, constraints,
-			function (err, servers, reasons) {
+	plugin.run(SERVERS, opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
 
@@ -116,7 +114,9 @@ test('disable overprovisioning without pkg', function (t) {
 		t.deepEqual(reasons, expectReasons);
 
 		// just checking pkg attr wasn't added
-		t.deepEqual(constraints, expectConstraints);
+		delete opts.log;
+		delete expectOpts.log;
+		t.deepEqual(opts, expectOpts);
 
 		t.end();
 	});
@@ -132,12 +132,14 @@ function (t) {
 	};
 
 	var pkg = {};
-	var constraints = { pkg: pkg, defaults: {
-		disable_override_overprovisioning: true
-	} };
+	var opts = common.addCommonOpts({
+		pkg: pkg,
+		defaults: {
+			disable_override_overprovisioning: true
+		}
+	});
 
-	plugin.run(LOG, SERVERS, constraints,
-			function (err, servers, reasons) {
+	plugin.run(SERVERS, opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
 
@@ -169,14 +171,16 @@ test('disable overprovisioning with override_overprovision_* 1', function (t) {
 	} ];
 
 	var pkg = {};
-	var constraints = { pkg: pkg, defaults: {
-		overprovision_ratio_cpu: 6,
-		overprovision_ratio_ram: 0.75,
-		overprovision_ratio_disk: 0.5
-	} };
+	var opts = common.addCommonOpts({
+		pkg: pkg,
+		defaults: {
+			overprovision_ratio_cpu: 6,
+			overprovision_ratio_ram: 0.75,
+			overprovision_ratio_disk: 0.5
+		}
+	});
 
-	plugin.run(LOG, SERVERS, constraints,
-			function (err, servers, reasons) {
+	plugin.run(SERVERS, opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
 
@@ -220,14 +224,16 @@ test('disable overprovisioning with override_overprovision_* 2', function (t) {
 		overprovision_net: 1
 	};
 
-	var constraints = { pkg: pkg, defaults: {
-		overprovision_ratio_cpu: 6,
-		overprovision_ratio_ram: 0.75,
-		overprovision_ratio_disk: 0.5
-	} };
+	var opts = common.addCommonOpts({
+		pkg: pkg,
+		defaults: {
+			overprovision_ratio_cpu: 6,
+			overprovision_ratio_ram: 0.75,
+			overprovision_ratio_disk: 0.5
+		}
+	});
 
-	plugin.run(LOG, SERVERS, constraints,
-			function (err, servers, reasons) {
+	plugin.run(SERVERS, opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
 
@@ -249,9 +255,9 @@ test('disable overprovisioning with override_overprovision_* 2', function (t) {
 
 
 test('disable overprovisioning with no servers', function (t) {
-	var constraints = { pkg: {}, defaults: {} };
+	var opts = common.addCommonOpts({ pkg: {}, defaults: {} });
 
-	plugin.run(LOG, [], constraints, function (err, servers, reasons) {
+	plugin.run([], opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
 

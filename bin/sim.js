@@ -380,15 +380,17 @@ function calculateServerUtilization(server) {
  */
 
 function createAllocator() {
-	var log = {
-		info:  function () {},
-		warn:  function () {},
-		debug: function () {},
-		error: function () {},
-		trace: function () {}
+	var sys = {
+		log: {
+			info:  function () {},
+			warn:  function () {},
+			debug: function () {},
+			error: function () {},
+			trace: function () {}
+		}
 	};
 
-	var allocator = new Allocator(log, ALLOC_CHAIN, ALLOC_DEFAULTS);
+	var allocator = new Allocator(sys, ALLOC_CHAIN, ALLOC_DEFAULTS);
 
 	return (allocator);
 }

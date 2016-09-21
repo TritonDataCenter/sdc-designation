@@ -13,13 +13,7 @@ var filter = require('../../lib/algorithms/hard-filter-sick-servers.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterSickServers()', function (t) {
@@ -134,9 +128,9 @@ test('filterSickServers()', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {};
+	var opts = {};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 

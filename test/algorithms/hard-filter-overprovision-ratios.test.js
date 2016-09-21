@@ -14,11 +14,6 @@ var filter = require('../../lib/algorithms/' +
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [
 	{
 		uuid: '98b6985f-f102-4c4f-a2e3-eda731a8b0dc',
@@ -54,7 +49,7 @@ var SERVERS = [
 ];
 
 
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterOverprovisionRatios() 1', function (t) {
@@ -70,9 +65,9 @@ test('filterOverprovisionRatios() 1', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { pkg: { overprovision_ram: 1.0 } };
+	var opts = { pkg: { overprovision_ram: 1.0 } };
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -92,29 +87,27 @@ test('filterOverprovisionRatios() 2', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { pkg: { overprovision_ram: 1.5 } };
+	var opts = { pkg: { overprovision_ram: 1.5 } };
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
 test('filterOverprovisionRatios() without pkg', function (t) {
 	var expectServers = SERVERS;
 	var expectReasons = { skip: 'No pkg provided' };
+	var opts = {};
 
-	var constraints = {};
-
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
 test('filterOverprovisionRatios() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
+	var opts = { pkg: { overprovision_ram: 1.0 } };
 
-	var constraints = { pkg: { overprovision_ram: 1.0 } };
-
-	checkFilter(t, [], constraints, expectServers, expectReasons);
+	checkFilter(t, [], opts, expectServers, expectReasons);
 });
 
 

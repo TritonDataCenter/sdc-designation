@@ -8,16 +8,12 @@
  * Copyright (c) 2016, Joyent, Inc.
  */
 
+var assert = require('assert-plus');
 var test = require('tape');
 var scorer = require('../../lib/algorithms/score-uniform-random.js');
 var common = require('./common');
 var clone  = common.clone;
 
-
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
 
 var SERVERS = [ {
 	uuid: '59eb4f1b-c9a7-41c7-8ab0-2142da53d62f',
@@ -31,39 +27,40 @@ var SERVERS = [ {
 } ];
 
 
-var checkScorer = common.createPluginChecker(scorer, LOG);
+var checkScorer = common.createPluginChecker(scorer);
 
 
 test('scoreUniformRandom()', function (t) {
-	var constraints = { defaults: { weight_uniform_random: 4 } };
-	checkRandom(t, constraints, 5);
+	var opts = { defaults: { weight_uniform_random: 4 } };
+
+	checkRandom(t, opts, 5);
 });
 
 
 test('scoreUniformRandom() with pkg set spread', function (t) {
-	var constraints = {
+	var opts = {
 		defaults: { weight_uniform_random: 4 },
 		pkg: { alloc_server_spread: 'random' }
 	};
 
-	checkRandom(t, constraints, 3);
+	checkRandom(t, opts, 3);
 });
 
 
 test('scoreUniformRandom() with defaults set spread', function (t) {
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_uniform_random: 4,
 			server_spread: 'random'
 		}
 	};
 
-	checkRandom(t, constraints, 3);
+	checkRandom(t, opts, 3);
 });
 
 
 test('scoreUniformRandom() with defaults and package attr', function (t) {
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_uniform_random: 4,
 			server_spread: 'min-ram'
@@ -71,7 +68,7 @@ test('scoreUniformRandom() with defaults and package attr', function (t) {
 		pkg: { alloc_server_spread: 'random' }
 	};
 
-	checkRandom(t, constraints, 3);
+	checkRandom(t, opts, 3);
 });
 
 
@@ -81,14 +78,14 @@ test('scoreUniformRandom() skip wrong spread', function (t) {
 		skip: 'pkg or default set to spread with: min-owner'
 	};
 
-	var constraints = {
+	var opts = {
 		defaults: {
 			weight_uniform_random: 4,
 			server_spread: 'min-owner'
 		}
 	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -98,9 +95,12 @@ test('scoreUniformRandom() skip wrong spread', function (t) {
 		skip: 'pkg or default set to spread with: min-owner'
 	};
 
-	var constraints = { pkg: {}, defaults: { server_spread: 'min-owner' } };
+	var opts = {
+		defaults: { server_spread: 'min-owner' },
+		pkg: {}
+	};
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -111,8 +111,14 @@ test('name', function (t) {
 
 
 function
-checkRandom(t, constraints, expectedMax)
+checkRandom(t, opts, expectedMax)
 {
+	assert.object(t, 't');
+	assert.object(opts, 'opts');
+	assert.number(expectedMax, 'expectedMax');
+
+	opts = common.addCommonOpts(opts);
+
 	var scores = SERVERS.map(function () { return ([]); });
 
 	function iter(num) {
@@ -120,7 +126,7 @@ checkRandom(t, constraints, expectedMax)
 			return (checkScores());
 		}
 
-		return scorer.run(LOG, clone(SERVERS), constraints,
+		return scorer.run(clone(SERVERS), opts,
 				function (err, servers, reasons) {
 			t.ifError(err);
 

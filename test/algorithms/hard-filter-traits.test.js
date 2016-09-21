@@ -13,11 +13,6 @@ var filter = require('../../lib/algorithms/hard-filter-traits.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [ {
 	uuid: 'de52bbab-a12d-4e11-8292-c4141031553c',
 	traits: { ssd: true,  users: 'john' }
@@ -39,7 +34,7 @@ var SERVERS = [ {
 } ];
 
 
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterTraits() for VMs 1', function (t) {
@@ -54,9 +49,12 @@ test('filterTraits() for VMs 1', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm: { traits: { ssd: true } }, img: {} };
+	var opts = {
+		vm: { traits: { ssd: true } },
+		img: {}
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -72,9 +70,12 @@ test('filterTraits() for VMs 2', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm: { traits: { ssd: false } }, img: {} };
+	var opts = {
+		vm: { traits: { ssd: false } },
+		img: {}
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -91,9 +92,12 @@ test('filterTraits() for VMs 3', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm: { traits: { users: 'john' } }, img: {} };
+	var opts = {
+		vm: { traits: { users: 'john' } },
+		img: {}
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -109,9 +113,12 @@ test('filterTraits() for VMs 4', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm: { traits: { users: 'jack' } }, img: {} };
+	var opts = {
+		vm: { traits: { users: 'jack' } },
+		img: {}
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -127,11 +134,12 @@ test('filterTraits() for VMs 5', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: { traits: { ssd: true, users: 'jane' } }, img: {}
+	var opts = {
+		vm: { traits: { ssd: true, users: 'jane' } },
+		img: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -149,11 +157,12 @@ test('filterTraits() for VMs 6', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: { traits: { ssd: false, users: 'jane' } }, img: {}
+	var opts = {
+		vm: { traits: { ssd: false, users: 'jane' } },
+		img: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -168,11 +177,12 @@ test('filterTraits() for VMs 7', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: { traits: { users: ['john', 'jane' ] } }, img: {}
+	var opts = {
+		vm: { traits: { users: ['john', 'jane' ] } },
+		img: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -188,9 +198,13 @@ test('filterTraits() for image manifests 1', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm: {}, pkg: {}, img: { traits: { ssd: true } } };
+	var opts = {
+		vm:  {},
+		pkg: {},
+		img: { traits: { ssd: true } }
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -206,9 +220,13 @@ test('filterTraits() for image manifests 2', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm: {}, pkg: {}, img: { traits: { ssd: false } } };
+	var opts = {
+		vm:  {},
+		pkg: {},
+		img: { traits: { ssd: false } }
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -224,11 +242,13 @@ test('filterTraits() for image manifests 3', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: {}, pkg: {}, img: { traits: { users: 'john' } }
+	var opts = {
+		vm:  {},
+		pkg: {},
+		img: { traits: { users: 'john' } }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -244,11 +264,13 @@ test('filterTraits() for image manifests 4', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: {}, pkg: {}, img: { traits: { users: 'jack' } }
+	var opts = {
+		vm:  {},
+		pkg: {},
+		img: { traits: { users: 'jack' } }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -264,11 +286,13 @@ test('filterTraits() for image manifests 5', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: {}, pkg: {}, img: { traits: { ssd: true, users: 'jane' } }
+	var opts = {
+		vm:  {},
+		pkg: {},
+		img: { traits: { ssd: true, users: 'jane' } }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -285,11 +309,13 @@ test('filterTraits() for image manifests 6', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: {}, pkg: {}, img: { traits: { ssd: false, users: 'jane' } }
+	var opts = {
+		vm:  {},
+		pkg: {},
+		img: { traits: { ssd: false, users: 'jane' } }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -304,11 +330,13 @@ test('filterTraits() for image manifests 7', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: {}, pkg: {}, img: { traits: { users: ['john', 'jane'] } }
+	var opts = {
+		vm:  {},
+		pkg: {},
+		img: { traits: { users: ['john', 'jane'] } }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -325,13 +353,13 @@ test('filterTraits() for VMs and manifests 1', function (t) {
 	};
 
 	/* image manifest overrides VM package */
-	var constraints = {
+	var opts = {
 		vm:  { traits: { ssd: false } },
 		img: { traits: { ssd: true } },
 		pkg: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -347,13 +375,13 @@ test('filterTraits() for VMs and manifests 2', function (t) {
 	};
 
 	/* should merge values between the two */
-	var constraints = {
+	var opts = {
 		vm:  { traits: { ssd: true } },
 		img: { traits: { users: 'john' } },
 		pkg: {}
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -369,9 +397,13 @@ test('filterTraits() for VMs and manifests 3', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm: { traits: { ssd: true } }, img: {}, pkg: {} };
+	var opts = {
+		vm:  { traits: { ssd: true } },
+		img: {},
+		pkg: {}
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -387,9 +419,13 @@ test('filterTraits() for VMs and manifests 4', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm: {}, img: { traits: { ssd: true } }, pkg: {} };
+	var opts = {
+		vm:  {},
+		img: { traits: { ssd: true } },
+		pkg: {}
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -406,13 +442,13 @@ test('filterTraits() for packages and manifests 1', function (t) {
 	};
 
 	/* image manifest overrides package */
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: { traits: { ssd: true  } },
 		pkg: { traits: { ssd: false } }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -429,13 +465,13 @@ test('filterTraits() for packages and manifests 2', function (t) {
 	};
 
 	/* VM overrides package */
-	var constraints = {
+	var opts = {
 		vm:  { traits: { ssd: true  } },
 		img: {},
 		pkg: { traits: { ssd: false } }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -451,13 +487,13 @@ test('filterTraits() for packages and manifests 3', function (t) {
 	};
 
 	/* should merge values between the two */
-	var constraints = {
+	var opts = {
 		vm:  {},
 		img: { traits: { users: 'john' } },
 		pkg: { traits: { ssd: true	 } }
 	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -474,9 +510,13 @@ test('filterTraits() for packages and manifests 4', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm:  {}, img: {}, pkg: { traits: { ssd: true } } };
+	var opts = {
+		vm:  {},
+		img: {},
+		pkg: { traits: { ssd: true } }
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -492,9 +532,13 @@ test('filterTraits() for packages and manifests 5', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = { vm:  {}, img: { traits: { ssd: true } }, pkg: {} };
+	var opts = {
+		vm:  {},
+		img: { traits: { ssd: true } },
+		pkg: {}
+	};
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -507,9 +551,13 @@ test('filterTraits() with no traits on server 1', function (t) {
 	var expectServers = servers;
 	var expectReasons = {};
 
-	var constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
+	var opts = {
+		vm:  { traits: {} },
+		img: { traits: {} },
+		pkg: {}
+	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -526,13 +574,13 @@ test('filterTraits() with no traits on server 2', function (t) {
 		    'but server has undefined'
 	};
 
-	var constraints = {
-		vm: { traits: { ssd: false } },
+	var opts = {
+		vm:  { traits: { ssd: false } },
 		img: { traits: {} },
 		pkg: {}
 	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -553,9 +601,13 @@ test('filterTraits() with no traits on VM or manifest 1', function (t) {
 		    'but server has {"ssd":true}'
 	};
 
-	var constraints = { vm: { traits: {} }, img: { traits: {} }, pkg: {} };
+	var opts = {
+		vm:  { traits: {} },
+		img: { traits: {} },
+		pkg: {}
+	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -577,9 +629,13 @@ test('filterTraits() with no traits on VM or manifest 2', function (t) {
 		    'but server has {"ssd":true}'
 	};
 
-	var constraints = { vm: {}, img: {}, pkg: {} };
+	var opts = {
+		vm:  {},
+		img: {},
+		pkg: {}
+	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
@@ -600,16 +656,23 @@ test('filterTraits() with no package', function (t) {
 		    'but server has {"ssd":true}'
 	};
 
-	var constraints = { vm: { ram: 512 }, img: {} };
+	var opts = {
+		vm:  { ram: 512 },
+		img: {}
+	};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
 test('filterTraits() with no servers', function (t) {
-	var constraints = { vm: { ram: 512 }, pkg: {}, img: {} };
+	var opts = {
+		vm:  { ram: 512 },
+		pkg: {},
+		img: {}
+	};
 
-	checkFilter(t, [], constraints, [], {});
+	checkFilter(t, [], opts, [], {});
 });
 
 

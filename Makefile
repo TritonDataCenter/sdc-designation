@@ -57,9 +57,13 @@ all: $(TAPE) $(REPO_DEPS)
 $(TAPE): | $(NPM_EXEC)
 	$(NPM) install
 
-.PHONY: test
+.PHONY: test plugins_test
 test: $(TAPE)
 	$(TAPE) test/*.test.js test/algorithms/*.test.js
+
+plugins_test: $(TAPE)
+	$(TAPE) test/algorithms/*.test.js
+
 
 include ./tools/mk/Makefile.deps
 include ./tools/mk/Makefile.targ

@@ -14,11 +14,6 @@ var common = require('./common');
 var clone  = common.clone;
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [ {
 	uuid: '62ccf0e0-268f-4f82-838a-218e4798d6c2',
 	score: 1,
@@ -50,7 +45,7 @@ var SERVERS = [ {
 // helpers ---
 
 
-var checkScorer = common.createPluginChecker(scorer, LOG);
+var checkScorer = common.createPluginChecker(scorer);
 
 var now;
 function delta(days) {
@@ -87,11 +82,9 @@ test('scoreNextReboot() - positive weight', function (t) {
 			'increased score by 2.00 to 3.00'
 	};
 
-	var constraints = {
-		defaults: { weight_next_reboot: 3 }
-	};
+	var opts = { defaults: { weight_next_reboot: 3 } };
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -119,11 +112,9 @@ test('scoreNextReboot() - negative weight', function (t) {
 			'increased score by 1.00 to 2.00'
 	};
 
-	var constraints = {
-		defaults: { weight_next_reboot: -3 }
-	};
+	var opts = { defaults: { weight_next_reboot: -3 } };
 
-	checkScorer(t, SERVERS, constraints, expectServers, expectReasons);
+	checkScorer(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -136,18 +127,17 @@ test('scoreNextReboot() with one server', function (t) {
 
 	var expectServers = servers;
 	var expectReasons = { skip: 'One or fewer servers' };
+	var opts = { defaults: {} };
 
-	var constraints = { defaults: {} };
-
-	checkScorer(t, servers, constraints, expectServers, expectReasons);
+	checkScorer(t, servers, opts, expectServers, expectReasons);
 });
 
 
 test('scoreNextReboot() with no servers', function (t) {
 	var expectReasons = { skip: 'One or fewer servers' };
-	var constraints = { defaults: {} };
+	var opts = { defaults: {} };
 
-	checkScorer(t, [], constraints, [], expectReasons);
+	checkScorer(t, [], opts, [], expectReasons);
 });
 
 

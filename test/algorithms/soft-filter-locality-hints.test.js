@@ -17,18 +17,13 @@ var common = require('./common.js');
 // --- globals
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var OWNER_UUID = 'b0bbbbbb-9172-4c58-964e-fe58a9989708';
 
 
 // --- internal support stuff
 
 
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 function
@@ -86,19 +81,19 @@ test('name', function (t) {
 
 
 test('no locality, no servers', function (t) {
-	var constraints = { vm: { owner_uuid: OWNER_UUID } };
+	var opts = { vm: { owner_uuid: OWNER_UUID } };
 
-	checkFilter(t, [], constraints, [], {});
+	checkFilter(t, [], opts, [], {});
 });
 
 
 test('locality, no servers', function (t) {
-	var constraints = { vm: {
+	var opts = { vm: {
 		owner_uuid: OWNER_UUID,
 		locality: { near: '468994e6-d53d-c74c-8245-3273a86dc3d9' }
 	}};
 
-	checkFilter(t, [], constraints, [], {});
+	checkFilter(t, [], opts, [], {});
 });
 
 
@@ -142,9 +137,9 @@ test('locality scenario A', function (tt) {
 				= 'exclude: spread by owner';
 		});
 
-		var constraints = { vm: { owner_uuid: OWNER_UUID } };
+		var opts = { vm: { owner_uuid: OWNER_UUID } };
 
-		checkFilter(t, servers, constraints, expServers, expReasons);
+		checkFilter(t, servers, opts, expServers, expReasons);
 	});
 
 	tt.test('  no locality -> owner spread (ignored)', function (t) {
@@ -155,9 +150,9 @@ test('locality scenario A', function (tt) {
 			'*': 'exclude: spread by owner (ignored b/c non-strict)'
 		};
 
-		var constraints = { vm: { owner_uuid: OWNER_UUID } };
+		var opts = { vm: { owner_uuid: OWNER_UUID } };
 
-		checkFilter(t, subsetServers, constraints, expServers,
+		checkFilter(t, subsetServers, opts, expServers,
 			expReasons);
 	});
 
@@ -167,12 +162,12 @@ test('locality scenario A', function (tt) {
 		expReasons[servers[0].uuid]
 			= 'exclude: inst!=' + ownerVmOnServer0;
 
-		var constraints = { vm: {
+		var opts = { vm: {
 			owner_uuid: OWNER_UUID,
 			locality: { far: ownerVmOnServer0 }
 		} };
 
-		checkFilter(t, servers, constraints, expServers, expReasons);
+		checkFilter(t, servers, opts, expServers, expReasons);
 	});
 
 	tt.test('  non-strict far (string)', function (t) {
@@ -181,12 +176,12 @@ test('locality scenario A', function (tt) {
 		expReasons[servers[0].uuid]
 			= 'exclude: inst!=' + ownerVmOnServer0;
 
-		var constraints = { vm: {
+		var opts = { vm: {
 			owner_uuid: OWNER_UUID,
 			locality: { far: [ownerVmOnServer0] }
 		} };
 
-		checkFilter(t, servers, constraints, expServers, expReasons);
+		checkFilter(t, servers, opts, expServers, expReasons);
 	});
 
 	tt.test('  strict far', function (t) {
@@ -196,12 +191,12 @@ test('locality scenario A', function (tt) {
 				'needed'
 		};
 
-		var constraints = { vm: {
+		var opts = { vm: {
 			owner_uuid: OWNER_UUID,
 			locality: { strict: true, far: [ownerVmOnServer0] }
 		} };
 
-		checkFilter(t, servers, constraints, expServers, expReasons);
+		checkFilter(t, servers, opts, expServers, expReasons);
 	});
 
 	tt.test('  non-strict near', function (t) {
@@ -210,12 +205,12 @@ test('locality scenario A', function (tt) {
 		expReasons[servers[3].uuid]
 			= 'include: inst==~' + ownerVmOnServer3;
 
-		var constraints = { vm: {
+		var opts = { vm: {
 			owner_uuid: OWNER_UUID,
 			locality: { strict: false, near: [ownerVmOnServer3] }
 		} };
 
-		checkFilter(t, servers, constraints, expServers, expReasons);
+		checkFilter(t, servers, opts, expServers, expReasons);
 	});
 
 	tt.test('  strict near', function (t) {
@@ -225,18 +220,18 @@ test('locality scenario A', function (tt) {
 				'needed'
 		};
 
-		var constraints = { vm: {
+		var opts = { vm: {
 			owner_uuid: OWNER_UUID,
 			locality: { strict: true, near: [ownerVmOnServer3] }
 		} };
 
-		checkFilter(t, servers, constraints, expServers, expReasons);
+		checkFilter(t, servers, opts, expServers, expReasons);
 	});
 
 	tt.test('  non-strict near non-existent-VM (gets ignored)',
 	    function (t) {
 		var nonExistentVm = 'ef26f01e-200e-2a43-a056-cab333731e8f';
-		var constraints = { vm: {
+		var opts = { vm: {
 			owner_uuid: OWNER_UUID,
 			locality: { strict: false, near: [nonExistentVm] }
 		} };
@@ -247,13 +242,13 @@ test('locality scenario A', function (tt) {
 				+ ' (ignored b/c non-strict)'
 		};
 
-		checkFilter(t, servers, constraints, expServers, expReasons);
+		checkFilter(t, servers, opts, expServers, expReasons);
 	});
 
 	// Here we expect to return all the CNs with *any* of the list VMs.
 	tt.test('  non-strict near, VMs on multiple CNs', function (t) {
 		var near = [ownerVmOnServer0, ownerVmOnServer2];
-		var constraints = { vm: {
+		var opts = { vm: {
 			owner_uuid: OWNER_UUID,
 			locality: { strict: false, near: near }
 		} };
@@ -265,12 +260,12 @@ test('locality scenario A', function (tt) {
 		expReasons[servers[2].uuid]
 			= 'include: inst==~' + ownerVmOnServer2;
 
-		checkFilter(t, servers, constraints, expServers, expReasons);
+		checkFilter(t, servers, opts, expServers, expReasons);
 	});
 
 	tt.test('  non-strict far, that gets ignored', function (t) {
 		var far = [ownerVmOnServer3, ownerVmOnServer4];
-		var constraints = { vm: {
+		var opts = { vm: {
 			owner_uuid: OWNER_UUID,
 			locality: { strict: false, far: far }
 		} };
@@ -284,8 +279,7 @@ test('locality scenario A', function (tt) {
 		expReasons[servers[4].uuid] = 'exclude: inst!='
 			+ ownerVmOnServer4 + ' (ignored b/c non-strict)';
 
-		checkFilter(t, subsetServers, constraints, expServers,
-			expReasons);
+		checkFilter(t, subsetServers, opts, expServers, expReasons);
 	});
 });
 
@@ -317,15 +311,20 @@ test('locality scenario B: large set', function (tt) {
 	var ownerVmOnServer997 = ownerVmOnServer(997);
 
 	tt.test('  non-strict near', function (t) {
-		var constraints = { vm: {
-			owner_uuid: OWNER_UUID,
-			locality: { strict: false, near: [ownerVmOnServer997] }
-		} };
+		var opts = common.addCommonOpts({
+			vm: {
+				owner_uuid: OWNER_UUID,
+				locality: {
+					strict: false,
+					near: [ownerVmOnServer997]
+				}
+			}
+		});
 
 		var givenServers = common.clone(servers);
 
 		var start = Date.now();
-		filter.run(LOG, givenServers, constraints,
+		filter.run(givenServers, opts,
 				function (err, filteredServers, reasons) {
 			t.ifError(err);
 
@@ -340,16 +339,23 @@ test('locality scenario B: large set', function (tt) {
 	});
 
 	tt.test('  non-strict far', function (t) {
-		var constraints = { vm: {
-			owner_uuid: OWNER_UUID,
-			locality: { strict: false, far: [
-				ownerVmOnServer42, ownerVmOnServer997] }
-		} };
+		var opts = common.addCommonOpts({
+			vm: {
+				owner_uuid: OWNER_UUID,
+				locality: {
+					strict: false,
+					far: [
+						ownerVmOnServer42,
+						ownerVmOnServer997
+					]
+				}
+			}
+		});
 
 		var givenServers = common.clone(servers);
 
 		var start = Date.now();
-		filter.run(LOG, givenServers, constraints,
+		filter.run(givenServers, opts,
 				function (err, filteredServers, reasons) {
 			t.ifError(err);
 

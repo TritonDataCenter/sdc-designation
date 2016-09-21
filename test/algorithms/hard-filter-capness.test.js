@@ -13,11 +13,6 @@ var filter = require('../../lib/algorithms/hard-filter-capness.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
 var SERVERS = [ {
 	uuid: 'cdfe84c4-f7cc-4104-bc24-45f786bce762',
 	vms : {
@@ -68,7 +63,7 @@ var SERVERS = [ {
 } ];
 
 
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterCapness() with package with cpu_cap', function (t) {
@@ -81,12 +76,9 @@ test('filterCapness() with package with cpu_cap', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: {},
-		pkg: { cpu_cap: 100 }
-	};
+	var opts = { vm: {}, pkg: { cpu_cap: 100 } };
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
@@ -100,25 +92,18 @@ test('filterCapness() with package without cpu_cap', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var constraints = {
-		vm: {},
-		pkg: {}
-	};
+	var opts = { vm: {}, pkg: {} };
 
-	checkFilter(t, SERVERS, constraints, expectServers, expectReasons);
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
 
 
 test('filterCapness() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
+	var opts = { vm: {}, pkg: {} };
 
-	var constraints = {
-		vm: {},
-		pkg: {}
-	};
-
-	checkFilter(t, [], constraints, expectServers, expectReasons);
+	checkFilter(t, [], opts, expectServers, expectReasons);
 });
 
 

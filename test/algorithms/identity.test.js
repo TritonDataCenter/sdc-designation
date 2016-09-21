@@ -13,13 +13,7 @@ var identity = require('../../lib/algorithms/identity.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
-var checkPlugin = common.createPluginChecker(identity, LOG);
+var checkPlugin = common.createPluginChecker(identity);
 
 
 test('identity()', function (t) {
@@ -32,10 +26,9 @@ test('identity()', function (t) {
 
 	var expectServers = servers;
 	var expectReasons = {};
+	var opts = {};
 
-	var constraints = {};
-
-	checkPlugin(t, servers, constraints, expectServers, expectReasons);
+	checkPlugin(t, servers, opts, expectServers, expectReasons);
 });
 
 

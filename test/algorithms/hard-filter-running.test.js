@@ -13,13 +13,7 @@ var filter = require('../../lib/algorithms/hard-filter-running.js');
 var common = require('./common.js');
 
 
-var LOG = {
-	trace: function () { return (true); },
-	debug: function () { return (true); }
-};
-
-
-var checkFilter = common.createPluginChecker(filter, LOG);
+var checkFilter = common.createPluginChecker(filter);
 
 
 test('filterRunning()', function (t) {
@@ -44,19 +38,18 @@ test('filterRunning()', function (t) {
 		    'Server has status: offline'
 	};
 
-	var constraints = {};
+	var opts = {};
 
-	checkFilter(t, servers, constraints, expectServers, expectReasons);
+	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
 
 test('filterRunning() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
+	var opts = {};
 
-	var constraints = {};
-
-	checkFilter(t, [], constraints, expectServers, expectReasons);
+	checkFilter(t, [], opts, expectServers, expectReasons);
 });
 
 
@@ -74,17 +67,9 @@ test('filterRunning() with malformed servers', function (t) {
 		    'Server has status: rebooting'
 	};
 
-	var constraints = {};
+	var opts = {};
 
-	filter.run(LOG, givenServers, constraints,
-			function (err, servers, reasons) {
-		t.ifError(err);
-
-		t.deepEqual(servers, expectServers);
-		t.deepEqual(reasons, expectReasons);
-
-		t.end();
-	});
+	checkFilter(t, givenServers, opts, expectServers, expectReasons);
 });
 
 
