@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2016, Joyent, Inc.
  */
 
 var assert = require('assert-plus');
@@ -116,6 +116,7 @@ test('disable overprovisioning without pkg', function (t) {
 		// just checking pkg attr wasn't added
 		delete opts.log;
 		delete expectOpts.log;
+
 		t.deepEqual(opts, expectOpts);
 
 		t.end();

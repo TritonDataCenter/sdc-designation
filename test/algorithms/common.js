@@ -40,6 +40,7 @@ function addCommonOpts(opts) {
 
 function createPluginChecker(plugin) {
 	assert.object(plugin, 'plugin');
+	assert.object(plugin, 'plugin');
 
 	return function checkPlugin(t, givenServers, opts, expectServers,
 			expectReasons) {
@@ -68,6 +69,7 @@ function createPluginChecker(plugin) {
 
 
 module.exports = {
+	OPTS: OPTS,
 	addCommonOpts: addCommonOpts,
 	createPluginChecker: createPluginChecker,
 	clone: clone

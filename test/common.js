@@ -14,24 +14,30 @@ var fs = require('fs');
 var ALGO_DESC = [
 	'pipe', 'hard-filter-setup',
 		'hard-filter-running',
+		// servers above invalid-servers could contain gibberish
 		'hard-filter-invalid-servers',
+		// keep volumes-from early; if present, it cuts down number
+		// of servers to just one:
 		'hard-filter-volumes-from',
-		'calculate-ticketed-vms',
 		'hard-filter-reserved',
-		'hard-filter-headnode',
-		'hard-filter-vm-count',
-		'hard-filter-capness',
 		'hard-filter-vlans',
 		'hard-filter-platform-versions',
 		'hard-filter-traits',
-		'hard-filter-owners-servers',
+		'hard-filter-headnode',
+		'hard-filter-overprovision-ratios',
+		// above plugins do not need vm info
+		// we defer vm loading as late as possible:
+		'load-server-vms',
+		'calculate-ticketed-vms',
+		'hard-filter-capness',
+		'hard-filter-vm-count',
 		'hard-filter-sick-servers',
 		'calculate-server-unreserved',
-		'hard-filter-overprovision-ratios',
 		'hard-filter-min-ram',
 		'hard-filter-min-cpu',
 		'hard-filter-min-disk',
 		'hard-filter-locality-hints',
+		'hard-filter-owners-servers',
 		['or', 'hard-filter-reservoir',
 		        'identity'],
 		['or', 'hard-filter-large-servers',

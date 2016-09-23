@@ -164,39 +164,17 @@ test('allocate 1', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
-			/* JSSTYLED */
-			step: 'Servers containing VMs required for volumes-from',
+			step: 'Servers containing VMs required for volumesfrom',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Add VMs which have open provisioning tickets',
-			remaining: [
-				'00000000-0000-0000-0000-00259094373c',
-				'00000000-0000-0000-0000-0025909437d4'
-			]
+			],
+			reasons: {
+				/* JSSTYLED */
+				skip: 'Requested VM is not a Docker container and/or has no internal_metadata'
+			}
 		}, {
 			step: 'Servers which are not reserved',
-			remaining: [
-				'00000000-0000-0000-0000-00259094373c',
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Servers which are not headnodes',
-			remaining: [
-				'00000000-0000-0000-0000-00259094373c',
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Servers with more VMs than limit',
-			remaining: [
-				'00000000-0000-0000-0000-00259094373c',
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			/* JSSTYLED */
-			step: 'Servers which have same existence of cpu_cap as package',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
@@ -225,21 +203,35 @@ test('allocate 1', function (t) {
 				'00000000-0000-0000-0000-0025909437d4': 'Combined vm/pkg/img traits require {"cabbages":true} but server has {}'
 			}
 		}, {
-			step: 'Filter CNs based on owner filters',
+			step: 'Servers which are not headnodes',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
+		}, {
+			/* JSSTYLED */
+			step: 'Servers with same overprovision ratios as requested VM',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
+		}, {
+			step: 'Load info about all VMs for each server',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: {
-				skip: 'No filter_owner_server default to run'
+				/* JSSTYLED */
+				skip: 'getServerVms not set; assuming server.vms is already populated'
 			}
+		}, {
+			step: 'Add VMs which have open provisioning tickets',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
+		}, {
+			/* JSSTYLED */
+			step: 'Servers which have same existence of cpu_cap as package',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
+		}, {
+			step: 'Servers with more VMs than limit',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
 			/* JSSTYLED */
 			step: 'Servers that had consecutive failed provisions recently',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
 			step: 'Calculate unreserved resources on each server',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
-		}, {
-			/* JSSTYLED */
-			step: 'Servers with same overprovision ratios as requested VM',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
 			step: 'Servers with enough unreserved RAM',
@@ -254,6 +246,12 @@ test('allocate 1', function (t) {
 			step: 'Servers with requested hard locality considered',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: { skip: 'No strict locality requested' }
+		}, {
+			step: 'Filter CNs based on owner filters',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: {
+				skip: 'No filter_owner_server default to run'
+			}
 		}, {
 			step: 'Servers which are not in the reservoir',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
@@ -357,39 +355,17 @@ test('allocate 2', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
-			/* JSSTYLED */
-			step: 'Servers containing VMs required for volumes-from',
+			step: 'Servers containing VMs required for volumesfrom',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Add VMs which have open provisioning tickets',
-			remaining: [
-				'00000000-0000-0000-0000-00259094373c',
-				'00000000-0000-0000-0000-0025909437d4'
-			]
+			],
+			reasons: {
+				/* JSSTYLED */
+				skip: 'Requested VM is not a Docker container and/or has no internal_metadata'
+			}
 		}, {
 			step: 'Servers which are not reserved',
-			remaining: [
-				'00000000-0000-0000-0000-00259094373c',
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Servers which are not headnodes',
-			remaining: [
-				'00000000-0000-0000-0000-00259094373c',
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Servers with more VMs than limit',
-			remaining: [
-				'00000000-0000-0000-0000-00259094373c',
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			/* JSSTYLED */
-			step: 'Servers which have same existence of cpu_cap as package',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
@@ -420,71 +396,65 @@ test('allocate 2', function (t) {
 				'00000000-0000-0000-0000-00259094373c':'Combined vm/pkg/img require no traits but server has {"cabbages":true}'
 			}
 		}, {
+			step: 'Servers which are not headnodes',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			/* JSSTYLED */
+			step: 'Servers with same overprovision ratios as requested VM',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: { skip: 'No pkg provided' }
+		}, {
+			step: 'Load info about all VMs for each server',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: {
+				/* JSSTYLED */
+				skip: 'getServerVms not set; assuming server.vms is already populated'
+			}
+		}, {
+			step: 'Add VMs which have open provisioning tickets',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			/* JSSTYLED */
+			step: 'Servers which have same existence of cpu_cap as package',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			step: 'Servers with more VMs than limit',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			/* JSSTYLED */
+			step: 'Servers that had consecutive failed provisions recently',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			step: 'Calculate unreserved resources on each server',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			step: 'Servers with enough unreserved RAM',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			step: 'Servers with enough unreserved CPU',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			step: 'Servers with enough unreserved disk',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			step: 'Servers with requested hard locality considered',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: { skip: 'No strict locality requested' }
+		}, {
 			step: 'Filter CNs based on owner filters',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			],
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
 			reasons: {
 				skip: 'No filter_owner_server default to run'
 			}
 		}, {
-			/* JSSTYLED */
-			step: 'Servers that had consecutive failed provisions recently',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Calculate unreserved resources on each server',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			/* JSSTYLED */
-			step: 'Servers with same overprovision ratios as requested VM',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			],
-			reasons: {
-				skip: 'No pkg provided'
-			}
-		}, {
-			step: 'Servers with enough unreserved RAM',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Servers with enough unreserved CPU',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Servers with enough unreserved disk',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
-		}, {
-			step: 'Servers with requested hard locality considered',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			],
-			reasons: {
-				skip: 'No strict locality requested'
-			}
-		}, {
 			step: 'Servers which are not in the reservoir',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
 		}, {
 			step: 'Filter out the largest and most empty servers',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			]
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
 		}, {
 			step: 'Servers with requested soft locality considered',
-			remaining: [
-				'00000000-0000-0000-0000-0025909437d4'
-			],
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
 			reasons: {
 				'*': 'exclude: inst==~' + VM.locality.near
 					+ ' (ignored b/c non-strict)'

@@ -37,30 +37,36 @@ var ALLOC_CHAIN = [
 	        'hard-filter-running',
 	        'hard-filter-invalid-servers',
 	        'hard-filter-volumes-from',
-	        'calculate-ticketed-vms',
 	        'hard-filter-reserved',
 	        'hard-filter-headnode',
-//	        'hard-filter-vm-count',
-	        'hard-filter-capness',
 	        'hard-filter-vlans',
 	        'hard-filter-platform-versions',
 	        'hard-filter-traits',
-	        'hard-filter-sick-servers',
 	        'override-overprovisioning',
-	        'calculate-server-unreserved',
 	        'hard-filter-overprovision-ratios',
+	        'load-server-vms',
+	        'calculate-ticketed-vms',
+	        'hard-filter-capness',
+//	        'hard-filter-vm-count',
+	        'hard-filter-sick-servers',
+	        'calculate-server-unreserved',
 	        'hard-filter-min-ram',
 	        'hard-filter-min-cpu',
 //	        'hard-filter-min-disk',
+	        'hard-filter-locality-hints',
+	        'hard-filter-owners-servers',
 	       ['or', 'hard-filter-reservoir',
 	              'identity'],
 	       ['or', 'hard-filter-large-servers',
 	              'identity'],
-	       'soft-filter-locality-hints',
-	       'sort-min-ram',
-	       'sort-min-owner',
-	       'sort-random',
-	       'pick-weighted-random'];
+	        'soft-filter-locality-hints',
+	        'score-unreserved-ram',
+	        'score-unreserved-disk',
+	        'score-num-owner-zones',
+	        'score-current-platform',
+	        'score-next-reboot',
+	        'score-uniform-random'];
+
 
 var ALLOC_DEFAULTS = {
 	server_spread: SERVER_SPREAD,
@@ -380,7 +386,7 @@ function calculateServerUtilization(server) {
  */
 
 function createAllocator() {
-	var sys = {
+	var opts = {
 		log: {
 			info:  function () {},
 			warn:  function () {},
@@ -390,7 +396,7 @@ function createAllocator() {
 		}
 	};
 
-	var allocator = new Allocator(sys, ALLOC_CHAIN, ALLOC_DEFAULTS);
+	var allocator = new Allocator(opts, ALLOC_CHAIN, ALLOC_DEFAULTS);
 
 	return (allocator);
 }

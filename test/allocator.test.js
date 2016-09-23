@@ -18,7 +18,7 @@ var OPTS = addCommonOpts({});
 
 
 test('algorithms pipeline', function (t) {
-	var serverStubs = [1, 2, 3, 4, 5];
+	var serverStubs = [ {id: 1}, {id: 2}, {id: 3}, {id: 4}, {id: 5} ];
 
 	var plugins = [
 		'pipe',
@@ -32,7 +32,9 @@ test('algorithms pipeline', function (t) {
 				t.deepEqual(servers, serverStubs);
 
 				executed.push(1);
-				cb(null, [5, 4, 3, 2], {});
+				cb(null, [
+					{id: 5}, {id: 4}, {id: 3}, {id: 2}
+				], {});
 			}
 		}, {
 			name: 'bar',
@@ -41,10 +43,12 @@ test('algorithms pipeline', function (t) {
 				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(servers, [5, 4, 3, 2]);
+				t.deepEqual(servers, [
+					{id: 5}, {id: 4}, {id: 3}, {id: 2}
+				]);
 
 				executed.push(2);
-				cb(null, [2, 3], {});
+				cb(null, [ {id: 2}, {id: 3} ], {});
 			}
 		}, {
 			name: 'baz',
@@ -53,10 +57,10 @@ test('algorithms pipeline', function (t) {
 				assert.object(opts);
 				assert.func(cb);
 
-				t.deepEqual(servers, [2, 3]);
+				t.deepEqual(servers, [ {id: 2}, {id: 3} ]);
 
 				executed.push(3);
-				cb(null, [3], {});
+				cb(null, [ {id: 3} ], {});
 			}
 		}
 	];
@@ -69,7 +73,7 @@ test('algorithms pipeline', function (t) {
 	allocator.allocate(serverStubs, {}, {}, {}, [], function (err, stub) {
 		t.ifError(err);
 
-		t.equal(stub, 3);
+		t.deepEqual(stub, {id: 3});
 		t.deepEqual(executed, [1, 2, 3]);
 
 		t.end();
@@ -462,8 +466,9 @@ test('pipe 1', function (t) {
 	var executed = [];
 
 	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
+	var opts2 = { log: OPTS.log, vm: { foo: 1 } };
 
-	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
+	allocator._dispatch(plugins, serverStubs, opts2,
 			function (err, serverStub, visitedAlgorithms,
 			remainingServers, reasons) {
 		t.ifError(err);
@@ -536,8 +541,9 @@ test('pipe 2', function (t) {
 	var executed = [];
 
 	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
+	var opts2 = { log: OPTS.log, vm: { foo: 1 } };
 
-	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
+	allocator._dispatch(plugins, serverStubs, opts2,
 			function (err, serverStub, visitedAlgorithms,
 			remainingServers, reasons) {
 		t.ifError(err);
@@ -614,8 +620,9 @@ test('or 1', function (t) {
 	var executed = [];
 
 	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
+	var opts2 = { log: OPTS.log, vm: { foo: 1 } };
 
-	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
+	allocator._dispatch(plugins, serverStubs, opts2,
 			function (err, serverStub, visitedAlgorithms,
 			remainingServers, reasons) {
 		t.ifError(err);
@@ -680,8 +687,9 @@ test('or 2', function (t) {
 	var executed = [];
 
 	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
+	var opts2 = { log: OPTS.log, vm: { foo: 1 } };
 
-	allocator._dispatch(plugins, serverStubs, { vm: { foo: 1 } },
+	allocator._dispatch(plugins, serverStubs, opts2,
 			function (err, serverStub, visitedAlgorithms,
 			remainingServers, reasons) {
 		t.ifError(err);
@@ -805,6 +813,7 @@ test('load available algorithms', function (t) {
 		'hard-filter-vm-count',
 		'hard-filter-volumes-from',
 		'identity',
+		'load-server-vms',
 		'override-overprovisioning',
 		'score-current-platform',
 		'score-next-reboot',
@@ -884,7 +893,9 @@ test('server capacity', function (t) {
 	};
 
 	var expectedReasons = {
-		asdsa: 'Server has status: undefined'
+		asdsa: 'Server has status: undefined',
+		skip: 'getServerVms not set; assuming server.vms is ' +
+			'already populated'
 	};
 
 	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);

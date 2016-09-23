@@ -436,6 +436,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | hard-filter-vm-count            | Removes CNs with more than 223 (default) VMs                |
 | hard-filter-volumes-from        | Removes CNs which do not contain VMs listed in docker:volumesfrom metadata, if provided |
 | identity                        | Returns the same servers it received                        |
+| load-server-vms                 | Populates all server.vms with VM information if sys.getServerVms was passed to allocator constructor |
 | override-overprovisioning       | Substitutes package and server overprovision data for own defaults   |
 | soft-filter-locality-hints      | Tries to place VM near or far from other given VMs, with non-strict placement |
 | score-current-platform          | Make CNs running more recent platforms more likely to be selected |
