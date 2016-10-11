@@ -322,21 +322,22 @@ test('allocate 1', function (t) {
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: {
 				'00000000-0000-0000-0000-00259094373c':
-					'increased score by 2'
+					'increased score by 2.00 to 2.00'
 			}
 		}, {
 			step: 'Score servers based on unreserved disk',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: {
 				'00000000-0000-0000-0000-00259094373c':
-					'increased score by 1'
+					'increased score by 1.00 to 3.00'
 			}
 		}, {
 			/* JSSTYLED */
 			step: 'Score servers based on number of zones belonging to owner',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: {
-				skip: 'Resolved score weight to 0; no changes'
+				/* JSSTYLED */
+				skip: 'Resolved score weight to 0.00; no changes'
 			}
 		}, {
 			/* JSSTYLED */
@@ -353,7 +354,7 @@ test('allocate 1', function (t) {
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: {
 				'00000000-0000-0000-0000-00259094373c':
-					'increased score by 0.5'
+					'increased score by 0.50 to 3.50'
 			}
 		}
 	];
@@ -461,7 +462,7 @@ test('allocate 2', function (t) {
 			],
 			reasons: {
 				/* JSSTYLED */
-				'00000000-0000-0000-0000-00259094373c': 'Combined vm/pkg/img require no traits but server has {"cabbages":true}'
+				'00000000-0000-0000-0000-00259094373c':'Combined vm/pkg/img require no traits but server has {"cabbages":true}'
 			}
 		}, {
 			step: 'Filter CNs based on owner filters',
@@ -535,21 +536,22 @@ test('allocate 2', function (t) {
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
 			reasons: {
 				'00000000-0000-0000-0000-0025909437d4':
-					'increased score by 2'
+					'increased score by 2.00 to 2.00'
 			}
 		}, {
 			step: 'Score servers based on unreserved disk',
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
 			reasons: {
 				'00000000-0000-0000-0000-0025909437d4':
-					'increased score by 1'
+					'increased score by 1.00 to 3.00'
 			}
 		}, {
 			/* JSSTYLED */
 			step: 'Score servers based on number of zones belonging to owner',
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
 			reasons: {
-				skip: 'Resolved score weight to 0; no changes'
+				/* JSSTYLED */
+				skip: 'Resolved score weight to 0.00; no changes'
 			}
 		}, {
 			/* JSSTYLED */
@@ -566,7 +568,7 @@ test('allocate 2', function (t) {
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
 			reasons: {
 				'00000000-0000-0000-0000-0025909437d4':
-					'increased score by 0.5'
+					'increased score by 0.50 to 3.50'
 			}
 		}
 	];

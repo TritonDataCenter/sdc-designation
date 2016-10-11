@@ -63,17 +63,17 @@ test('scoreNextReboot()', function (t) {
 
 	var expectedReasons = {
 		'0cb6d02c-a0de-4edd-95fd-30a71a397f71':
-			'increased score by 3',
+			'increased score by 3.00 to 4.00',
 		'3b4157cd-8f2e-4d57-b7a0-bb43bea5455c':
-			'increased score by 0',
+			'increased score by 0.00 to 1.00',
 		'44710ff2-57e6-45df-9d87-9844fd3c216f':
-			'increased score by 3',
+			'increased score by 3.00 to 4.00',
 		'62ccf0e0-268f-4f82-838a-218e4798d6c2':
-			'increased score by 2',
+			'increased score by 2.00 to 3.00',
 		'7fbf5802-26b0-4e14-bbce-87e44c6aa926':
-			'increased score by 1',
+			'increased score by 1.00 to 2.00',
 		'ad60a3e7-497c-4876-b074-79bf041b7086':
-			'increased score by 2'
+			'increased score by 2.00 to 3.00'
 	};
 
 	var constraints = {
@@ -98,17 +98,17 @@ test('scoreNextReboot()', function (t) {
 
 	expectedReasons = {
 		'0cb6d02c-a0de-4edd-95fd-30a71a397f71':
-			'increased score by 0',
+			'increased score by 0.00 to 1.00',
 		'3b4157cd-8f2e-4d57-b7a0-bb43bea5455c':
-			'increased score by 3',
+			'increased score by 3.00 to 4.00',
 		'44710ff2-57e6-45df-9d87-9844fd3c216f':
-			'increased score by 0',
+			'increased score by 0.00 to 1.00',
 		'62ccf0e0-268f-4f82-838a-218e4798d6c2':
-			'increased score by 1',
+			'increased score by 1.00 to 2.00',
 		'7fbf5802-26b0-4e14-bbce-87e44c6aa926':
-			'increased score by 2',
+			'increased score by 2.00 to 3.00',
 		'ad60a3e7-497c-4876-b074-79bf041b7086':
-			'increased score by 1'
+			'increased score by 1.00 to 2.00'
 	};
 
 	constraints = {

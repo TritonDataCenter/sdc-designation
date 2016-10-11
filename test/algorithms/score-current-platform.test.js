@@ -55,12 +55,18 @@ test('scoreCurrentPlatform()', function (t) {
 	expectedServers[5].score = 1;
 
 	var expectedReasons = {
-		'8973fb43-29da-474c-97b8-7c513c602a24': 'increased score by 3',
-		'cc8c8619-21a8-403f-a4db-3061b38d5881': 'increased score by 3',
-		'd68d4508-b153-4f3c-8121-b84c23848dcb': 'increased score by 3',
-		'64664347-aae4-49a9-b064-a144e142a8ed': 'increased score by 2',
-		'b8ed3526-13a9-4da2-a6a8-06b142c51b77': 'increased score by 1',
-		'682de1bd-b409-4c51-affc-c21ad3ba8d81': 'increased score by 0'
+		'8973fb43-29da-474c-97b8-7c513c602a24':
+			'increased score by 3.00 to 4.00',
+		'cc8c8619-21a8-403f-a4db-3061b38d5881':
+			'increased score by 3.00 to 4.00',
+		'd68d4508-b153-4f3c-8121-b84c23848dcb':
+			'increased score by 3.00 to 4.00',
+		'64664347-aae4-49a9-b064-a144e142a8ed':
+			'increased score by 2.00 to 3.00',
+		'b8ed3526-13a9-4da2-a6a8-06b142c51b77':
+			'increased score by 1.00 to 2.00',
+		'682de1bd-b409-4c51-affc-c21ad3ba8d81':
+			'increased score by 0.00 to 1.00'
 	};
 
 	var constraints = {
@@ -88,12 +94,18 @@ test('scoreCurrentPlatform() with negative weight', function (t) {
 	expectedServers[5].score = 4;
 
 	var expectedReasons = {
-		'8973fb43-29da-474c-97b8-7c513c602a24': 'increased score by 0',
-		'cc8c8619-21a8-403f-a4db-3061b38d5881': 'increased score by 0',
-		'd68d4508-b153-4f3c-8121-b84c23848dcb': 'increased score by 0',
-		'64664347-aae4-49a9-b064-a144e142a8ed': 'increased score by 1',
-		'b8ed3526-13a9-4da2-a6a8-06b142c51b77': 'increased score by 2',
-		'682de1bd-b409-4c51-affc-c21ad3ba8d81': 'increased score by 3'
+		'8973fb43-29da-474c-97b8-7c513c602a24':
+			'increased score by 0.00 to 1.00',
+		'cc8c8619-21a8-403f-a4db-3061b38d5881':
+			'increased score by 0.00 to 1.00',
+		'd68d4508-b153-4f3c-8121-b84c23848dcb':
+			'increased score by 0.00 to 1.00',
+		'64664347-aae4-49a9-b064-a144e142a8ed':
+			'increased score by 1.00 to 2.00',
+		'b8ed3526-13a9-4da2-a6a8-06b142c51b77':
+			'increased score by 2.00 to 3.00',
+		'682de1bd-b409-4c51-affc-c21ad3ba8d81':
+			'increased score by 3.00 to 4.00'
 	};
 
 	var constraints = {

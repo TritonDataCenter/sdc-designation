@@ -40,9 +40,12 @@ test('scoreUnreservedDisk()', function (t) {
 	expectedServers[2].score = 3;
 
 	var expectedReasons = {
-		'ef23ad0e-1802-4929-af61-387e9071d39f': 'increased score by 4',
-		'330ea9b9-0b4a-425d-8fc5-d31ccbfcc0cd': 'increased score by 0',
-		'd3409329-e847-40a1-a924-119eacb69d9c': 'increased score by 2'
+		'ef23ad0e-1802-4929-af61-387e9071d39f':
+			'increased score by 4.00 to 5.00',
+		'330ea9b9-0b4a-425d-8fc5-d31ccbfcc0cd':
+			'increased score by 0.00 to 1.00',
+		'd3409329-e847-40a1-a924-119eacb69d9c':
+			'increased score by 2.00 to 3.00'
 	};
 
 	var constraints = {
@@ -67,9 +70,12 @@ test('scoreUnreservedDisk() with negative default weight', function (t) {
 	expectedServers[2].score = 3;
 
 	var expectedReasons = {
-		'ef23ad0e-1802-4929-af61-387e9071d39f': 'increased score by 0',
-		'330ea9b9-0b4a-425d-8fc5-d31ccbfcc0cd': 'increased score by 4',
-		'd3409329-e847-40a1-a924-119eacb69d9c': 'increased score by 2'
+		'ef23ad0e-1802-4929-af61-387e9071d39f':
+			'increased score by 0.00 to 1.00',
+		'330ea9b9-0b4a-425d-8fc5-d31ccbfcc0cd':
+			'increased score by 4.00 to 5.00',
+		'd3409329-e847-40a1-a924-119eacb69d9c':
+			'increased score by 2.00 to 3.00'
 	};
 
 	var constraints = {
@@ -90,7 +96,7 @@ test('scoreUnreservedDisk() with negative default weight', function (t) {
 test('scoreUnreservedDisk() with zero default weight', function (t) {
 	var expectedServers = SERVERS;
  	var expectedReasons = {
-		'skip': 'Resolved score weight to 0; no changes'
+		'skip': 'Resolved score weight to 0.00; no changes'
 	};
 
 	var constraints = {
@@ -161,7 +167,8 @@ test('scoreUnreservedDisk() with one server', function (t) {
 	expectedServers[0].score = 5;
 
 	var expectedReasons = {
-		'ef23ad0e-1802-4929-af61-387e9071d39f': 'increased score by 4'
+		'ef23ad0e-1802-4929-af61-387e9071d39f':
+			'increased score by 4.00 to 5.00'
 	};
 
 	var constraints = {

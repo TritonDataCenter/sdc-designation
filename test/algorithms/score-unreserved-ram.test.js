@@ -40,9 +40,12 @@ test('scoreUnreservedRam()', function (t) {
 	expectedServers[2].score = 3;
 
 	var expectedReasons = {
-		'26888f40-bae2-4b68-9053-c91bc82de296': 'increased score by 4',
-		'55d40d4b-296c-42c5-b8f2-295d094b7206': 'increased score by 0',
-		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 2'
+		'26888f40-bae2-4b68-9053-c91bc82de296':
+			'increased score by 4.00 to 5.00',
+		'55d40d4b-296c-42c5-b8f2-295d094b7206':
+			'increased score by 0.00 to 1.00',
+		'926c4009-93ed-4fd0-99d5-f3e73676f10d':
+			'increased score by 2.00 to 3.00'
 	};
 
 	var constraints = {
@@ -67,9 +70,12 @@ test('scoreUnreservedRam() with negative default weight', function (t) {
 	expectedServers[2].score = 3;
 
 	var expectedReasons = {
-		'26888f40-bae2-4b68-9053-c91bc82de296': 'increased score by 0',
-		'55d40d4b-296c-42c5-b8f2-295d094b7206': 'increased score by 4',
-		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 2'
+		'26888f40-bae2-4b68-9053-c91bc82de296':
+			'increased score by 0.00 to 1.00',
+		'55d40d4b-296c-42c5-b8f2-295d094b7206':
+			'increased score by 4.00 to 5.00',
+		'926c4009-93ed-4fd0-99d5-f3e73676f10d':
+			'increased score by 2.00 to 3.00'
 	};
 
 	var constraints = {
@@ -90,7 +96,7 @@ test('scoreUnreservedRam() with negative default weight', function (t) {
 test('scoreUnreservedRam() with zero default weight', function (t) {
 	var expectedServers = SERVERS;
  	var expectedReasons = {
-		skip: 'Resolved score weight to 0; no changes'
+		skip: 'Resolved score weight to 0.00; no changes'
 	};
 
 	var constraints = {
@@ -115,9 +121,12 @@ test('scoreUnreservedRam() with min-ram default set', function (t) {
 	expectedServers[2].score = 2;
 
 	var expectedReasons = {
-		'26888f40-bae2-4b68-9053-c91bc82de296': 'increased score by 2',
-		'55d40d4b-296c-42c5-b8f2-295d094b7206': 'increased score by 0',
-		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 1'
+		'26888f40-bae2-4b68-9053-c91bc82de296':
+			'increased score by 2.00 to 3.00',
+		'55d40d4b-296c-42c5-b8f2-295d094b7206':
+			'increased score by 0.00 to 1.00',
+		'926c4009-93ed-4fd0-99d5-f3e73676f10d':
+			'increased score by 1.00 to 2.00'
 	};
 
 	var constraints = {
@@ -145,9 +154,12 @@ test('scoreUnreservedRam() with max-ram default set', function (t) {
 	expectedServers[2].score = 2;
 
 	var expectedReasons = {
-		'26888f40-bae2-4b68-9053-c91bc82de296': 'increased score by 0',
-		'55d40d4b-296c-42c5-b8f2-295d094b7206': 'increased score by 2',
-		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 1'
+		'26888f40-bae2-4b68-9053-c91bc82de296':
+			'increased score by 0.00 to 1.00',
+		'55d40d4b-296c-42c5-b8f2-295d094b7206':
+			'increased score by 2.00 to 3.00',
+		'926c4009-93ed-4fd0-99d5-f3e73676f10d':
+			'increased score by 1.00 to 2.00'
 	};
 
 	var constraints = {
@@ -199,9 +211,12 @@ test('scoreUnreservedRam() with package attr set', function (t) {
 	expectedServers[2].score = 2;
 
 	var expectedReasons = {
-		'26888f40-bae2-4b68-9053-c91bc82de296': 'increased score by 2',
-		'55d40d4b-296c-42c5-b8f2-295d094b7206': 'increased score by 0',
-		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 1'
+		'26888f40-bae2-4b68-9053-c91bc82de296':
+			'increased score by 2.00 to 3.00',
+		'55d40d4b-296c-42c5-b8f2-295d094b7206':
+			'increased score by 0.00 to 1.00',
+		'926c4009-93ed-4fd0-99d5-f3e73676f10d':
+			'increased score by 1.00 to 2.00'
 	};
 
 	var constraints = {
@@ -229,9 +244,12 @@ test('scoreUnreservedRam() with package and default set', function (t) {
 	expectedServers[2].score = 2;
 
 	var expectedReasons = {
-		'26888f40-bae2-4b68-9053-c91bc82de296': 'increased score by 2',
-		'55d40d4b-296c-42c5-b8f2-295d094b7206': 'increased score by 0',
-		'926c4009-93ed-4fd0-99d5-f3e73676f10d': 'increased score by 1'
+		'26888f40-bae2-4b68-9053-c91bc82de296':
+			'increased score by 2.00 to 3.00',
+		'55d40d4b-296c-42c5-b8f2-295d094b7206':
+			'increased score by 0.00 to 1.00',
+		'926c4009-93ed-4fd0-99d5-f3e73676f10d':
+			'increased score by 1.00 to 2.00'
 	};
 
 	var constraints = {
@@ -282,7 +300,8 @@ test('scoreUnreservedRam() with one server', function (t) {
 	expectedServers[0].score = 5;
 
 	var expectedReasons = {
-		'26888f40-bae2-4b68-9053-c91bc82de296': 'increased score by 4'
+		'26888f40-bae2-4b68-9053-c91bc82de296':
+			'increased score by 4.00 to 5.00'
 	};
 
 	var constraints = {

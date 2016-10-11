@@ -104,11 +104,11 @@ test('scoreNumOwnerZones()', function (t) {
 
 	var expectedReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
-			'increased score by 0; 12 owner zones found',
+			'increased score by 0.00 to 1.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
-			'increased score by 2; 2 owner zones found',
+			'increased score by 2.00 to 3.00; 2 owner zones found',
 		'd037fff2-eb00-11e5-9322-0b32f8d3f898':
-			'increased score by 4; 0 owner zones found'
+			'increased score by 4.00 to 5.00; 0 owner zones found'
 	};
 
 	var constraints = {
@@ -137,11 +137,11 @@ test('scoreNumOwnerZones() with negative default weight', function (t) {
 
 	var expectedReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
-			'increased score by 4; 12 owner zones found',
+			'increased score by 4.00 to 5.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
-			'increased score by 2; 2 owner zones found',
+			'increased score by 2.00 to 3.00; 2 owner zones found',
 		'd037fff2-eb00-11e5-9322-0b32f8d3f898':
-			'increased score by 0; 0 owner zones found'
+			'increased score by 0.00 to 1.00; 0 owner zones found'
 	};
 
 	var constraints = {
@@ -165,7 +165,7 @@ test('scoreNumOwnerZones() with negative default weight', function (t) {
 test('scoreNumOwnerZones() with zero default weight', function (t) {
 	var expectedServers = clone(SERVERS);
 	var expectedReasons = {
-		skip: 'Resolved score weight to 0; no changes'
+		skip: 'Resolved score weight to 0.00; no changes'
 	};
 
 	var constraints = {
@@ -194,11 +194,11 @@ test('scoreNumOwnerZones() with min-owner default set', function (t) {
 
 	var expectedReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
-			'increased score by 0; 12 owner zones found',
+			'increased score by 0.00 to 1.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
-			'increased score by 1; 2 owner zones found',
+			'increased score by 1.00 to 2.00; 2 owner zones found',
 		'd037fff2-eb00-11e5-9322-0b32f8d3f898':
-			'increased score by 2; 0 owner zones found'
+			'increased score by 2.00 to 3.00; 0 owner zones found'
 	};
 
 	var constraints = {
@@ -253,11 +253,11 @@ test('scoreNumOwnerZones() with min-owner package attr set', function (t) {
 
 	var expectedReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
-			'increased score by 0; 12 owner zones found',
+			'increased score by 0.00 to 1.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
-			'increased score by 1; 2 owner zones found',
+			'increased score by 1.00 to 2.00; 2 owner zones found',
 		'd037fff2-eb00-11e5-9322-0b32f8d3f898':
-			'increased score by 2; 0 owner zones found'
+			'increased score by 2.00 to 3.00; 0 owner zones found'
 	};
 
 	var constraints = {
@@ -285,11 +285,11 @@ test('scoreNumOwnerZones() with package and default set', function (t) {
 
 	var expectedReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
-			'increased score by 0; 12 owner zones found',
+			'increased score by 0.00 to 1.00; 12 owner zones found',
 		'c141a106-eb00-11e5-ae33-b7201124575a':
-			'increased score by 1; 2 owner zones found',
+			'increased score by 1.00 to 2.00; 2 owner zones found',
 		'd037fff2-eb00-11e5-9322-0b32f8d3f898':
-			'increased score by 2; 0 owner zones found'
+			'increased score by 2.00 to 3.00; 0 owner zones found'
 	};
 
 	var constraints = {
@@ -341,7 +341,7 @@ test('scoreNumOwnerZones() with one server', function (t) {
 
 	var expectedReasons = {
 		'b38dc3a0-eb00-11e5-943f-8bc57e287d0d':
-			'increased score by 4; 12 owner zones found'
+			'increased score by 4.00 to 5.00; 12 owner zones found'
 	};
 
 	var constraints = {
