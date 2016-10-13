@@ -100,7 +100,6 @@ test('linear 3', function (t) {
 });
 
 
-
 test('linear 4', function (t) {
 	var score = scorers.linear;
 	var reasons = {};
@@ -117,6 +116,18 @@ test('linear 4', function (t) {
 		'4ff8d936-66fc-4ec9-909c-1c0d9fbaad58':
 			'increased score by 2.00 to 3.00'
 	});
+
+	t.end();
+});
+
+
+test('linear 5', function (t) {
+	var score = scorers.linear;
+	var reasons = {};
+
+	var scores = score(LOG, [], 2, reasons);
+	t.deepEqual(scores, []);
+	t.deepEqual(reasons, {});
 
 	t.end();
 });
@@ -203,6 +214,148 @@ test('linearBuckets 4', function (t) {
 		'd758930b-b952-4cd1-a933-81dfc08f919c':
 			'increased score by 2.00 to 3.00'
 	});
+
+	t.end();
+});
+
+
+test('linearBuckets 5', function (t) {
+	var score = scorers.linearBuckets;
+	var reasons = {};
+
+	var scores = score(LOG, [], 2, reasons);
+	t.deepEqual(scores, []);
+	t.deepEqual(reasons, {});
+
+	t.end();
+});
+
+
+test('normalize 1', function (t) {
+	var score = scorers.normalize;
+	var reasons = {};
+
+	var scores = score(LOG, [
+		/* BEGIN JSSTYLED */
+		[ { score: 1, uuid: '2bc943d3-1192-43d9-842a-38c20f556aea' }, 10],
+		[ { score: 1, uuid: '12caaf31-205f-4d2e-8269-945dee4ee7e5' }, 10],
+		[ { score: 1, uuid: 'e256bad8-8055-4754-b7ec-d308baca5fa9' }, -5]
+		/* END JSSTYLED */
+	], 2, reasons);
+
+	t.deepEqual(scores, [
+		{ score: 3, uuid: '2bc943d3-1192-43d9-842a-38c20f556aea' },
+		{ score: 3, uuid: '12caaf31-205f-4d2e-8269-945dee4ee7e5' },
+		{ score: 1, uuid: 'e256bad8-8055-4754-b7ec-d308baca5fa9' }
+	]);
+
+	t.deepEqual(reasons, {
+		'2bc943d3-1192-43d9-842a-38c20f556aea':
+			'increased score by 2.00 to 3.00',
+		'12caaf31-205f-4d2e-8269-945dee4ee7e5':
+			'increased score by 2.00 to 3.00',
+		'e256bad8-8055-4754-b7ec-d308baca5fa9':
+			'increased score by 0.00 to 1.00'
+	});
+
+	t.end();
+});
+
+
+test('normalize 2', function (t) {
+	var score = scorers.normalize;
+	var reasons = {};
+
+	var scores = score(LOG, [
+		/* BEGIN JSSTYLED */
+		[ { score: 1, uuid: '2bc943d3-1192-43d9-842a-38c20f556aea' }, 10],
+		[ { score: 1, uuid: '12caaf31-205f-4d2e-8269-945dee4ee7e5' }, 10],
+		[ { score: 1, uuid: 'e256bad8-8055-4754-b7ec-d308baca5fa9' }, -5]
+		/* END JSSTYLED */
+	], -2, reasons);
+
+	t.deepEqual(scores, [
+		{ score: 1, uuid: '2bc943d3-1192-43d9-842a-38c20f556aea' },
+		{ score: 1, uuid: '12caaf31-205f-4d2e-8269-945dee4ee7e5' },
+		{ score: 3, uuid: 'e256bad8-8055-4754-b7ec-d308baca5fa9' }
+	]);
+
+	t.deepEqual(reasons, {
+		'2bc943d3-1192-43d9-842a-38c20f556aea':
+			'increased score by 0.00 to 1.00',
+		'12caaf31-205f-4d2e-8269-945dee4ee7e5':
+			'increased score by 0.00 to 1.00',
+		'e256bad8-8055-4754-b7ec-d308baca5fa9':
+			'increased score by 2.00 to 3.00'
+	});
+
+	t.end();
+});
+
+test('normalize 3', function (t) {
+	var score = scorers.normalize;
+	var reasons = {};
+
+	var scores = score(LOG, [
+		/* BEGIN JSSTYLED */
+		[ { score: 1, uuid: 'a04eb2a2-be1c-45ff-ae2b-4b60210b82c8' }, 2 ],
+		[ { score: 1, uuid: 'ee7436a3-5b7c-4279-9138-283e7d03e497' }, 1.5 ],
+		[ { score: 1, uuid: '48f3b143-0ba1-4894-8c09-26ff88ed8d31' }, 0 ]
+		/* END JSSTYLED */
+	], 3, reasons);
+
+	t.deepEqual(scores, [
+		{ score: 4,    uuid: 'a04eb2a2-be1c-45ff-ae2b-4b60210b82c8' },
+		{ score: 3.25, uuid: 'ee7436a3-5b7c-4279-9138-283e7d03e497' },
+		{ score: 1,    uuid: '48f3b143-0ba1-4894-8c09-26ff88ed8d31' }
+	]);
+
+	t.deepEqual(reasons, {
+		'a04eb2a2-be1c-45ff-ae2b-4b60210b82c8':
+			'increased score by 3.00 to 4.00',
+		'ee7436a3-5b7c-4279-9138-283e7d03e497':
+			'increased score by 2.25 to 3.25',
+		'48f3b143-0ba1-4894-8c09-26ff88ed8d31':
+			'increased score by 0.00 to 1.00'
+	});
+
+	t.end();
+});
+
+
+test('normalize 4', function (t) {
+	var score = scorers.normalize;
+	var reasons = {};
+
+	var scores = score(LOG, [
+		/* JSSTYLED */
+		[ { score: 1, uuid: 'f56663e5-0187-47e9-9f35-463a2411e60b' }, 1],
+		[ { score: 1, uuid: '3caf33e7-e3e2-422d-bfbb-f0a6198e7856' }, 1]
+	], 2, reasons);
+
+	t.deepEqual(scores, [
+		{ score: 3, uuid: 'f56663e5-0187-47e9-9f35-463a2411e60b' },
+		{ score: 3, uuid: '3caf33e7-e3e2-422d-bfbb-f0a6198e7856' }
+	]);
+
+	t.deepEqual(reasons, {
+		'f56663e5-0187-47e9-9f35-463a2411e60b':
+			'increased score by 2.00 to 3.00',
+		'3caf33e7-e3e2-422d-bfbb-f0a6198e7856':
+			'increased score by 2.00 to 3.00'
+	});
+
+	t.end();
+});
+
+
+test('normalize 5', function (t) {
+	var score = scorers.normalize;
+	var reasons = {};
+
+	var scores = score(LOG, [], 2, reasons);
+	t.deepEqual(scores, []);
+	t.deepEqual(reasons, {});
 
 	t.end();
 });
