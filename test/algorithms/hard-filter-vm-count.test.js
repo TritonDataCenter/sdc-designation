@@ -9,7 +9,7 @@
  */
 
 var test = require('tape');
-var genUuid = require('node-uuid');
+var genUuid = require('libuuid').create;
 var filter = require('../../lib/algorithms/hard-filter-vm-count.js');
 
 
