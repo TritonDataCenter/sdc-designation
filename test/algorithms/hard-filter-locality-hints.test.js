@@ -8,7 +8,7 @@
  * Copyright 2016 Joyent, Inc.
  */
 
-var genUuid = require('node-uuid');
+var genUuid = require('libuuid').create;
 var test = require('tape');
 
 var filter = require('../../lib/algorithms/hard-filter-locality-hints.js');

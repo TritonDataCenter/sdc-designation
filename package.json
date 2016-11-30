@@ -1,15 +1,15 @@
 {
   "name": "dapi",
   "description": "SmartDataCenter Designation API",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
     "assert-plus": "~1.0.0",
-    "bunyan": "~1.3.3",
-    "node-uuid": "~1.4.0",
+    "bunyan": "1.8.5",
+    "libuuid": "0.2.1",
     "joyent-schemas": "git://github.com/joyent/schemas.git#c661af34f9fa839aada1ff5c215067d9c86cbe89",
-    "jsprim": "~0.6.1"
+    "jsprim": "1.3.1"
   },
   "devDependencies": {
     "tape": "4.0.0"
