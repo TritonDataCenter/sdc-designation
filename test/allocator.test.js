@@ -878,7 +878,7 @@ test('create expression', function (t) {
 });
 
 
-test('server capacity', function (t) {
+test('server capacity with default overprovisioning', function (t) {
 	var expectedServers = {
 		'00000000-0000-0000-0000-00259094373c': {
 			cpu: 6100,
@@ -899,6 +899,47 @@ test('server capacity', function (t) {
 	};
 
 	var allocator = new Allocator(OPTS, common.ALGO_DESC, common.DEFAULTS);
+	allocator.serverCapacity(common.getExampleServers(),
+			function (err, servers, reasons) {
+		t.ifError(err);
+		t.deepEqual(servers, expectedServers);
+		t.deepEqual(reasons, expectedReasons);
+		t.end();
+	});
+});
+
+
+test('server capacity with altered overprovisioning', function (t) {
+	var expectedServers = {
+		'00000000-0000-0000-0000-00259094373c': {
+			cpu: 6199,
+			ram: 106941,
+			disk: 3079003
+		},
+		'00000000-0000-0000-0000-0025909437d4': {
+			cpu: 5816,
+			ram: 109459,
+			disk: 1583360
+		}
+	};
+
+	var expectedReasons = {
+		asdsa: 'Server has status: undefined',
+		skip: 'getServerVms not set; assuming server.vms is ' +
+			'already populated'
+	};
+
+	var defaults = {
+		overprovision_ratio_cpu: 6,
+		overprovision_ratio_ram: 3,
+		overprovision_ratio_disk: 2
+	};
+
+	Object.keys(common.DEFAULTS).forEach(function (key) {
+		defaults[key] = defaults[key] || common.DEFAULTS[key];
+	});
+
+	var allocator = new Allocator(OPTS, common.ALGO_DESC, defaults);
 	allocator.serverCapacity(common.getExampleServers(),
 			function (err, servers, reasons) {
 		t.ifError(err);
