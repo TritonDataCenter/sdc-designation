@@ -19,7 +19,7 @@ var GiB = 1024 * MiB;
 var checkFilter = common.createPluginChecker(filter);
 
 
-test('filterMinDisk()', function (t) {
+test('filterMinDisk() without overprovision ratio', function (t) {
 	var servers = [ {
 		uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
 		unreserved_disk: 2560,
@@ -49,7 +49,7 @@ test('filterMinDisk()', function (t) {
 	};
 
 	var opts = {
-		vm:  { quota: 5120 },
+		vm:  { quota: 5 },
 		img: {},
 		pkg: {},
 		defaults: {}
@@ -82,7 +82,7 @@ test('filterMinDisk() without pkg', function (t) {
 	var expectReasons = {};
 
 	var opts = {
-		vm:  { quota: 5120 },
+		vm:  { quota: 5 },
 		img: {},
 		defaults: {}
 	};
@@ -116,7 +116,7 @@ test('filterMinDisk() with override', function (t) {
 	};
 
 	var opts = {
-		vm:  { quota: 5120 },
+		vm:  { quota: 5 },
 		img: {},
 		pkg: {},
 		defaults: { filter_min_resources: false }
@@ -156,7 +156,7 @@ test('filterMinDisk() with overprovision ratios - kvm', function (t) {
 	};
 
 	var opts = {
-		vm:  { quota: 10 }, // in GiB
+		vm:  { quota: 29 }, // in GiB
 		img: {
 			type: 'zvol',
 			image_size: 10 * 1024, // in MiB
@@ -165,7 +165,7 @@ test('filterMinDisk() with overprovision ratios - kvm', function (t) {
 			} ]
 		},
 		pkg: {
-			quota: 29 * 1024, // in MiB
+			quota: 50 * 1024, // MiB, but ignored due to vm quota
 			overprovision_disk: 1.5
 		},
 		defaults: {}
@@ -210,7 +210,52 @@ test('filterMinDisk() with overprovision ratios - zone', function (t) {
 			} ]
 		},
 		pkg: {
-			quota: 29 * 1024, // in MiB
+			quota: 50 * 1024, // MiB, but ignored due to vm quota
+			overprovision_disk: 1.5
+		},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+
+test('filterMinDisk() without vm quota arg', function (t) {
+	var servers = [ {
+		uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
+		unreserved_disk: 25600,
+		overprovision_ratios: { disk: 1.0 }
+	}, {
+		uuid: '9324d37d-e160-4a9d-a6d8-39a519634398',
+		unreserved_disk: 50000,
+		overprovision_ratios: { disk: 1.0 }
+	}, {
+		uuid: 'f07f6c2c-8f9c-4b77-89fe-4b777dff5826',
+		unreserved_disk: 51200,
+		overprovision_ratios: { disk: 1.0 }
+	}, {
+		uuid: '69003dc2-1122-4851-8a2a-fccb609e4e84',
+		unreserved_disk: 76800,
+		overprovision_ratios: { disk: 1.0 }
+	} ];
+
+	var expectServers = servers.slice(1, 4);
+	var expectReasons = {
+		'79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf':
+			'VM\'s calculated 30188 MiB disk is more than ' +
+			'server\'s spare 25600 MiB'
+	};
+
+	var opts = {
+		vm: {},
+		img: {
+			image_size: 10 * 1024, // in MiB
+			files: [ {
+				size: 150 * MiB // in bytes
+			} ]
+		},
+		pkg: {
+			quota: 29 * 1024, // MiB
 			overprovision_disk: 1.5
 		},
 		defaults: {}
