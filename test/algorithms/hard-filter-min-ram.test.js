@@ -186,6 +186,41 @@ test('filterMinRam() with overprovision ratios', function (t) {
 });
 
 
+test('filterMinRam() with pkg ram instead of vm', function (t) {
+	var servers = [ {
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		unreserved_ram: 256, overprovision_ratios: {}
+	}, {
+		uuid: '4fe12d99-f013-4983-9e39-6e2f35b37aec',
+		unreserved_ram: 511, overprovision_ratios: {}
+	}, {
+		uuid: '7a8c759c-2a82-4d9b-bed4-7049b71197cb',
+		unreserved_ram: 512,
+		overprovision_ratios: { ram: 1.0 }
+	}, {
+		uuid: 'f60f7e40-2e92-47b8-8686-1b46a85dd35f',
+		unreserved_ram: 768,
+		overprovision_ratios: { ram: 1.0 }
+	} ];
+
+	var expectServers = servers.slice(2, 4);
+	var expectReasons = {
+		'4fe12d99-f013-4983-9e39-6e2f35b37aec':
+		    'VM\'s calculated 512 RAM is less than server\'s spare 511',
+		'f667e0fa-33db-48da-a5d0-9fe837ce93fc':
+		    'VM\'s calculated 512 RAM is less than server\'s spare 256'
+	};
+
+	var opts = {
+		vm: {},
+		pkg: { max_physical_memory: 512, overprovision_ram: 1.0 },
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+
 test('filterMinRam() with no servers', function (t) {
 	var servers = [];
 
