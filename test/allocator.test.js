@@ -914,12 +914,12 @@ test('server capacity with altered overprovisioning', function (t) {
 		'00000000-0000-0000-0000-00259094373c': {
 			cpu: 6199,
 			ram: 106941,
-			disk: 3079003
+			disk: 3047003
 		},
 		'00000000-0000-0000-0000-0025909437d4': {
 			cpu: 5816,
 			ram: 109459,
-			disk: 1583360
+			disk: 777728
 		}
 	};
 
