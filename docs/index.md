@@ -270,16 +270,22 @@ Each overprovision ratio is optional. If a ratio is provided, DAPI will attempt
 to ensure that the ratio (or better) is kept. If a ratio is not provided, DAPI
 will assume that overprovisioning on that resource does not matter, and will
 completely disregard maintaining any ratio. This feature only works if the
-allocation chain has been set up properly -- overprovisioning is disabled by
-default.
+allocation chain has been set up properly -- by default all overprovisioning
+attributes get overridden with defaults.
 
 E.g. if you want to guarantee that CPU is not overprovisioned, provide an
 overprovision_cpu of 1.0. If you'd like to overprovision CPU by two, use
 overprovision_cpu of 2.0. If you really don't care whether it's overprovisioned
 or not, do not provide an overprovision_cpu.
 
+Memory works similarly. Disk is much more complicated, where overprovisioning is
+only applied to the free portion of the quotas of regular (not KVM) zones.
+
 By default, if a package does not provide any overprovision ratios at all,
-DAPI will default to using a single ratio: an overprivison_memory of 1.0.
+DAPI will default to using a single ratio: an overprivison_memory of 1.0. If the
+override-overprovisioning plugin is enabled, the default will be an
+overprovision_memory and overprovision_storage of 1.0, and an overprovision_cpu
+of 4.0.
 
 An example of a valid package payload:
 
