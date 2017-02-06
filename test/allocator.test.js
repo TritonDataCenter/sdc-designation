@@ -799,6 +799,7 @@ test('load available algorithms', function (t) {
 		'hard-filter-locality-hints',
 		'hard-filter-min-cpu',
 		'hard-filter-min-disk',
+		'hard-filter-min-free-disk',
 		'hard-filter-min-ram',
 		'hard-filter-overprovision-ratios',
 		'hard-filter-owners-servers',

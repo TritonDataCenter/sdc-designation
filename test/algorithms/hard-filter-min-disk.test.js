@@ -112,7 +112,7 @@ test('filterMinDisk() with override', function (t) {
 
 	var expectServers = servers;
 	var expectReasons = {
-		skip: 'Do not filter out based on minimum free disk'
+		skip: 'Do not filter out based on unreserved disk'
 	};
 
 	var opts = {

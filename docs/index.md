@@ -428,9 +428,10 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | hard-filter-invalid-servers     | Removes any server objects which don't pass validation      |
 | hard-filter-large-servers       | Removes the top 15% servers with the most available RAM     |
 | hard-filter-locality-hints      | Tries to place VM near or far from other given VMs, with strict placement |
-| hard-filter-min-cpu             | Removes CNs with insufficient CPU                           |
-| hard-filter-min-disk            | Removes CNs with insufficient disk                          |
-| hard-filter-min-ram             | Removes CNs with insufficient RAM                           |
+| hard-filter-min-cpu             | Removes CNs with insufficient unreserved CPU                |
+| hard-filter-min-disk            | Removes CNs with insufficient unreserved disk               |
+| hard-filter-min-ram             | Removes CNs with insufficient unreserved RAM                |
+| hard-filter-min-free-disk       | Removes CNs with insufficient free disk                     |
 | hard-filter-overprovision-ratios | Removes CNs with different overprovision ratios than the request    |
 | hard-filter-platform-versions   | Removes servers that don't pass image manifest platform requirements |
 | hard-filter-reserved            | Removes reserved CNs                                        |
