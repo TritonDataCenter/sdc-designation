@@ -227,10 +227,6 @@ test('allocate 1', function (t) {
 			step: 'Servers with more VMs than limit',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
-			/* JSSTYLED */
-			step: 'Servers that had consecutive failed provisions recently',
-			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
-		}, {
 			step: 'Calculate unreserved resources on each server',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
@@ -419,10 +415,6 @@ test('allocate 2', function (t) {
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
 		}, {
 			step: 'Servers with more VMs than limit',
-			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
-		}, {
-			/* JSSTYLED */
-			step: 'Servers that had consecutive failed provisions recently',
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
 		}, {
 			step: 'Calculate unreserved resources on each server',

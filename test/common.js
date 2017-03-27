@@ -31,7 +31,6 @@ var ALGO_DESC = [
 		'calculate-ticketed-vms',
 		'hard-filter-capness',
 		'hard-filter-vm-count',
-		'hard-filter-sick-servers',
 		'calculate-server-unreserved',
 		'hard-filter-min-ram',
 		'hard-filter-min-cpu',

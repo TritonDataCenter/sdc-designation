@@ -808,7 +808,6 @@ test('load available algorithms', function (t) {
 		'hard-filter-reservoir',
 		'hard-filter-running',
 		'hard-filter-setup',
-		'hard-filter-sick-servers',
 		'hard-filter-traits',
 		'hard-filter-vlans',
 		'hard-filter-vm-count',
