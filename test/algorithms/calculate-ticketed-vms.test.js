@@ -211,7 +211,6 @@ test('calculate ticketed VMs', function (t) {
 
 		var vmUuid = '8e54da2f-996f-491c-92ff-1b1d6c48f314';
 		var server = servers[1];
-		delete server.vms[vmUuid].last_modified;
 		t.deepEqual(server, {
 			uuid: '67e48c2e-45bb-400a-bc7d-3143894aacfa',
 			disk_kvm_zvol_volsize_bytes: 0,
@@ -232,7 +231,6 @@ test('calculate ticketed VMs', function (t) {
 
 		vmUuid = 'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a';
 		server = servers[2];
-		delete server.vms[vmUuid].last_modified;
 		t.deepEqual(server, {
 			uuid: '0c104a5b-1844-4205-821b-f0c989ccf6e7',
 			disk_kvm_zvol_volsize_bytes: 25 * GiB,

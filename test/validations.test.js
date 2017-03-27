@@ -89,8 +89,7 @@ var SERVER = {
 			zone_state: 'running',
 			state: 'running',
 			brand: 'joyent',
-			cpu_cap: 800,
-			last_modified: '2014-05-15T17:33:29.000Z'
+			cpu_cap: 800
 		}
 	},
 	transitional_status: '',

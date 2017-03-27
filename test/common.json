@@ -175,8 +175,7 @@
 					"zone_state": "running",
 					"state": "running",
 					"brand": "joyent",
-					"cpu_cap": 100,
-					"last_modified": "2013-06-21T17:38:51.000Z"
+					"cpu_cap": 100
 				},
 				"c3ae2426-9ed2-4322-a780-9ef032359d9a": {
 					"uuid": "c3ae2426-9ed2-4322-a780-9ef032359d9a",
@@ -186,8 +185,7 @@
 					"zone_state": "running",
 					"state": "running",
 					"brand": "joyent",
-					"cpu_cap": 300,
-					"last_modified": "2013-06-06T22:22:31.000Z"
+					"cpu_cap": 300
 				},
 				"9dc466a4-b918-4a6f-9226-1e49d0017a79": {
 					"uuid": "9dc466a4-b918-4a6f-9226-1e49d0017a79",
@@ -197,8 +195,7 @@
 					"zone_state": "running",
 					"state": "running",
 					"brand": "joyent",
-					"cpu_cap": 100,
-					"last_modified": "2013-07-09T20:22:25.000Z"
+					"cpu_cap": 100
 				},
 				"01d16d02-9713-4bfa-a572-b68ef9eed942": {
 					"uuid": "01d16d02-9713-4bfa-a572-b68ef9eed942",
@@ -208,8 +205,7 @@
 					"zone_state": "running",
 					"state": "running",
 					"brand": "kvm",
-					"cpu_cap": 300,
-					"last_modified": "2013-07-30T20:30:52.000Z"
+					"cpu_cap": 300
 				},
 				"6295c165-e718-47be-b4d1-af78ee54bbb9": {
 					"uuid": "6295c165-e718-47be-b4d1-af78ee54bbb9",
@@ -219,8 +215,7 @@
 					"zone_state": "running",
 					"state": "running",
 					"brand": "joyent-minimal",
-					"cpu_cap": 400,
-					"last_modified": "2013-08-20T00:16:45.000Z"
+					"cpu_cap": 400
 				},
 				"edaaee38-6e2a-4f0c-b7af-655959b60c36": {
 					"uuid": "edaaee38-6e2a-4f0c-b7af-655959b60c36",
@@ -230,8 +225,7 @@
 					"zone_state": "installed",
 					"state": "failed",
 					"brand": "joyent",
-					"cpu_cap": 100,
-					"last_modified": "2013-07-08T12:07:31.000Z"
+					"cpu_cap": 100
 				}
 			}
 		},
@@ -404,8 +398,6 @@
 					"owner_uuid": "9c294396-cddf-44b7-924b-baaddbec4be6",
 					"max_physical_memory": 512,
 					"cpu_cap": 350,
-					"last_modified": "2013-05-22T21:25:05.000Z",
-					"create_timestamp": "2013-05-22T21:25:05.000Z",
 					"quota": 10
 				},
 				"6f0a4b97-3642-48ba-bae1-b1215f4ad972": {
@@ -416,8 +408,6 @@
 					"owner_uuid": "d97bb63b-b7cb-4711-acc3-d9437619e71c",
 					"max_physical_memory": 1024,
 					"cpu_cap": 350,
-					"last_modified": "2013-05-22T21:25:05.000Z",
-					"create_timestamp": "2013-05-22T21:25:05.000Z",
 					"quota": 15
 				},
 				"834bd053-ddb4-4d68-8bcd-5db976501cb6": {
@@ -428,8 +418,6 @@
 					"owner_uuid": "390c229a-8c77-445f-b227-88e41c2bb3cf",
 					"max_physical_memory": 1024,
 					"cpu_cap": 350,
-					"last_modified": "2013-06-21T12:46:34.000Z",
-					"create_timestamp": "2013-06-21T12:46:34.000Z",
 					"quota": 15
 				},
 				"29d4f6b3-ccf1-481f-a0fa-5f04b0d4b853": {
@@ -440,8 +428,6 @@
 					"owner_uuid": "390c229a-8c77-445f-b227-88e41c2bb3cf",
 					"max_physical_memory": 1024,
 					"cpu_cap": 350,
-					"last_modified": "2013-05-22T21:25:05.000Z",
-					"create_timestamp": "2013-05-22T21:25:05.000Z",
 					"quota": 15
 				},
 				"1ac5a633-c0ab-4bd3-9642-92f84470406f": {
@@ -452,8 +438,6 @@
 					"owner_uuid": "390c229a-8c77-445f-b227-88e41c2bb3cf",
 					"max_physical_memory": 512,
 					"cpu_cap": 350,
-					"last_modified": "2013-05-22T21:25:06.000Z",
-					"create_timestamp": "2013-05-22T21:25:06.000Z",
 					"quota": 10
 				},
 				"ae9f609c-25b6-47fb-b429-e7e341a7875f": {
@@ -464,8 +448,6 @@
 					"owner_uuid": "390c229a-8c77-445f-b227-88e41c2bb3cf",
 					"max_physical_memory": 512,
 					"cpu_cap": 350,
-					"last_modified": "2013-05-22T21:25:06.000Z",
-					"create_timestamp": "2013-05-22T21:25:06.000Z",
 					"quota": 10
 				},
 				"a90b17b8-527f-4b57-bef9-c429c2d90049": {
@@ -476,8 +458,6 @@
 					"owner_uuid": "5c3a2297-e01b-4faf-9495-8d8c3314e08c",
 					"max_physical_memory": 64,
 					"cpu_cap": 350,
-					"last_modified": "2013-05-14T18:23:07.000Z",
-					"create_timestamp": "2013-05-14T18:23:07.000Z",
 					"quota": 1024
 				},
 				"6b525cdd-8d0d-454a-9b0a-39cd654300cd": {
@@ -488,8 +468,6 @@
 					"cpu_cap": 700,
 					"owner_uuid": "f723a444-e17e-4c6f-a1f9-233ea4ccb48b",
 					"max_physical_memory": 1024,
-					"last_modified": "2013-05-14T18:23:08.000Z",
-					"create_timestamp": "2013-05-14T18:23:08.000Z",
 					"quota": 1024
 				},
 				"02dd4dd4-6393-457b-a859-359da549549c": {
@@ -500,8 +478,6 @@
 					"owner_uuid": "13ed069e-d25e-47c9-a91f-0c202e25e945",
 					"max_physical_memory": 64,
 					"cpu_cap": 350,
-					"last_modified": "2013-05-14T18:23:08.000Z",
-					"create_timestamp": "2013-05-14T18:23:08.000Z",
 					"quota": 1024
 				}
 			}
