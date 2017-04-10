@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2015, Joyent, Inc.
+ * Copyright (c) 2017, Joyent, Inc.
  */
 
 var test = require('tape');
@@ -180,13 +180,13 @@ test('allocate 1', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
-			step: 'Servers supporting required VLANs',
+			step: 'Servers supporting required NIC Tags',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
 			],
 			reasons: {
-				skip: 'No nic_tags to filter on'
+				skip: 'No NIC Tag requirements to filter on'
 			}
 		}, {
 			/* JSSTYLED */
@@ -367,13 +367,13 @@ test('allocate 2', function (t) {
 				'00000000-0000-0000-0000-0025909437d4'
 			]
 		}, {
-			step: 'Servers supporting required VLANs',
+			step: 'Servers supporting required NIC Tags',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
 			],
 			reasons: {
-				skip: 'No nic_tags to filter on'
+				skip: 'No NIC Tag requirements to filter on'
 			}
 		}, {
 			/* JSSTYLED */

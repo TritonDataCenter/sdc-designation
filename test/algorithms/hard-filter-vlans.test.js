@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2015, Joyent, Inc.
+ * Copyright (c) 2017, Joyent, Inc.
  */
 
 var assert = require('assert-plus');
@@ -123,11 +123,12 @@ var SERVERS = [
 ];
 
 
-function
-runTest(t, vlans, expectedUuids, expectedReasons)
-{
-	var opts = common.addCommonOpts({ vm: { nic_tags: vlans }});
+function missing(tags) {
+	return ('Server must have one of the NIC Tags: ' + tags.join(', '));
+}
 
+
+function runTestHelper(t, opts, expectedUuids, expectedReasons) {
 	filter.run(SERVERS, opts, function (err, servers, reasons) {
 		assert.arrayOfObject(servers);
 		assert.object(reasons);
@@ -144,7 +145,21 @@ runTest(t, vlans, expectedUuids, expectedReasons)
 }
 
 
-test('filterVlans() on single vlan 1', function (t) {
+function runTest(t, nic_tags, expectedUuids, expectedReasons) {
+	var opts = common.addCommonOpts({ vm: { nic_tags: nic_tags }});
+
+	runTestHelper(t, opts, expectedUuids, expectedReasons);
+}
+
+
+function runMixedTest(t, reqs, expectedUuids, expectedReasons) {
+	var opts = common.addCommonOpts({ vm: { nic_tag_requirements: reqs }});
+
+	runTestHelper(t, opts, expectedUuids, expectedReasons);
+}
+
+
+test('filterTags() on single vlan 1', function (t) {
 	var expectUuids = [
 		'00009386-8c67-b674-587f-101f1db2eda7',
 		'222266d7-465d-4c22-b26e-a6707a22390e'
@@ -153,20 +168,20 @@ test('filterVlans() on single vlan 1', function (t) {
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
 			'NIC e1000g0 for tag "external" is down',
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "external"',
+			missing([ 'external' ]),
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
-			'Server missing vlan "external"',
+			missing([ 'external' ]),
 		'5555fa4e-144f-43e1-809f-70404573b076':
-			'Server missing vlan "external"',
+			missing([ 'external' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "external"'
+			missing([ 'external' ])
 	};
 
 	runTest(t, ['external'], expectUuids, expectReasons);
 });
 
 
-test('filterVlans() on single vlan 2', function (t) {
+test('filterTags() on single vlan 2', function (t) {
 	var expectUuids = [
 		'00009386-8c67-b674-587f-101f1db2eda7',
 		'1111e5f9-75e6-43e8-a016-a85835b377e1',
@@ -174,41 +189,41 @@ test('filterVlans() on single vlan 2', function (t) {
 	];
 	var expectReasons = {
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "admin"',
+			missing([ 'admin' ]),
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
-			'Server missing vlan "admin"',
+			missing([ 'admin' ]),
 		'5555fa4e-144f-43e1-809f-70404573b076':
-			'Server missing vlan "admin"',
+			missing([ 'admin' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "admin"'
+			missing([ 'admin' ])
 	};
 
 	runTest(t, ['admin'], expectUuids, expectReasons);
 });
 
 
-test('filterVlans() on single vlan 3', function (t) {
+test('filterTags() on single vlan 3', function (t) {
 	var expectUuids = [ '222266d7-465d-4c22-b26e-a6707a22390e' ];
 	var expectReasons = {
 		'00009386-8c67-b674-587f-101f1db2eda7':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'5555fa4e-144f-43e1-809f-70404573b076':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "customer12"'
+			missing([ 'customer12' ])
 	};
 
 	runTest(t, ['customer12'], expectUuids, expectReasons);
 });
 
 
-test('filterVlans() on single vlan 4', function (t) {
+test('filterTags() on single vlan 4', function (t) {
 	var expectUuids = [
 		'00009386-8c67-b674-587f-101f1db2eda7',
 		'1111e5f9-75e6-43e8-a016-a85835b377e1',
@@ -224,30 +239,30 @@ test('filterVlans() on single vlan 4', function (t) {
 });
 
 
-test('filterVlans() on single vlan 5', function (t) {
+test('filterTags() on single vlan 5', function (t) {
 	var expectUuids = [];
 	var expectReasons = {
 		'00009386-8c67-b674-587f-101f1db2eda7':
-			'Server missing vlan "doesnotexist"',
+			missing([ 'doesnotexist' ]),
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
-			'Server missing vlan "doesnotexist"',
+			missing([ 'doesnotexist' ]),
 		'222266d7-465d-4c22-b26e-a6707a22390e':
-			'Server missing vlan "doesnotexist"',
+			missing([ 'doesnotexist' ]),
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "doesnotexist"',
+			missing([ 'doesnotexist' ]),
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
-			'Server missing vlan "doesnotexist"',
+			missing([ 'doesnotexist' ]),
 		'5555fa4e-144f-43e1-809f-70404573b076':
-			'Server missing vlan "doesnotexist"',
+			missing([ 'doesnotexist' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "doesnotexist"'
+			missing([ 'doesnotexist' ])
 	};
 
 	runTest(t, ['doesnotexist'], expectUuids, expectReasons);
 });
 
 
-test('filterVlans() on multiple vlans 1', function (t) {
+test('filterTags() on multiple vlans 1', function (t) {
 	var expectUuids = [
 		'00009386-8c67-b674-587f-101f1db2eda7',
 		'222266d7-465d-4c22-b26e-a6707a22390e'
@@ -256,20 +271,20 @@ test('filterVlans() on multiple vlans 1', function (t) {
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
 			'NIC e1000g0 for tag "external" is down',
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "external"',
+			missing([ 'external' ]),
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
-			'Server missing vlan "external"',
+			missing([ 'external' ]),
 		'5555fa4e-144f-43e1-809f-70404573b076':
-			'Server missing vlan "external"',
+			missing([ 'external' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "external"'
+			missing([ 'external' ])
 	};
 
 	runTest(t, ['external', 'admin'], expectUuids, expectReasons);
 });
 
 
-test('filterVlans() on multiple vlans 2', function (t) {
+test('filterTags() on multiple vlans 2', function (t) {
 	var expectUuids = [
 		'00009386-8c67-b674-587f-101f1db2eda7',
 		'222266d7-465d-4c22-b26e-a6707a22390e'
@@ -278,34 +293,34 @@ test('filterVlans() on multiple vlans 2', function (t) {
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
 			'NIC e1000g0 for tag "external" is down',
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "admin"',
+			missing([ 'admin' ]),
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
-			'Server missing vlan "admin"',
+			missing([ 'admin' ]),
 		'5555fa4e-144f-43e1-809f-70404573b076':
-			'Server missing vlan "admin"',
+			missing([ 'admin' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "admin"'
+			missing([ 'admin' ])
 	};
 
 	runTest(t, ['admin', 'external'], expectUuids, expectReasons);
 });
 
 
-test('filterVlans() on multiple vlans 3', function (t) {
+test('filterTags() on multiple vlans 3', function (t) {
 	var expectUuids = [ '222266d7-465d-4c22-b26e-a6707a22390e' ];
 	var expectReasons = {
 		'00009386-8c67-b674-587f-101f1db2eda7':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'5555fa4e-144f-43e1-809f-70404573b076':
-			'Server missing vlan "customer12"',
+			missing([ 'customer12' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "customer12"'
+			missing([ 'customer12' ])
 	};
 
 	runTest(t, ['customer12', 'admin', 'external'], expectUuids,
@@ -314,30 +329,30 @@ test('filterVlans() on multiple vlans 3', function (t) {
 
 
 
-test('filterVlans() on multiple vlans 4', function (t) {
+test('filterTags() on multiple vlans 4', function (t) {
 	var expectUuids = [];
 	var expectReasons = {
 		'00009386-8c67-b674-587f-101f1db2eda7':
-			'Server missing vlan "doesnotexist"',
+			missing([ 'doesnotexist' ]),
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
-			'Server missing vlan "doesnotexist"',
+			missing([ 'doesnotexist' ]),
 		'222266d7-465d-4c22-b26e-a6707a22390e':
-			'Server missing vlan "doesnotexist"',
+			missing([ 'doesnotexist' ]),
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "admin"',
+			missing([ 'admin' ]),
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
-			'Server missing vlan "admin"',
+			missing([ 'admin' ]),
 		'5555fa4e-144f-43e1-809f-70404573b076':
-			'Server missing vlan "admin"',
+			missing([ 'admin' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "admin"'
+			missing([ 'admin' ])
 	};
 
 	runTest(t, ['admin', 'doesnotexist'], expectUuids, expectReasons);
 });
 
 
-test('filterVlans() with no servers', function (t) {
+test('filterTags() with no servers', function (t) {
 	var emptyServers = [];
 	var opts = common.addCommonOpts({ vm: { nic_tags: ['admin'] }});
 
@@ -352,44 +367,119 @@ test('filterVlans() with no servers', function (t) {
 });
 
 
-test('filterVlans() on single overlay tag', function (t) {
+test('filterTags() on single overlay tag', function (t) {
 	var expectUuids = [ '3333059f-8ce2-4573-b56a-4ed2db802ea8',
 		'5555fa4e-144f-43e1-809f-70404573b076' ];
 	var expectReasons = {
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'NIC e1000g0 for tag "sdc_overlay" is down',
 		'00009386-8c67-b674-587f-101f1db2eda7':
-			'Server missing vlan "sdc_overlay"',
+			missing([ 'sdc_overlay' ]),
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
-			'Server missing vlan "sdc_overlay"',
+			missing([ 'sdc_overlay' ]),
 		'222266d7-465d-4c22-b26e-a6707a22390e':
-			'Server missing vlan "sdc_overlay"',
+			missing([ 'sdc_overlay' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "sdc_overlay"'
+			missing([ 'sdc_overlay' ])
 	};
 
 	runTest(t, ['sdc_overlay'], expectUuids, expectReasons);
 });
 
 
-test('filterVlans() on overlay tag and vlan', function (t) {
+test('filterTags() on overlay tag and vlan', function (t) {
 	var expectUuids = [ '5555fa4e-144f-43e1-809f-70404573b076' ];
 	var expectReasons = {
 		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
 			'NIC e1000g0 for tag "sdc_overlay" is down',
 		'00009386-8c67-b674-587f-101f1db2eda7':
-			'Server missing vlan "sdc_overlay"',
+			missing([ 'sdc_overlay' ]),
 		'1111e5f9-75e6-43e8-a016-a85835b377e1':
-			'Server missing vlan "sdc_overlay"',
+			missing([ 'sdc_overlay' ]),
 		'222266d7-465d-4c22-b26e-a6707a22390e':
-			'Server missing vlan "sdc_overlay"',
+			missing([ 'sdc_overlay' ]),
 		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
-			'Server missing vlan "customer13"',
+			missing([ 'customer13' ]),
 		'666660a9-4174-4e97-91d3-4becd075d280':
-			'Server missing vlan "sdc_overlay"'
+			missing([ 'sdc_overlay' ])
 	};
 
 	runTest(t, ['sdc_overlay', 'customer13'], expectUuids, expectReasons);
+});
+
+
+test('filterTags() on pool with mixed tags', function (t) {
+	var expectUuids = [ '222266d7-465d-4c22-b26e-a6707a22390e' ];
+	var expectReasons = {
+		'00009386-8c67-b674-587f-101f1db2eda7':
+			missing([ 'customer12', 'nonexistent1' ]),
+		'1111e5f9-75e6-43e8-a016-a85835b377e1':
+			'NIC e1000g0 for tag "external" is down',
+		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
+			missing([ 'external' ]),
+		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
+			missing([ 'external' ]),
+		'5555fa4e-144f-43e1-809f-70404573b076':
+			missing([ 'external' ]),
+		'666660a9-4174-4e97-91d3-4becd075d280':
+			missing([ 'external' ])
+	};
+
+	runMixedTest(t, [
+		[ 'external' ],
+		[ 'customer12', 'nonexistent1' ],
+		[ 'customer13', 'external', 'admin', 'nonexistent2' ]
+	], expectUuids, expectReasons);
+});
+
+
+test('filterTags() on pool that has all NIC Tags', function (t) {
+	var allTags = [
+		'customer12', 'customer13', 'external',
+		'admin', 'sdc_overlay'
+	];
+	var expectUuids = [
+		'00009386-8c67-b674-587f-101f1db2eda7',
+		'1111e5f9-75e6-43e8-a016-a85835b377e1',
+		'222266d7-465d-4c22-b26e-a6707a22390e',
+		'3333059f-8ce2-4573-b56a-4ed2db802ea8',
+		'5555fa4e-144f-43e1-809f-70404573b076'
+	];
+	var expectReasons = {
+		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
+			'NIC e1000g0 for tag "sdc_overlay" is down',
+		'666660a9-4174-4e97-91d3-4becd075d280':
+			missing(allTags)
+	};
+
+	runMixedTest(t, [ allTags ], expectUuids, expectReasons);
+});
+
+
+test('filterTags() with too restrictive requirements', function (t) {
+	var expectUuids = [ ];
+	var expectReasons = {
+		'00009386-8c67-b674-587f-101f1db2eda7':
+			missing([ 'customer12', 'nonexistent1' ]),
+		'1111e5f9-75e6-43e8-a016-a85835b377e1':
+			'NIC e1000g0 for tag "external" is down',
+		'222266d7-465d-4c22-b26e-a6707a22390e':
+			missing([ 'customer13', 'nonexistent2' ]),
+		'3333059f-8ce2-4573-b56a-4ed2db802ea8':
+			missing([ 'external' ]),
+		'44448d4e-c4a6-484c-ae49-0ff5cc2e293c':
+			missing([ 'external' ]),
+		'5555fa4e-144f-43e1-809f-70404573b076':
+			missing([ 'external' ]),
+		'666660a9-4174-4e97-91d3-4becd075d280':
+			missing([ 'external' ])
+	};
+
+	runMixedTest(t, [
+		[ 'external' ],
+		[ 'customer12', 'nonexistent1' ],
+		[ 'customer13', 'nonexistent2' ]
+	], expectUuids, expectReasons);
 });
 
 
