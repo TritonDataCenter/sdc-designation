@@ -310,6 +310,8 @@ Some default values can be altered upon allocator initialisation.
 | ------------------------ | -------- | ------------| --------------- |
 | disable_override_overprovisioning | Boolean | false | Whether the override-overprovisioning plugin should be disabled. |
 | filter_docker_min_platform        | String  | -     | Minimum platform version allowed for Docker containers.         |
+| filter_docker_nfs_volumes_automount_min_platform        | String  | -     | Minimum platform version allowed for Docker containers that automatically mount NFS volumes. |
+| filter_non_docker_nfs_volumes_automount_min_platform        | String  | -     | Minimum platform version allowed for non-Docker (infrastructure) containers that automatically mount NFS volumes. |
 | filter_headnode          | Boolean  | true    | Whether to remove the headnode from consideration for a new VM.       |
 | filter_min_resources     | Boolean  | true    | Whether to filter out CNs which don't have enough space for a new VM. |
 | filter_large_servers     | Boolean  | true    | Whether to remove large empty servers as much as possible.            |
@@ -424,6 +426,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | ------------------------------- | ----------------------------------------------------------- |
 | calculate-recent-vms            | Adds recent VMs to pipeline if they haven't appeared yet in CNAPI    |
 | calculate-server-unreserved     | Does some free-resource calculations that are used by other plugins  |
+| hard-filter-feature-min-platform| Removes servers that don't pass platform requirements for specific optional features used by the VM being allocated |
 | hard-filter-headnode            | Removes any headnodes                                       |
 | hard-filter-invalid-servers     | Removes any server objects which don't pass validation      |
 | hard-filter-large-servers       | Removes the top 15% servers with the most available RAM     |

@@ -59,18 +59,39 @@ function createPluginChecker(plugin) {
 
 			t.ifError(err);
 
-			t.deepEqual(servers, expectServers);
-			t.deepEqual(reasons, expectReasons);
+			t.deepEqual(servers, expectServers,
+				'valid servers should be equal to expected ' +
+					'valid servers');
+			t.deepEqual(reasons, expectReasons,
+				'rejection reasons should be equal to ' +
+					'expected reasons');
 
 			t.end();
 		});
 	};
 }
 
+function genServers(serverData)
+{
+	var servers = serverData.map(function (data) {
+		var r = {
+			uuid: data[0],
+			sysinfo: {
+				'SDC Version': data[1],
+				'Live Image': data[2]
+			}
+		};
+
+		return (r);
+	});
+
+	return (servers);
+}
 
 module.exports = {
 	OPTS: OPTS,
 	addCommonOpts: addCommonOpts,
 	createPluginChecker: createPluginChecker,
-	clone: clone
+	clone: clone,
+	genServers: genServers
 };
