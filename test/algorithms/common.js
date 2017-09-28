@@ -59,8 +59,12 @@ function createPluginChecker(plugin) {
 
 			t.ifError(err);
 
-			t.deepEqual(servers, expectServers);
-			t.deepEqual(reasons, expectReasons);
+			t.deepEqual(servers, expectServers,
+				'valid servers should be equal to expected ' +
+					'valid servers');
+			t.deepEqual(reasons, expectReasons,
+				'rejection reasons should be equal to ' +
+					'expected reasons');
 
 			t.end();
 		});
