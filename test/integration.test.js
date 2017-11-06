@@ -190,7 +190,7 @@ test('allocate 1', function (t) {
 			}
 		}, {
 			/* JSSTYLED */
-			step: 'Servers which meet image manifest platform requirements',
+			step: 'Servers which meet image manifest and package platform requirements',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
@@ -377,7 +377,7 @@ test('allocate 2', function (t) {
 			}
 		}, {
 			/* JSSTYLED */
-			step: 'Servers which meet image manifest platform requirements',
+			step: 'Servers which meet image manifest and package platform requirements',
 			remaining: [
 				'00000000-0000-0000-0000-00259094373c',
 				'00000000-0000-0000-0000-0025909437d4'
