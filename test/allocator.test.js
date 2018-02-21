@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 var assert = require('assert-plus');
@@ -795,6 +795,7 @@ test('load available algorithms', function (t) {
 		'hard-filter-capness',
 		'hard-filter-feature-min-platform',
 		'hard-filter-headnode',
+		'hard-filter-hvm',
 		'hard-filter-invalid-servers',
 		'hard-filter-large-servers',
 		'hard-filter-locality-hints',
