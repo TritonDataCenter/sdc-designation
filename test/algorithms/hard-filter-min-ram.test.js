@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 var test = require('tape');
@@ -84,6 +84,45 @@ test('filterMinRam() with KVM', function (t) {
 	var expectServers = servers.slice(2, 4);
 	var opts = {
 		vm:  { ram: 512, brand: 'kvm' },
+		pkg: { overprovision_ram: 2.0 },
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+
+test('filterMinRam() with bhyve', function (t) {
+	var servers = [ {
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		unreserved_ram: 256,
+		overprovision_ratios: { ram: 2.0 }
+	}, {
+		uuid: '4fe12d99-f013-4983-9e39-6e2f35b37aec',
+		unreserved_ram: 511,
+		overprovision_ratios: { ram: 2.0 }
+	}, {
+		uuid: '7a8c759c-2a82-4d9b-bed4-7049b71197cb',
+		unreserved_ram: 512,
+		overprovision_ratios: { ram: 2.0 }
+	}, {
+		uuid: 'f60f7e40-2e92-47b8-8686-1b46a85dd35f',
+		unreserved_ram: 768,
+		overprovision_ratios: { ram: 2.0 }
+	} ];
+
+	var expectReasons = {
+		'f667e0fa-33db-48da-a5d0-9fe837ce93fc':
+			'VM\'s calculated 512 RAM is less than server\'s ' +
+			'spare 256',
+		'4fe12d99-f013-4983-9e39-6e2f35b37aec':
+			'VM\'s calculated 512 RAM is less than server\'s ' +
+			'spare 511'
+	};
+
+	var expectServers = servers.slice(2, 4);
+	var opts = {
+		vm:  { ram: 512, brand: 'bhyve' },
 		pkg: { overprovision_ram: 2.0 },
 		defaults: {}
 	};

@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 var test = require('tape');
@@ -17,6 +17,7 @@ test('calculateServerUnreserved()', function (t) {
 	var GB = 1024 * 1024 * 1024;
 
 	var serversInfo = [
+		// [0]
 		{
 			memory_total_bytes: 2942881792,
 			disk_pool_size_bytes: 2048 * GB,
@@ -48,6 +49,7 @@ test('calculateServerUnreserved()', function (t) {
 				}
 			}
 		},
+		// [1]
 		{
 			memory_total_bytes: 9132881112,
 			disk_pool_size_bytes: 2048 * GB,
@@ -79,6 +81,7 @@ test('calculateServerUnreserved()', function (t) {
 				}
 			}
 		},
+		// [2]
 		{
 			overprovision_ratios: { ram: 1.5 },
 			memory_total_bytes: 9132881112,
@@ -111,6 +114,7 @@ test('calculateServerUnreserved()', function (t) {
 				}
 			}
 		},
+		// [3]
 		{
 			overprovision_ratios: { ram: 1.5, disk: 2.0, cpu: 2.0 },
 			memory_total_bytes: 9132881112,
@@ -152,6 +156,7 @@ test('calculateServerUnreserved()', function (t) {
 				}
 			}
 		},
+		// [4]
 		{
 			memory_total_bytes: 2942881792,
 			disk_pool_size_bytes: 2048 * GB,
@@ -177,6 +182,38 @@ test('calculateServerUnreserved()', function (t) {
 				},
 				'3066c163-31cb-4a2f-87c4-eec9b1aa2218': {
 					brand: 'kvm',
+					cpu_cap: 350,
+					quota: 5,
+					max_physical_memory: 128
+				}
+			}
+		},
+		// [5] same as [4], but bhyve instead of kvm
+		{
+			memory_total_bytes: 2942881792,
+			disk_pool_size_bytes: 2048 * GB,
+			disk_pool_alloc_bytes: 1024 * GB,
+			disk_system_used_bytes: 10 * GB,
+			disk_installed_images_used_bytes: 1 * GB,
+			disk_zone_quota_bytes: 0,
+			disk_zone_quota_used_bytes: 0,
+			disk_kvm_quota_bytes: 0,
+			disk_kvm_zvol_volsize_bytes: 0,
+			disk_cores_quota_used_bytes: 1 * GB,
+			reservation_ratio: 0.15,
+			sysinfo: {
+				'Zpool Size in GiB': 2048,
+				'CPU Total Cores': 16
+			},
+			vms: {
+				'372a07dc-6e83-4c5f-b0e3-27e413f4a925': {
+					brand: 'bhyve',
+					cpu_cap: 350,
+					quota: 25,
+					max_physical_memory: 2048
+				},
+				'3066c163-31cb-4a2f-87c4-eec9b1aa2218': {
+					brand: 'bhyve',
 					cpu_cap: 350,
 					quota: 5,
 					max_physical_memory: 128
@@ -211,6 +248,10 @@ test('calculateServerUnreserved()', function (t) {
 		t.equal(servers[4].unreserved_disk, 922746);
 		t.equal(servers[4].unreserved_ram,  209);
 		t.equal(servers[4].unreserved_cpu,  1425);
+
+		t.equal(servers[5].unreserved_disk, 922746);
+		t.equal(servers[5].unreserved_ram,  209);
+		t.equal(servers[5].unreserved_cpu,  1425);
 
 		t.end();
 	});
