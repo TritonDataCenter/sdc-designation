@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 var test = require('tape');
@@ -74,6 +74,14 @@ var SERVERS = [ {
 	vms: {}
 }, {
 	uuid: '0c104a5b-1844-4205-821b-f0c989ccf6e7',
+	disk_kvm_zvol_volsize_bytes: 0,
+	disk_zone_quota_bytes: 0
+}, {
+	// this one will have an in-flight bhyve provision
+	uuid: '282bd1ca-1bf1-11e8-b756-afc3f7940864',
+	sysinfo: {
+		'Bhyve Capable': true
+	},
 	disk_kvm_zvol_volsize_bytes: 0,
 	disk_zone_quota_bytes: 0
 } ];
@@ -194,6 +202,33 @@ var TICKETS = [ {
 			refreservation: 25600
 		} ]
 	}
+}, {
+	// in-flight bhyve provision
+	uuid: '3f2c2028-1bf1-11e8-a512-130d62a301b1',
+	server_uuid: '282bd1ca-1bf1-11e8-b756-afc3f7940864',
+	scope: 'vm',
+	id: '67adeb44-1bf1-11e8-9828-735e406bdf49',
+	expires_at: '2014-12-10T07:03:19.207Z',
+	created_at: '2014-12-10T06:53:19.217Z',
+	updated_at: '2014-12-10T06:53:45.306Z',
+	status: 'active',
+	action: 'provision',
+	extra: {
+		workflow_job_uuid: '8299720c-1bf1-11e8-be8d-af10b6e78c96',
+		owner_uuid: '930896af-bf8c-48d4-885c-6573a94b1853',
+		max_physical_memory: 2048,
+		cpu_cap: 600,
+		quota: 10,
+		brand: 'bhyve',
+		disks: [ {
+			image_uuid: 'd8d81aee-20cf-11e5-8503-2bc101a1d577',
+			image_name: 'debian-7',
+			image_size: 10240
+		}, {
+			size: 25600,
+			refreservation: 25600
+		} ]
+	}
 } ];
 
 
@@ -202,6 +237,9 @@ test('calculate ticketed VMs', function (t) {
 	var opts = common.addCommonOpts({ tickets: TICKETS });
 
 	filter.run(SERVERS, opts, function (err, servers, reasons) {
+		var server;
+		var vmUuid;
+
 		t.ifError(err);
 
 		// t.deepEqual(servers, serversInfo);
@@ -209,8 +247,8 @@ test('calculate ticketed VMs', function (t) {
 
 		t.deepEqual(servers[0], SERVERS[0]);
 
-		var vmUuid = '8e54da2f-996f-491c-92ff-1b1d6c48f314';
-		var server = servers[1];
+		vmUuid = '8e54da2f-996f-491c-92ff-1b1d6c48f314';
+		server = servers[1];
 		t.deepEqual(server, {
 			uuid: '67e48c2e-45bb-400a-bc7d-3143894aacfa',
 			disk_kvm_zvol_volsize_bytes: 0,
@@ -243,6 +281,27 @@ test('calculate ticketed VMs', function (t) {
 					cpu_cap: 600,
 					quota: 10,
 					brand: 'kvm',
+					zone_state: 'running',
+					state: 'running'
+				}
+			}
+		});
+
+		vmUuid = '67adeb44-1bf1-11e8-9828-735e406bdf49';
+		server = servers[3];
+		t.deepEqual(server, {
+			uuid: '282bd1ca-1bf1-11e8-b756-afc3f7940864',
+			disk_kvm_zvol_volsize_bytes: 0,
+			disk_zone_quota_bytes: 35 * GiB, // for root and zvols
+			sysinfo: { 'Bhyve Capable': true },
+			vms: {
+				'67adeb44-1bf1-11e8-9828-735e406bdf49': {
+					uuid: vmUuid,
+					owner_uuid: ownerUuid,
+					max_physical_memory: 3328,
+					cpu_cap: 600,
+					quota: 35,
+					brand: 'bhyve',
 					zone_state: 'running',
 					state: 'running'
 				}
