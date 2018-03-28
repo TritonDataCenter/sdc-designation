@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2015, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 var test = require('tape');
@@ -27,6 +27,8 @@ var SERVER = {
 		'HW Family': 'JCP-1100',
 		'Setup': 'true',
 		'VM Capable': true,
+		'Bhyve Capable': true,
+		'Bhyve Max Vcpus': 16,
 		'CPU Type': 'Intel(R) Xeon(R) CPU E5-2670 0 @ 2.60GHz',
 		'CPU Virtualization': 'vmx',
 		'CPU Physical Cores': 2,
@@ -407,6 +409,24 @@ test('validate server', function (t) {
 
 	var badServer = deepCopy(SERVER);
 	badServer.sysinfo = {};
+	res = validations.validateServer(badServer);
+	t.ok(res);
+
+	t.end();
+});
+
+
+test('bad bhyve sysinfo properties', function (t) {
+	var badServer;
+	var res;
+
+	badServer = deepCopy(SERVER);
+	badServer.sysinfo['Bhyve Capable'] = 'bacon';
+	res = validations.validateServer(badServer);
+	t.ok(res);
+
+	badServer = deepCopy(SERVER);
+	badServer.sysinfo['Bhyve Max Vcpus'] = 'bacon';
 	res = validations.validateServer(badServer);
 	t.ok(res);
 

@@ -82,7 +82,7 @@ test('filterHVM() with bhyve and mixed HW support', function (t) {
 	};
 
 	var opts = {
-		vm:  { brand: 'bhyve', ram: 512 },
+		vm:  { brand: 'bhyve', ram: 512, vcpus: 1 },
 		pkg: {},
 		defaults: {}
 	};
@@ -114,7 +114,7 @@ test('filterHVM() with bhyve and existing kvm', function (t) {
 	};
 
 	var opts = {
-		vm:  { brand: 'bhyve', ram: 512 },
+		vm:  { brand: 'bhyve', ram: 512, vcpus: 1 },
 		pkg: {},
 		defaults: {}
 	};
@@ -163,6 +163,112 @@ test('filterHVM() with no servers', function (t) {
 
 	var opts = {
 		vm:  { brand: 'joyent', ram: 512 },
+		pkg: {},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+
+// Ensure that when bhyve supports more than the system, we don't allow more
+// than the total.
+test('filterHVM() vcpus total less than bhyve -- over', function (t) {
+	var servers = [ {
+		sysinfo: {
+			'Bhyve Capable': true,
+			'Bhyve Max Vcpus': 56,
+			'CPU Total Cores': 32
+		},
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		vms: []
+	} ];
+
+	var expectServers = [];
+	var expectReasons = {
+		'f667e0fa-33db-48da-a5d0-9fe837ce93fc':
+		    'bhyve VM undefined is requesting 33 vcpus whereas ' +
+		    'server supports 1 - 32 vcpus'
+	};
+
+	var opts = {
+		vm:  { brand: 'bhyve', ram: 512, vcpus: 33 },
+		pkg: {},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+// Same as above but with 32 and it should succeed
+test('filterHVM() vcpus total less than bhyve -- under', function (t) {
+	var servers = [ {
+		sysinfo: {
+			'Bhyve Capable': true,
+			'Bhyve Max Vcpus': 56,
+			'CPU Total Cores': 32
+		},
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		vms: []
+	} ];
+
+	var expectServers = servers.slice(0, 1);
+	var expectReasons = {};
+
+	var opts = {
+		vm:  { brand: 'bhyve', ram: 512, vcpus: 32 },
+		pkg: {},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+// 0 is too few
+test('filterHVM() 0 vcpus bhyve', function (t) {
+	var servers = [ {
+		sysinfo: {
+			'Bhyve Capable': true,
+			'Bhyve Max Vcpus': 32,
+			'CPU Total Cores': 32
+		},
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		vms: []
+	} ];
+
+	var expectServers = [];
+	var expectReasons = {
+		'f667e0fa-33db-48da-a5d0-9fe837ce93fc':
+		    'bhyve VM undefined is requesting -1 vcpus whereas ' +
+		    'server supports 1 - 32 vcpus'
+	};
+
+	var opts = {
+		vm:  { brand: 'bhyve', ram: 512, vcpus: 0 },
+		pkg: {},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+// 1 is fine
+test('filterHVM() 1 vcpus bhyve', function (t) {
+	var servers = [ {
+		sysinfo: {
+			'Bhyve Capable': true,
+			'Bhyve Max Vcpus': 32,
+			'CPU Total Cores': 32
+		},
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		vms: []
+	} ];
+
+	var expectServers = servers.slice(0, 1);
+	var expectReasons = {};
+
+	var opts = {
+		vm:  { brand: 'bhyve', ram: 512, vcpus: 1 },
 		pkg: {},
 		defaults: {}
 	};
