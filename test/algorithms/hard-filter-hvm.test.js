@@ -155,6 +155,64 @@ test('filterHVM() with kvm and existing bhyve', function (t) {
 });
 
 
+test('filterHVM() with bhyve and existing kvm on HVM API CN', function (t) {
+	var servers = [ {
+		sysinfo: {
+			'Bhyve Capable': true,
+			'HVM API': true
+		},
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		vms: [ {
+			brand: 'kvm',
+			uuid: '3ac37ee8-16a9-11e8-a114-9bd01a859c7f'
+		}]
+	}, {
+		sysinfo: { 'Bhyve Capable': true },
+		uuid: '4fe12d99-f013-4983-9e39-6e2f35b37aec',
+		vms: []
+	} ];
+
+	var expectServers = servers;
+	var expectReasons = {};
+	var opts = {
+		vm:  { brand: 'bhyve', ram: 512, vcpus: 1 },
+		pkg: {},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+
+test('filterHVM() with kvm and existing bhyve on HVM API CN', function (t) {
+	var servers = [ {
+		sysinfo: {
+			'Bhyve Capable': true,
+			'HVM API': true
+		},
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		vms: [ {
+			brand: 'bhyve',
+			uuid: '3ac37ee8-16a9-11e8-a114-9bd01a859c7f'
+		} ]
+	}, {
+		sysinfo: { 'Bhyve Capable': true },
+		uuid: '4fe12d99-f013-4983-9e39-6e2f35b37aec',
+		vms: []
+	} ];
+
+	var expectServers = servers;
+	var expectReasons = {};
+	var opts = {
+		vm:  { brand: 'kvm', ram: 512 },
+		pkg: {},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+
 test('filterHVM() with no servers', function (t) {
 	var servers = [];
 
@@ -200,6 +258,7 @@ test('filterHVM() vcpus total less than bhyve -- over', function (t) {
 	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
+
 // Same as above but with 32 and it should succeed
 test('filterHVM() vcpus total less than bhyve -- under', function (t) {
 	var servers = [ {
@@ -223,6 +282,7 @@ test('filterHVM() vcpus total less than bhyve -- under', function (t) {
 
 	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
+
 
 // 0 is too few
 test('filterHVM() 0 vcpus bhyve', function (t) {
@@ -251,6 +311,7 @@ test('filterHVM() 0 vcpus bhyve', function (t) {
 
 	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
+
 
 // 1 is fine
 test('filterHVM() 1 vcpus bhyve', function (t) {
