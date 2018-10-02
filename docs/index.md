@@ -10,7 +10,7 @@ markdown2extras: wiki-tables, code-friendly
 -->
 
 <!--
-    Copyright (c) 2015, Joyent, Inc.
+    Copyright (c) 2018, Joyent, Inc.
 -->
 
 # sdc-designation (formerly known as DAPI)
@@ -427,6 +427,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | calculate-recent-vms            | Adds recent VMs to pipeline if they haven't appeared yet in CNAPI    |
 | calculate-server-unreserved     | Does some free-resource calculations that are used by other plugins  |
 | hard-filter-feature-min-platform| Removes servers that don't pass platform requirements for specific optional features used by the VM being allocated |
+| hard-filter-force-failure       | Removes all servers (forcing the provision to fail) when internal\_metadata.force\_designation\_failure is set. Used by tests to force a failure to ensure proper handling. |
 | hard-filter-headnode            | Removes any headnodes                                       |
 | hard-filter-invalid-servers     | Removes any server objects which don't pass validation      |
 | hard-filter-large-servers       | Removes the top 15% servers with the most available RAM     |
