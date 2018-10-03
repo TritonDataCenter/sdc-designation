@@ -420,7 +420,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 ## Provided Algorithms
 
 *Note: This list may be a little out of date. See
-[lib/algoritms](../lib/alogrithms/) for the authoritative list.*
+[lib/algorithms](../lib/alogrithms/) for the authoritative list.*
 
 | **Name**                        | **Action**                                                  |
 | ------------------------------- | ----------------------------------------------------------- |
