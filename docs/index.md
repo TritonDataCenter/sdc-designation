@@ -424,37 +424,37 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 
 | **Name**                        | **Action**                                                  |
 | ------------------------------- | ----------------------------------------------------------- |
-| calculate-recent-vms            | Adds recent VMs to pipeline if they haven't appeared yet in CNAPI    |
-| calculate-server-unreserved     | Does some free-resource calculations that are used by other plugins  |
-| hard-filter-feature-min-platform| Removes servers that don't pass platform requirements for specific optional features used by the VM being allocated |
+| calculate-recent-vms            | Adds recent VMs to pipeline if they haven't appeared yet in CNAPI.   |
+| calculate-server-unreserved     | Does some free-resource calculations that are used by other plugins. |
+| hard-filter-feature-min-platform| Removes servers that don't pass platform requirements for specific optional features used by the VM being allocated. |
 | hard-filter-force-failure       | Removes all servers (forcing the provision to fail) when internal\_metadata.force\_designation\_failure is set. Used by tests to force a failure to ensure proper handling. |
-| hard-filter-headnode            | Removes any headnodes                                       |
-| hard-filter-invalid-servers     | Removes any server objects which don't pass validation      |
-| hard-filter-large-servers       | Removes the top 15% servers with the most available RAM     |
-| hard-filter-locality-hints      | Tries to place VM near or far from other given VMs, with strict placement |
-| hard-filter-min-cpu             | Removes CNs with insufficient unreserved CPU                |
-| hard-filter-min-disk            | Removes CNs with insufficient unreserved disk               |
-| hard-filter-min-ram             | Removes CNs with insufficient unreserved RAM                |
-| hard-filter-min-free-disk       | Removes CNs with insufficient free disk                     |
-| hard-filter-overprovision-ratios | Removes CNs with different overprovision ratios than the request    |
-| hard-filter-platform-versions   | Removes servers that don't pass image manifest platform requirements |
-| hard-filter-reserved            | Removes reserved CNs                                        |
-| hard-filter-reservoir           | Removes reservoir CNs                                       |
-| hard-filter-running             | Removes CNs which are not running                           |
-| hard-filter-setup               | Removes CNs which are not setup                             |
-| hard-filter-traits              | Removes CNs with traits that cannot fulfill VM traits       |
-| hard-filter-vlans               | Removes CNs which do not have required nic tags             |
-| hard-filter-vm-count            | Removes CNs with more than 223 (default) VMs                |
-| hard-filter-volumes-from        | Removes CNs which do not contain VMs listed in docker:volumesfrom metadata, if provided |
-| identity                        | Returns the same servers it received                        |
-| load-server-vms                 | Populates all server.vms with VM information if sys.getServerVms was passed to allocator constructor |
-| override-overprovisioning       | Substitutes package and server overprovision data for own defaults   |
-| soft-filter-locality-hints      | Tries to place VM near or far from other given VMs, with non-strict placement |
-| score-current-platform          | Make CNs running more recent platforms more likely to be selected |
-| score-next-reboot               | Make CNs with reboots schedule much further in the future more likely to be selected |
-| score-num-owner-zones           | Make CNs with fewer VMs belonging to current owner more likely to be selected |
-| score-unreserved-ram            | Make CNs with more unreserved RAM more likely to be selected      |
-| score-unreserved-disk           | Make CNs with more unreserved disk more likely to be selected     |
+| hard-filter-headnode            | Removes any headnodes.                                       |
+| hard-filter-invalid-servers     | Removes any server objects which don't pass validation.      |
+| hard-filter-large-servers       | Removes the top 15% servers with the most available RAM.     |
+| hard-filter-locality-hints      | Tries to place VM near or far from other given VMs, with strict placement. |
+| hard-filter-min-cpu             | Removes CNs with insufficient unreserved CPU.                |
+| hard-filter-min-disk            | Removes CNs with insufficient unreserved disk.               |
+| hard-filter-min-ram             | Removes CNs with insufficient unreserved RAM.                |
+| hard-filter-min-free-disk       | Removes CNs with insufficient free disk.                     |
+| hard-filter-overprovision-ratios | Removes CNs with different overprovision ratios than the request.    |
+| hard-filter-platform-versions   | Removes servers that don't pass image manifest platform requirements. |
+| hard-filter-reserved            | Removes reserved CNs.                                        |
+| hard-filter-reservoir           | Removes reservoir CNs.                                       |
+| hard-filter-running             | Removes CNs which are not running.                           |
+| hard-filter-setup               | Removes CNs which are not setup.                             |
+| hard-filter-traits              | Removes CNs with traits that cannot fulfill VM traits.       |
+| hard-filter-vlans               | Removes CNs which do not have required nic tags.             |
+| hard-filter-vm-count            | Removes CNs with more than 223 (default) VMs.                |
+| hard-filter-volumes-from        | Removes CNs which do not contain VMs listed in docker:volumesfrom metadata, if provided. |
+| identity                        | Returns the same servers it received.                        |
+| load-server-vms                 | Populates all server.vms with VM information if sys.getServerVms was passed to allocator constructor. |
+| override-overprovisioning       | Substitutes package and server overprovision data for own defaults.   |
+| soft-filter-locality-hints      | Tries to place VM near or far from other given VMs, with non-strict placement. |
+| score-current-platform          | Make CNs running more recent platforms more likely to be selected. |
+| score-next-reboot               | Make CNs with reboots schedule much further in the future more likely to be selected. |
+| score-num-owner-zones           | Make CNs with fewer VMs belonging to current owner more likely to be selected. |
+| score-unreserved-ram            | Make CNs with more unreserved RAM more likely to be selected.      |
+| score-unreserved-disk           | Make CNs with more unreserved disk more likely to be selected.     |
 
 The allocation pipeline typically starts with the hard filters, then soft
 filters, then scorers. After the pipeline is run, the allocator uses a remaining
