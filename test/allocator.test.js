@@ -794,6 +794,7 @@ test('load available algorithms', function (t) {
 		'calculate-ticketed-vms',
 		'hard-filter-capness',
 		'hard-filter-feature-min-platform',
+		'hard-filter-force-failure',
 		'hard-filter-headnode',
 		'hard-filter-hvm',
 		'hard-filter-invalid-servers',
