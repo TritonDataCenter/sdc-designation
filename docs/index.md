@@ -445,6 +445,7 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 | hard-filter-traits              | Removes CNs with traits that cannot fulfill VM traits.       |
 | hard-filter-vlans               | Removes CNs which do not have required nic tags.             |
 | hard-filter-vm-count            | Removes CNs with more than 223 (default) VMs.                |
+| hard-filter-virtual-servers     | Removes CNs which are virtual servers (e.g. mockcloud).      |
 | hard-filter-volumes-from        | Removes CNs which do not contain VMs listed in docker:volumesfrom metadata, if provided. |
 | identity                        | Returns the same servers it received.                        |
 | load-server-vms                 | Populates all server.vms with VM information if sys.getServerVms was passed to allocator constructor. |
