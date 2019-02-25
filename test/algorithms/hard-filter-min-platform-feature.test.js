@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2017, Joyent, Inc.
+ * Copyright (c) 2019, Joyent, Inc.
  */
 
 var test = require('tape');
@@ -60,6 +60,20 @@ var infraContainersNfsAutomountTestServers = common.genServers([
 	['59359918-cb06-45c2-9adb-42fc814baa0d', '7.0', '20160613T123039Z'],
 	['b4343a95-5aeb-499a-bc0e-701c5119b89e', '7.0', '20170925T211846Z']
 ]);
+
+var infraContainersFlexibleDiskTestServers = common.genServers([
+	/* null should default to 6.5 */
+	['e69c5420-3876-11e9-9081-c749e75a2f97', null,  '20130129T122401Z'],
+	['ee8d8960-3876-11e9-8b90-4b56ff71b355', '7.0', '20121218T203452Z'],
+	['f4a3c6ac-3876-11e9-b1aa-4fe850533f1e', '7.0', '20171005T201141Z'],
+	['fadc79a6-3876-11e9-a5d6-3b484b754776', '7.0', '20181206T190646Z'],
+	['0123ccc4-3877-11e9-9d48-4b1a8bdf0b0b', '7.1', '20121218T203452Z'],
+	['07a3a57e-3877-11e9-9cb5-375b98cc38d9', '7.1', '20121210T203034Z'],
+	['0d8618f0-3877-11e9-a22e-17c3804a76c9', '7.1', '20130129T122401Z'],
+	['13395a5a-3877-11e9-9206-bbe22ee1f65c', '7.0', '20181206T190647Z'],
+	['19aa8c38-3877-11e9-ace5-63ec3db2d342', '7.0', '20190106T200727Z']
+]);
+
 
 var checkFilter = common.createPluginChecker(filter);
 
@@ -278,5 +292,62 @@ test('filterFeatureMinPlatform with ' +
 	};
 
 	checkFilter(t, infraContainersNfsAutomountTestServers, opts,
+		expectedServers, expectedReasons);
+});
+
+
+test('filterFeatureMinPlatform with filter_flexible_disk_min_platform, ' +
+	'VM has flexible_disk_size',
+	function (t) {
+	var expectedServers = [
+		infraContainersFlexibleDiskTestServers[4],
+		infraContainersFlexibleDiskTestServers[5],
+		infraContainersFlexibleDiskTestServers[6],
+		infraContainersFlexibleDiskTestServers[7],
+		infraContainersFlexibleDiskTestServers[8]
+	];
+
+	var opts = {
+		vm: {
+			flexible_disk_size: 1024
+		},
+		img: {},
+		pkg: {},
+		defaults: {
+			filter_flexible_disk_min_platform: '20181206T190647Z'
+		}
+	};
+
+	var expectedReasons = {
+		/* BEGIN JSSTYLED */
+		'e69c5420-3876-11e9-9081-c749e75a2f97': 'Flexible disk size support requires min platforms {"7.0":"20181206T190647Z"}, but server has {"6.5":"20130129T122401Z"}',
+		'ee8d8960-3876-11e9-8b90-4b56ff71b355': 'Flexible disk size support requires min platforms {"7.0":"20181206T190647Z"}, but server has {"7.0":"20121218T203452Z"}',
+		'f4a3c6ac-3876-11e9-b1aa-4fe850533f1e': 'Flexible disk size support requires min platforms {"7.0":"20181206T190647Z"}, but server has {"7.0":"20171005T201141Z"}',
+		'fadc79a6-3876-11e9-a5d6-3b484b754776': 'Flexible disk size support requires min platforms {"7.0":"20181206T190647Z"}, but server has {"7.0":"20181206T190646Z"}'
+		/* END JSSTYLED */
+	};
+
+	checkFilter(t, infraContainersFlexibleDiskTestServers, opts,
+		expectedServers, expectedReasons);
+});
+
+
+test('filterFeatureMinPlatform with filter_flexible_disk_min_platform, ' +
+	'VM does not have flexible_disk_size',
+	function (t) {
+	var expectedServers = infraContainersFlexibleDiskTestServers;
+
+	var opts = {
+		vm: {},
+		img: {},
+		pkg: {},
+		defaults: {
+			filter_flexible_disk_min_platform: '20181206T190647Z'
+		}
+	};
+
+	var expectedReasons = {};
+
+	checkFilter(t, infraContainersFlexibleDiskTestServers, opts,
 		expectedServers, expectedReasons);
 });
