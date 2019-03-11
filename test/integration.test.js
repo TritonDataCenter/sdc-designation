@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2017, Joyent, Inc.
+ * Copyright (c) 2019, Joyent, Inc.
  */
 
 var test = require('tape');
@@ -239,6 +239,10 @@ test('allocate 1', function (t) {
 			step: 'Servers with enough unreserved disk',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ]
 		}, {
+			step: 'Convert affinity to locality hints',
+			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
+			reasons: { skip: 'No affinity found' }
+		}, {
 			step: 'Servers with requested hard locality considered',
 			remaining: [ '00000000-0000-0000-0000-00259094373c' ],
 			reasons: { skip: 'No strict locality requested' }
@@ -428,6 +432,10 @@ test('allocate 2', function (t) {
 		}, {
 			step: 'Servers with enough unreserved disk',
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ]
+		}, {
+			step: 'Convert affinity to locality hints',
+			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],
+			reasons: { skip: 'No affinity found' }
 		}, {
 			step: 'Servers with requested hard locality considered',
 			remaining: [ '00000000-0000-0000-0000-0025909437d4' ],

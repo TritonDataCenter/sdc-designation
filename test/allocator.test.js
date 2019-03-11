@@ -790,6 +790,7 @@ test('load available algorithms', function (t) {
 	var names = Object.keys(algorithms).sort();
 
 	var expectedNames = [
+		'calculate-affinity',
 		'calculate-server-unreserved',
 		'calculate-ticketed-vms',
 		'hard-filter-capness',

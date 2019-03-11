@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2015, Joyent, Inc.
+ * Copyright (c) 2019, Joyent, Inc.
  */
 
 var test = require('tape');
@@ -96,8 +96,8 @@ test('filterVolumesFrom() with no getVm set', function (t) {
 
 
 test('filterVolumesFrom() with getVm set', function (t) {
-	common.OPTS.getVm = function (vmUuid, cb) {
-		return (cb(null, VM_LOOKUP[vmUuid]));
+	common.OPTS.getVm = function (opts, cb) {
+		return (cb(null, VM_LOOKUP[opts.uuid]));
 	};
 
 	var vm = {

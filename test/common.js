@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2019, Joyent, Inc.
  */
 
 var fs = require('fs');
@@ -35,6 +35,7 @@ var ALGO_DESC = [
 		'hard-filter-min-ram',
 		'hard-filter-min-cpu',
 		'hard-filter-min-disk',
+		'calculate-affinity',
 		'hard-filter-locality-hints',
 		'hard-filter-owners-servers',
 		['or', 'hard-filter-reservoir',

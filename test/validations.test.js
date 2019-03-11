@@ -271,6 +271,74 @@ test('validate platform limits', function (t) {
 });
 
 
+test('validate affinity', function testAffinity(t) {
+	var validAffinities = [
+		null,
+		[],
+		[ {
+			key: 'instance',
+			operator: '!=',
+			value: 'webhead3',
+			isSoft: false,
+			valueType: 'exact'
+		} ],
+		[ {
+			key: 'container',
+			operator: '==',
+			value: 'webhead*',
+			isSoft: true,
+			valueType: 'glob'
+		}, {
+			key: 'role',
+			operator: '==',
+			value: '/web/',
+			isSoft: false,
+			valueType: 're'
+		} ]
+	];
+
+	validAffinities.forEach(function validateAffinity(affinity) {
+		var res = validations.validateAffinity(affinity);
+		t.ifError(res);
+	});
+
+	var badAffinityChecks = [ [
+		function (a) { a.operator = '=~'; },
+		'"affinity.operator" has invalid operator'
+	], [
+		function (a) { a.valueType = 'foo'; },
+		'"affinity.valueType" has invalid value'
+	], [
+		function (a) { a.isSoft = 1; },
+		'"affinity.isSoft" is not a boolean'
+	], [
+		function (a) { a.key = 1; },
+		'"affinity.key" is not a string'
+	], [
+		function (a) { a.operator = 1; },
+		'"affinity.operator" is not a string'
+	], [
+		function (a) { a.value = 1; },
+		'"affinity.value" is not a string'
+	], [
+		function (a) { a.valueType = 1; },
+		'"affinity.valueType" is not a string'
+	] ];
+
+	badAffinityChecks.forEach(function testBadAffinity(check) {
+		var mutator = check[0];
+		var errMsg = check[1];
+
+		var badAffinity = deepCopy(validAffinities[2]);
+		mutator(badAffinity[0]);
+		var res = validations.validateAffinity(badAffinity);
+		t.equal(res, errMsg);
+	});
+
+	t.end();
+});
+
+
 test('validate locality', function (t) {
 	var validLocalities = [
 		{},

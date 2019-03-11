@@ -54,6 +54,7 @@ VM, but the current version only considers the following characteristics:
 | nic_tags      | array    | If VLAN filtering is enabled, nic_tags needed for VM |
 | owner_uuid    | string   | UUID of the new zone's owner                         |
 | locality      | hash     | Hints for VM placement                               |
+| affinity      | array    | Requirements for VM placement                        |
 
 The following are a couple of valid VM payload examples. The object must contain
 at least ***ram*** and ***owner_uuid***.
@@ -423,8 +424,9 @@ aware that you'll need to add the custom file back after any DAPI zone upgrade.
 *Note: This list may be a little out of date. See
 [lib/algorithms](../lib/alogrithms/) for the authoritative list.*
 
-| **Name**                        | **Action**                                                  |
-| ------------------------------- | ----------------------------------------------------------- |
+| **Name**                        | **Action**                                                   |
+| ------------------------------- | ------------------------------------------------------------ |
+| calculate-locality-hints        | Transforms affinities into locality hints.                   |
 | calculate-recent-vms            | Adds recent VMs to pipeline if they haven't appeared yet in CNAPI.   |
 | calculate-server-unreserved     | Does some free-resource calculations that are used by other plugins. |
 | hard-filter-feature-min-platform| Removes servers that don't pass platform requirements for specific optional features used by the VM being allocated. |
@@ -647,3 +649,61 @@ When `strict` is true, either a server will be found that fulfills all
 requirements, or the allocation will fail. An example is a request that wants to
 guarantee a new database VM does not end up on the same server as a different
 database VM, for HA purposes.
+
+
+
+## Affinities
+
+Affinities are similar to locality hints -- and are transformed into locality
+hints for later filtering -- but provide broader control over where a new VM
+will be allocated. Please see [Locality Hints](#locality-hints) for more
+details.
+
+Affinities are an array of affinity objects with the following format:
+
+    {
+        "key": "instance" | "container" | <tag string>,
+        "operator": "!=" | "==",
+        "value": <see below>,
+        "valueType": "exact" | "glob" | "re",
+        "isSoft": true | false
+    }
+
+When the `key` is "instance" or "container" (they are the same thing), the
+affinity is matching on a VM alias. Otherwise the match is performed on VM tags.
+
+`operator` determines whether a new VM should be allocated on the same servers
+as matching VMs ("=="), or *not* be allocated on those same servers ("!=").
+
+`valueType` specifies whether `value` is an exact string ("exact") to match on
+the target set by `key`, a glob to match against the same ("glob"), or a regular
+expression applied to the same ("re").
+
+`value` contains the value used for filtering. Based on the `valueType`:
+
+* "exact": a VM UUID, a partial or full prefix Docker ID, or a full alias
+   (e.g. "webhead")
+* "re": a regular expression to apply to an alias or tag (e.g. "/web/")
+* "glob": a glob to apply to an alias or tag (e.g. "web\*")
+
+An example:
+
+    "affinity: [
+        {
+            "key": "container",
+            "operator": "==",
+            "value": "database-*",
+            "valueType": "glob",
+            "isSoft": false
+        }, {
+            "key": "disabled",
+            "operator": "!=",
+            "value": "yes",
+            "valueType": "exact",
+            "isSoft": false
+        }
+    ]
+
+This will attempt to place the new VM on a CN which contains at least one VM
+with an alias starting with "database-", which also does not have the tag
+"disabled" set to "yes".
