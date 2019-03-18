@@ -6,7 +6,7 @@
 	url = https://github.com/davepacheco/javascriptlint.git
 [submodule "deps/jsstyle"]
 	path = deps/jsstyle
-	url = https://github.com/davepacheco/jsstyle.git
+	url = https://github.com/joyent/jsstyle.git
 [submodule "deps/restdown-brand-remora"]
 	path = deps/restdown-brand-remora
 	url = https://github.com/joyent/restdown-brand-remora.git
