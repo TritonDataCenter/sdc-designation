@@ -96,7 +96,7 @@ test('filterVolumesFrom() with no getVm set', function (t) {
 
 
 test('filterVolumesFrom() with getVm set', function (t) {
-	common.OPTS.getVm = function (opts, cb) {
+	common.OPTS.getVm = function (opts, _extra, cb) {
 		return (cb(null, VM_LOOKUP[opts.uuid]));
 	};
 
