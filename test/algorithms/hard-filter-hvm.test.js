@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2018, Joyent, Inc.
+ * Copyright 2019 Joyent, Inc.
  */
 
 var test = require('tape');
@@ -276,6 +276,61 @@ test('filterHVM() vcpus total less than bhyve -- under', function (t) {
 
 	var opts = {
 		vm:  { brand: 'bhyve', ram: 512, vcpus: 32 },
+		pkg: {},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+// Ensure we are limited by online CPUs.
+test('filterHVM() online CPUs less than bhyve -- over', function (t) {
+	var servers = [ {
+		sysinfo: {
+			'Bhyve Capable': true,
+			'Bhyve Max Vcpus': 56,
+			'CPU Total Cores': 32,
+			'CPU Online Count': 16
+		},
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		vms: []
+	} ];
+
+	var expectServers = [];
+	var expectReasons = {
+		'f667e0fa-33db-48da-a5d0-9fe837ce93fc':
+		    'bhyve VM undefined is requesting 17 vcpus whereas ' +
+		    'server supports 1 - 16 vcpus'
+	};
+
+	var opts = {
+		vm:  { brand: 'bhyve', ram: 512, vcpus: 17 },
+		pkg: {},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+
+// Same as above but with 16 and it should succeed
+test('filterHVM() online CPUs less than bhyve -- under', function (t) {
+	var servers = [ {
+		sysinfo: {
+			'Bhyve Capable': true,
+			'Bhyve Max Vcpus': 56,
+			'CPU Total Cores': 32,
+			'CPU Online Count': 16
+		},
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		vms: []
+	} ];
+
+	var expectServers = servers.slice(0, 1);
+	var expectReasons = {};
+
+	var opts = {
+		vm:  { brand: 'bhyve', ram: 512, vcpus: 16 },
 		pkg: {},
 		defaults: {}
 	};

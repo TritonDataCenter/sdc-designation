@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2018, Joyent, Inc.
+ * Copyright 2019 Joyent, Inc.
  */
 
 var test = require('tape');
@@ -35,6 +35,10 @@ var SERVER = {
 		'UUID': 'c0100000-0000-0000-ab1c-002520ca42b7',
 		'Hostname': 'server0001',
 		'CPU Total Cores': 32,
+		'CPU Socket Count': 2,
+		'CPU Core Count': 16,
+		'CPU Online Count': 16,
+		'CPU Count': 32,
 		'MiB of Memory': '262110',
 		'Zpool': 'zones',
 		'Zpool Profile': 'mirror',

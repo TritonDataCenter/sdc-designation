@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright 2019, Joyent, Inc.
  */
 
 /*
@@ -60,6 +60,8 @@ calculateCapacity(servers, processServerCap)
 
 		vms = server.vms;
 		cpu = server.sysinfo['CPU Total Cores'] * 100;
+		if (server.sysinfo.hasOwnProperty('CPU Online Count'))
+			cpu = server.sysinfo['CPU Online Count'] * 100;
 		ram = server.memory_total_bytes *
 		    (1 - server.reservation_ratio);
 		disk = server.disk_pool_size_bytes;

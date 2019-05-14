@@ -10,7 +10,7 @@ markdown2extras: wiki-tables, code-friendly
 -->
 
 <!--
-    Copyright (c) 2018, Joyent, Inc.
+    Copyright 2019 Joyent, Inc.
 -->
 
 # sdc-designation (formerly known as DAPI)
@@ -208,7 +208,7 @@ As an example of a valid server payload:
 		reserved: false,
 		setup: true,
 		sysinfo: {
-			'CPU Total Cores': 32,
+			'CPU Online Count': 32,
 			'Network Interfaces': {
 				'igb0': {
 					'MAC Address': '00:25:90:95:89:50',
