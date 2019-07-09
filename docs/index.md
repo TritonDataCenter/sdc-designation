@@ -310,6 +310,7 @@ Some default values can be altered upon allocator initialisation.
 | **Attribute**            | **Type** | **Default** | **Description** |
 | ------------------------ | -------- | ------------| --------------- |
 | disable_override_overprovisioning | Boolean | false | Whether the override-overprovisioning plugin should be disabled. |
+| filter_capness           | Boolean  | true    | Whether to disallow mixing of instances that set cpu_caps with instances that do not set cpu_caps on the same compute node.|
 | filter_docker_min_platform        | String  | -     | Minimum platform version allowed for Docker containers.         |
 | filter_docker_nfs_volumes_automount_min_platform      | String  | -     | Minimum platform version allowed for Docker containers that automatically mount NFS volumes. |
 | filter_non_docker_nfs_volumes_automount_min_platform  | String  | -     | Minimum platform version allowed for non-Docker (infrastructure) containers that automatically mount NFS volumes. |

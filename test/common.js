@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2019, Joyent, Inc.
+ * Copyright 2019 Joyent, Inc.
  */
 
 var fs = require('fs');
@@ -61,7 +61,8 @@ var DEFAULTS = {
 	weight_unreserved_ram: 2,
 	filter_headnode: true,
 	filter_min_resources: true,
-	filter_large_servers: true
+	filter_large_servers: true,
+	filter_capness: true
 };
 
 

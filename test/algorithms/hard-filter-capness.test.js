@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2015, Joyent, Inc.
+ * Copyright 2019 Joyent, Inc.
  */
 
 var test = require('tape');
@@ -76,7 +76,7 @@ test('filterCapness() with package with cpu_cap', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var opts = { vm: {}, pkg: { cpu_cap: 100 } };
+	var opts = { defaults: {}, vm: {}, pkg: { cpu_cap: 100 } };
 
 	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
@@ -92,7 +92,35 @@ test('filterCapness() with package without cpu_cap', function (t) {
 		/* END JSSTYLED */
 	};
 
-	var opts = { vm: {}, pkg: {} };
+	var opts = { defaults: {}, vm: {}, pkg: {} };
+
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
+});
+
+
+test('filterCapness() with package with cpu_cap, over-ridden', function (t) {
+	var expectServers = SERVERS;
+	var expectReasons = { skip: 'Do not filter out cpu_cap disparities' };
+
+	var opts = {
+		defaults:  { filter_capness: false },
+		vm: {},
+		pkg: { cpu_cap: 100 }
+	};
+
+	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
+});
+
+
+test('filterCapness() with package without cpu_cap, over-ridden', function (t) {
+	var expectServers = SERVERS;
+	var expectReasons = { skip: 'Do not filter out cpu_cap disparities' };
+
+	var opts = {
+		defaults:  { filter_capness: false },
+		vm: {},
+		pkg: {}
+	};
 
 	checkFilter(t, SERVERS, opts, expectServers, expectReasons);
 });
@@ -101,7 +129,7 @@ test('filterCapness() with package without cpu_cap', function (t) {
 test('filterCapness() with no servers', function (t) {
 	var expectServers = [];
 	var expectReasons = {};
-	var opts = { vm: {}, pkg: {} };
+	var opts = { defaults: {},  vm: {}, pkg: {} };
 
 	checkFilter(t, [], opts, expectServers, expectReasons);
 });

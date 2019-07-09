@@ -1,7 +1,7 @@
 {
   "name": "dapi",
   "description": "SmartDataCenter Designation API",
-  "version": "8.7.0",
+  "version": "8.8.0",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
