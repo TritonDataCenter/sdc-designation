@@ -5,14 +5,14 @@
 -->
 
 <!--
-    Copyright (c) 2016, Joyent, Inc.
+    Copyright 2019 Joyent, Inc.
 -->
 
 # sdc-designation
 
 This repository is part of the Joyent Triton project. See the [contribution
-guidelines](https://github.com/joyent/triton/blob/master/CONTRIBUTING.md) --
-*Triton does not use GitHub PRs* -- and general documentation at the main
+guidelines](https://github.com/joyent/triton/blob/master/CONTRIBUTING.md)
+and general documentation at the main
 [Triton project](https://github.com/joyent/triton) page.
 
 The purpose of this module is to select a compute node for provisioning
@@ -41,7 +41,7 @@ code review.  Do not integrate unless `make prepush` succeeds!
 
  * DAPI should support multiple allocation algorithms. Starting with "random"
    and then adding scope for things like "random within this set of compute
-   nodes". 
+   nodes".
  * Data that DAPI should take into account when selecting a machine (depending
    on algorithm):
      - Load (avg?) - ie, dont place new machines onto a "hot" box
