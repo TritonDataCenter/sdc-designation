@@ -47,7 +47,13 @@ test('filterZpoolEncryption() w/o encrypted servers', function (t) {
 	};
 
 	var opts = {
-		vm: { brand: 'joyent', ram: 512, encrypted: true },
+		vm: {
+			brand: 'joyent',
+			ram: 512,
+			internal_metadata: {
+				encrypted: true
+			}
+		},
 		pkg: {},
 		defaults: {}
 	};
@@ -73,7 +79,14 @@ test('filterZpoolEncryption() with encrypted severs', function (t) {
 			'Server is not Zpool Encrypted'
 	};
 	var opts = {
-		vm: { brand: 'joyent', ram: 512, vcpus: 1, encrypted: true },
+		vm: {
+			brand: 'joyent',
+			ram: 512,
+			vcpus: 1,
+			internal_metadata: {
+				encrypted: true
+			}
+		},
 		pkg: {},
 		defaults: {}
 	};
