@@ -21,7 +21,13 @@ test('filterZpoolEncryption() with no servers', function (t) {
 	var expectReasons = {};
 
 	var opts = {
-		vm: { brand: 'joyent', ram: 512 },
+		vm: {
+			brand: 'joyent',
+			ram: 512,
+			internal_metadata: {
+				encrypted: true
+			}
+		},
 		pkg: {},
 		defaults: {}
 	};
@@ -94,6 +100,34 @@ test('filterZpoolEncryption() with encrypted severs', function (t) {
 	checkFilter(t, servers, opts, expectServers, expectReasons);
 });
 
+test('filterZpoolEncryption() when no encryption required', function (t) {
+	var servers = [ {
+		sysinfo: {},
+		uuid: '4fe12d99-f013-4983-9e39-6e2f35b37aec',
+		vms: []
+	}, {
+		sysinfo: { 'Zpool Encrypted': true },
+		uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc',
+		vms: []
+	} ];
+
+	var expectServers = servers.slice(0, 1);
+	var expectReasons = {
+		'f667e0fa-33db-48da-a5d0-9fe837ce93fc':
+			'Server is Zpool Encrypted'
+	};
+	var opts = {
+		vm: {
+			brand: 'joyent',
+			ram: 512,
+			vcpus: 1
+		},
+		pkg: {},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
 
 test('name', function (t) {
 	t.equal(typeof (filter.name), 'string');
