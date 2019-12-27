@@ -817,6 +817,7 @@ test('load available algorithms', function (t) {
 		'hard-filter-vlans',
 		'hard-filter-vm-count',
 		'hard-filter-volumes-from',
+		'hard-filter-zpool-encryption',
 		'identity',
 		'load-server-vms',
 		'override-overprovisioning',
