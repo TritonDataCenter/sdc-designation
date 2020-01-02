@@ -314,6 +314,7 @@ Some default values can be altered upon allocator initialisation.
 | filter_docker_min_platform        | String  | -     | Minimum platform version allowed for Docker containers.         |
 | filter_docker_nfs_volumes_automount_min_platform      | String  | -     | Minimum platform version allowed for Docker containers that automatically mount NFS volumes. |
 | filter_non_docker_nfs_volumes_automount_min_platform  | String  | -     | Minimum platform version allowed for non-Docker (infrastructure) containers that automatically mount NFS volumes. |
+| filter_volapi_nfs_v2_min_platform  | String  | -     | Minimum platform version allowed for volapi NFS v2 containers. These containers use the native NGZ (non global zone) NFS. |
 | filter_flexible_disk_min_platform   | String  | -     | Minimum platform version allowed for VMs that have flexible disk sizing. |
 | filter_headnode          | Boolean  | true    | Whether to remove the headnode from consideration for a new VM.       |
 | filter_min_resources     | Boolean  | true    | Whether to filter out CNs which don't have enough space for a new VM. |
