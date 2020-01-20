@@ -61,6 +61,17 @@ var infraContainersNfsAutomountTestServers = common.genServers([
 	['b4343a95-5aeb-499a-bc0e-701c5119b89e', '7.0', '20170925T211846Z']
 ]);
 
+var infraContainersVolapiNfsV2TestServers = common.genServers([
+	['5d4de22f-e082-43ae-83ec-9957be55f2e1', null,  '20130129T122401Z'],
+	['eef1a665-5d51-4a6e-94cb-c23a8e11cc09', '6.5', '20130229T122401Z'],
+	['9728b8c3-ecbd-4af9-94b0-a1b26e6e5cc0', '7.0', '20121210T203034Z'],
+	['c98b17b0-d4f9-4a93-b4da-85ee6a065f8a', '7.0', '20130129T122401Z'],
+	['59359918-cb06-45c2-9adb-42fc814baa0d', '7.0', '20191213T123039Z'],
+	['b4343a95-5aeb-499a-bc0e-701c5119b89e', '7.0', '20200925T211846Z'],
+	['9902bee1-fe4a-4f77-93db-951ed5c501bb', '7.1', '20121218T203452Z'],
+	['26dbdcdc-ed50-4169-b27f-e12f27c20026', '7.1', '20200129T122401Z']
+]);
+
 var infraContainersFlexibleDiskTestServers = common.genServers([
 	/* null should default to 6.5 */
 	['e69c5420-3876-11e9-9081-c749e75a2f97', null,  '20130129T122401Z'],
@@ -292,6 +303,61 @@ test('filterFeatureMinPlatform with ' +
 	};
 
 	checkFilter(t, infraContainersNfsAutomountTestServers, opts,
+		expectedServers, expectedReasons);
+});
+
+
+test('filterFeatureMinPlatform for filter_volapi_nfs_v2_min_platform, ' +
+		'VM requires volapi_nfs_v2',
+		function (t) {
+
+	var minPlatform = '20191201T000000Z';
+	var expectedReasons = {
+		/* BEGIN JSSTYLED */
+		'5d4de22f-e082-43ae-83ec-9957be55f2e1': 'volapi nfs v2 support requires min platforms {"7.0":"' + minPlatform + '"}, but server has {"6.5":"20130129T122401Z"}',
+		'eef1a665-5d51-4a6e-94cb-c23a8e11cc09': 'volapi nfs v2 support requires min platforms {"7.0":"' + minPlatform + '"}, but server has {"6.5":"20130229T122401Z"}',
+		'9728b8c3-ecbd-4af9-94b0-a1b26e6e5cc0': 'volapi nfs v2 support requires min platforms {"7.0":"' + minPlatform + '"}, but server has {"7.0":"20121210T203034Z"}',
+		'c98b17b0-d4f9-4a93-b4da-85ee6a065f8a': 'volapi nfs v2 support requires min platforms {"7.0":"' + minPlatform + '"}, but server has {"7.0":"20130129T122401Z"}'
+		/* END JSSTYLED */
+	};
+	var expectedServers = infraContainersVolapiNfsV2TestServers.slice(4);
+
+	var opts = {
+		vm: {
+			internal_metadata: {
+				'volapi-nfs-version': 2
+			}
+		},
+		img: {},
+		pkg: {},
+		defaults: {
+			filter_volapi_nfs_v2_min_platform: minPlatform
+		}
+	};
+
+	checkFilter(t, infraContainersVolapiNfsV2TestServers, opts,
+		expectedServers, expectedReasons);
+});
+
+
+test('filterFeatureMinPlatform with filter_volapi_nfs_v2_min_platform, ' +
+		'VM does not require volapi_nfs_v2',
+		function (t) {
+
+	var expectedReasons = {};
+	var expectedServers = infraContainersVolapiNfsV2TestServers;
+	var minPlatform = '20191201T000000Z';
+
+	var opts = {
+		vm: {},
+		img: {},
+		pkg: {},
+		defaults: {
+			filter_volapi_nfs_v2_min_platform: minPlatform
+		}
+	};
+
+	checkFilter(t, infraContainersVolapiNfsV2TestServers, opts,
 		expectedServers, expectedReasons);
 });
 
