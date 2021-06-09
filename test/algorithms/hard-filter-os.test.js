@@ -80,7 +80,7 @@ test('filterOS() one linux server', function (t) {
 			uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc'
 		},
 		{
-			sysinfo: {'System Type': 'linux'},
+			sysinfo: {'System Type': 'Linux'},
 			uuid: '6c467bc8-9d86-4a10-9dd0-f98938b942bd'
 		}
 	];
@@ -109,7 +109,7 @@ test('filterOS() one linux server (lxd image)', function (t) {
 			uuid: 'f667e0fa-33db-48da-a5d0-9fe837ce93fc'
 		},
 		{
-			sysinfo: {'System Type': 'linux'},
+			sysinfo: {'System Type': 'Linux'},
 			uuid: '6c467bc8-9d86-4a10-9dd0-f98938b942bd'
 		}
 	];

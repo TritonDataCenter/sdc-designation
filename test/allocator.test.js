@@ -805,6 +805,7 @@ test('load available algorithms', function (t) {
 		'hard-filter-min-disk',
 		'hard-filter-min-free-disk',
 		'hard-filter-min-ram',
+		'hard-filter-os',
 		'hard-filter-overprovision-ratios',
 		'hard-filter-owners-servers',
 		'hard-filter-platform-versions',
