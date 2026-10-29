@@ -360,13 +360,9 @@ function hvmTooBigReasons(requestedDisk) {
 }
 
 
-test('filterMinDisk() with 1.5 TiB flexible disk bhyve', function (t) {
-	// VMAPI deletes quota for bhyve and sets flexible_disk_size from
-	// pkg.quota. 1.5 TiB flex + 1 GiB root + image + fudge
-	var expectServers = HVM_SERVERS.slice(1);
-	var expectReasons = hvmTooBigReasons(1584278);
-
-	var opts = {
+// VMAPI deletes quota for bhyve and sets flexible_disk_size from pkg.quota.
+function flexBhyveOpts(defaults) {
+	return ({
 		vm: {
 			brand: 'bhyve',
 			flexible_disk_size: 1.5 * TiB / MiB,
@@ -384,10 +380,18 @@ test('filterMinDisk() with 1.5 TiB flexible disk bhyve', function (t) {
 			flexible_disk: true,
 			overprovision_disk: 1.0
 		},
-		defaults: {}
-	};
+		defaults: defaults
+	});
+}
 
-	checkFilter(t, HVM_SERVERS, opts, expectServers, expectReasons);
+
+test('filterMinDisk() with 1.5 TiB flexible disk bhyve', function (t) {
+	// 1.5 TiB flex + 1 GiB root + image + fudge
+	var expectServers = HVM_SERVERS.slice(1);
+	var expectReasons = hvmTooBigReasons(1584278);
+
+	checkFilter(t, HVM_SERVERS, flexBhyveOpts({}), expectServers,
+	    expectReasons);
 });
 
 
