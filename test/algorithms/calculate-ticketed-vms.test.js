@@ -6,6 +6,7 @@
 
 /*
  * Copyright (c) 2018, Joyent, Inc.
+ * Copyright 2026 Edgecast Cloud LLC.
  */
 
 var test = require('tape');
@@ -271,7 +272,8 @@ test('calculate ticketed VMs', function (t) {
 		server = servers[2];
 		t.deepEqual(server, {
 			uuid: '0c104a5b-1844-4205-821b-f0c989ccf6e7',
-			disk_kvm_zvol_volsize_bytes: 25 * GiB,
+			// image disk + data disk
+			disk_kvm_zvol_volsize_bytes: 35 * GiB,
 			disk_zone_quota_bytes: 10 * GiB, // for root kvm dataset
 			vms: {
 				'cbd5b6b3-861d-44d1-a2b7-65ea39ada45a': {
@@ -292,7 +294,7 @@ test('calculate ticketed VMs', function (t) {
 		t.deepEqual(server, {
 			uuid: '282bd1ca-1bf1-11e8-b756-afc3f7940864',
 			disk_kvm_zvol_volsize_bytes: 0,
-			disk_zone_quota_bytes: 35 * GiB, // for root and zvols
+			disk_zone_quota_bytes: 45 * GiB, // for root and zvols
 			sysinfo: { 'Bhyve Capable': true },
 			vms: {
 				'67adeb44-1bf1-11e8-9828-735e406bdf49': {
@@ -300,7 +302,7 @@ test('calculate ticketed VMs', function (t) {
 					owner_uuid: ownerUuid,
 					max_physical_memory: 3328,
 					cpu_cap: 600,
-					quota: 35,
+					quota: 45,
 					brand: 'bhyve',
 					zone_state: 'running',
 					state: 'running'
@@ -339,6 +341,152 @@ test('calculate ticketed VMs with no tickets', function (t) {
 		t.end();
 	});
 });
+
+var HVM_OWNER = '930896af-bf8c-48d4-885c-6573a94b1853';
+var HVM_IMAGE = 'd8d81aee-20cf-11e5-8503-2bc101a1d577';
+
+var HVM_SERVERS = [ {
+	uuid: '3b4157cd-8f2e-4d57-b7a0-bb43bea5455c',
+	disk_kvm_zvol_volsize_bytes: 0,
+	disk_zone_quota_bytes: 0
+}, {
+	uuid: '62ccf0e0-268f-4f82-838a-218e4798d6c2',
+	disk_kvm_zvol_volsize_bytes: 0,
+	disk_zone_quota_bytes: 0
+}, {
+	uuid: 'ad60a3e7-497c-4876-b074-79bf041b7086',
+	disk_kvm_zvol_volsize_bytes: 0,
+	disk_zone_quota_bytes: 0
+}, {
+	uuid: '7fbf5802-26b0-4e14-bbce-87e44c6aa926',
+	disk_kvm_zvol_volsize_bytes: 0,
+	disk_zone_quota_bytes: 0
+} ];
+
+function hvmTicket(serverUuid, vmUuid, extra) {
+	extra.owner_uuid = HVM_OWNER;
+	extra.max_physical_memory = 2048;
+	extra.cpu_cap = 100;
+
+	return ({
+		uuid: vmUuid,
+		server_uuid: serverUuid,
+		scope: 'vm',
+		id: vmUuid,
+		status: 'active',
+		action: 'provision',
+		extra: extra
+	});
+}
+
+function hvmVm(vmUuid, brand, quota) {
+	return ({
+		uuid: vmUuid,
+		owner_uuid: HVM_OWNER,
+		max_physical_memory: brand === 'bhyve' ? 3328 : 3072,
+		cpu_cap: 100,
+		quota: quota,
+		brand: brand,
+		zone_state: 'running',
+		state: 'running'
+	});
+}
+
+var HVM_TICKETS = [
+	// bhyve: VMAPI does not send quota, so vmadm's 1 GiB root applies
+	hvmTicket(HVM_SERVERS[0].uuid,
+	    'd1a5b6ba-c8ca-4b3c-90b8-1cbbe0a1e6b8', {
+		brand: 'bhyve',
+		image_size: 10240,
+		disks: [ {
+			image_uuid: HVM_IMAGE,
+			image_size: 10240
+		}, {
+			size: 25600
+		} ]
+	}),
+	// flexible disk bhyve: flexible_disk_size covers all disks
+	hvmTicket(HVM_SERVERS[1].uuid,
+	    'a8f0a9b2-5c9e-4a39-8b0c-1c0c3c6f3a11', {
+		brand: 'bhyve',
+		image_size: 10240,
+		flexible_disk_size: 1.5 * 1024 * 1024,
+		disks: [ {
+			image_uuid: HVM_IMAGE,
+			image_size: 10240
+		}, {
+			size: 1.5 * 1024 * 1024 - 10240
+		} ]
+	}),
+	// kvm: image disk without image_size uses the ticket's image_size
+	hvmTicket(HVM_SERVERS[2].uuid,
+	    '6c3f1c64-2b0d-4f0e-9a8a-8f6b2d7c9e15', {
+		brand: 'kvm',
+		quota: 10,
+		image_size: 10240,
+		disks: [ {
+			image_uuid: HVM_IMAGE
+		}, {
+			size: 20480
+		} ]
+	}),
+	// unresolved disk size: the server cannot be accounted for
+	hvmTicket(HVM_SERVERS[3].uuid,
+	    'f4b9e3a6-0d2c-4f1b-b5e8-7a6c5d4e3f21', {
+		brand: 'bhyve',
+		image_size: 10240,
+		disks: [ {
+			image_uuid: HVM_IMAGE,
+			image_size: 10240
+		}, {
+			size: 'remaining'
+		} ]
+	})
+];
+
+
+test('calculate ticketed HVM VMs', function (t) {
+	var opts = common.addCommonOpts({ tickets: HVM_TICKETS });
+	var givenServers = JSON.parse(JSON.stringify(HVM_SERVERS));
+
+	filter.run(givenServers, opts, function (err, servers, reasons) {
+		var vmUuid;
+
+		t.ifError(err);
+		t.deepEqual(reasons, {});
+		t.equal(servers.length, 3, 'unresolved server is removed');
+
+		vmUuid = HVM_TICKETS[0].id;
+		t.deepEqual(servers[0], {
+			uuid: HVM_SERVERS[0].uuid,
+			disk_kvm_zvol_volsize_bytes: 0,
+			disk_zone_quota_bytes: 36 * GiB, // 1 root + 35 zvols
+			vms: { 'd1a5b6ba-c8ca-4b3c-90b8-1cbbe0a1e6b8':
+			    hvmVm(vmUuid, 'bhyve', 36) }
+		});
+
+		vmUuid = HVM_TICKETS[1].id;
+		t.deepEqual(servers[1], {
+			uuid: HVM_SERVERS[1].uuid,
+			disk_kvm_zvol_volsize_bytes: 0,
+			disk_zone_quota_bytes: 1537 * GiB, // 1 root + 1.5 TiB
+			vms: { 'a8f0a9b2-5c9e-4a39-8b0c-1c0c3c6f3a11':
+			    hvmVm(vmUuid, 'bhyve', 1537) }
+		});
+
+		vmUuid = HVM_TICKETS[2].id;
+		t.deepEqual(servers[2], {
+			uuid: HVM_SERVERS[2].uuid,
+			disk_kvm_zvol_volsize_bytes: 30 * GiB,
+			disk_zone_quota_bytes: 10 * GiB,
+			vms: { '6c3f1c64-2b0d-4f0e-9a8a-8f6b2d7c9e15':
+			    hvmVm(vmUuid, 'kvm', 10) }
+		});
+
+		t.end();
+	});
+});
+
 
 test('name', function (t) {
 	t.equal(typeof (filter.name), 'string');
