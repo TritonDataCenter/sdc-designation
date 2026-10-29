@@ -11,6 +11,7 @@ markdown2extras: wiki-tables, code-friendly
 
 <!--
     Copyright 2019 Joyent, Inc.
+    Copyright 2026 Edgecast Cloud LLC.
 -->
 
 # sdc-designation (formerly known as DAPI)
@@ -318,6 +319,7 @@ Some default values can be altered upon allocator initialisation.
 | filter_flexible_disk_min_platform   | String  | -     | Minimum platform version allowed for VMs that have flexible disk sizing. |
 | filter_headnode          | Boolean  | true    | Whether to remove the headnode from consideration for a new VM.       |
 | filter_min_resources     | Boolean  | true    | Whether to filter out CNs which don't have enough space for a new VM. |
+| filter_min_disk          | Boolean  | true    | Whether hard-filter-min-disk, when it is in the allocation pipeline, filters out CNs which don't have enough spare disk for a new VM. Has no effect when filter_min_resources is false. |
 | filter_large_servers     | Boolean  | true    | Whether to remove large empty servers as much as possible.            |
 | filter_vm_limit          | Integer  | 224     | Maximum number of VMs allowed on one CN.                              |
 | overprovision_ratio_cpu  | Float    | 4.0     | How much CPU can be overprovisioned per CN.                           |

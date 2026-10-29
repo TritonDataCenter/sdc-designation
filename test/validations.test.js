@@ -6,6 +6,7 @@
 
 /*
  * Copyright 2019 Joyent, Inc.
+ * Copyright 2026 Edgecast Cloud LLC.
  */
 
 var test = require('tape');
@@ -194,6 +195,7 @@ var TICKET = {
 var DEFAULTS = {
 	filter_headnode: true,
 	filter_min_resources: true,
+	filter_min_disk: true,
 	filter_large_servers: true,
 	filter_capness: true,
 	filter_docker_min_platform: '20130308T102805Z',
@@ -604,6 +606,11 @@ test('validate defaults', function (t) {
 	badDefaults.filter_headnode = 'blah';
 	res = validations.validateDefaults(badDefaults);
 	t.ok(res);
+
+	badDefaults = deepCopy(DEFAULTS);
+	badDefaults.filter_min_disk = 'false';
+	res = validations.validateDefaults(badDefaults);
+	t.equal(res, 'Defaults filter_min_disk is not boolean');
 
 	t.end();
 });
