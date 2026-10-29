@@ -395,6 +395,39 @@ test('filterMinDisk() with 1.5 TiB flexible disk bhyve', function (t) {
 });
 
 
+test('filterMinDisk() with filter_min_disk false', function (t) {
+	var expectReasons = {
+		skip: 'Do not filter out based on unreserved disk'
+	};
+
+	checkFilter(t, HVM_SERVERS, flexBhyveOpts({ filter_min_disk: false }),
+	    HVM_SERVERS, expectReasons);
+});
+
+
+test('filterMinDisk() with filter_min_disk true', function (t) {
+	var expectServers = HVM_SERVERS.slice(1);
+	var expectReasons = hvmTooBigReasons(1584278);
+
+	checkFilter(t, HVM_SERVERS, flexBhyveOpts({ filter_min_disk: true }),
+	    expectServers, expectReasons);
+});
+
+
+test('filterMinDisk() with filter_min_resources false overriding ' +
+    'filter_min_disk true', function (t) {
+	var expectReasons = {
+		skip: 'Do not filter out based on unreserved disk'
+	};
+	var opts = flexBhyveOpts({
+		filter_min_resources: false,
+		filter_min_disk: true
+	});
+
+	checkFilter(t, HVM_SERVERS, opts, HVM_SERVERS, expectReasons);
+});
+
+
 test('filterMinDisk() with kvm sized from pkg', function (t) {
 	// No disks given: 50 GiB pkg + 10 GiB image + 10 GiB root + image +
 	// fudge
