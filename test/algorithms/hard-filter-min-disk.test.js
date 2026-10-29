@@ -490,6 +490,49 @@ test('filterMinDisk() with hvm and no pkg or quota', function (t) {
 });
 
 
+test('filterMinDisk() with bhyve quota 0', function (t) {
+	// vmadm clamps the bhyve root to 1 GiB: 10 GiB image + 50 GiB data +
+	// 1 GiB root + image + fudge
+	var servers = [ {
+		uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
+		unreserved_disk: 72853,
+		overprovision_ratios: { disk: 1.0 }
+	}, {
+		uuid: '69003dc2-1122-4851-8a2a-fccb609e4e84',
+		unreserved_disk: 72854,
+		overprovision_ratios: { disk: 1.0 }
+	} ];
+
+	var expectServers = servers.slice(1);
+	var expectReasons = {
+		'79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf':
+			'VM\'s calculated 72854 MiB disk is more than ' +
+			'server\'s spare 72853 MiB'
+	};
+
+	var opts = {
+		vm: {
+			brand: 'bhyve',
+			quota: 0,
+			disks: [ {
+				image_uuid: IMAGE_UUID,
+				image_size: 10 * 1024
+			}, {
+				size: 50 * 1024
+			} ]
+		},
+		img: HVM_IMG,
+		pkg: {
+			quota: 50 * 1024,
+			overprovision_disk: 1.0
+		},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+
 test('filterMinDisk() with hvm cdrom', function (t) {
 	// cdroms have no zvol: 10 GiB image + 1000 GiB data + 1 GiB root +
 	// image + fudge

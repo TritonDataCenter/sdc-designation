@@ -488,6 +488,76 @@ test('calculate ticketed HVM VMs', function (t) {
 });
 
 
+test('calculate ticketed bhyve VMs with a flexible disk limit or quota 0',
+    function (t) {
+	var servers = [ {
+		uuid: '3b4157cd-8f2e-4d57-b7a0-bb43bea5455c',
+		disk_kvm_zvol_volsize_bytes: 0,
+		disk_zone_quota_bytes: 0
+	}, {
+		uuid: '62ccf0e0-268f-4f82-838a-218e4798d6c2',
+		disk_kvm_zvol_volsize_bytes: 0,
+		disk_zone_quota_bytes: 0
+	} ];
+
+	var tickets = [
+		// vmadm reserves the whole flexible disk limit, not just the
+		// initial disks
+		hvmTicket(servers[0].uuid,
+		    '9e2f4c1a-7b3d-4e6f-8a5c-2d1b0e9f8a7c', {
+			brand: 'bhyve',
+			image_size: 10240,
+			flexible_disk_size: 100 * 1024,
+			disks: [ {
+				image_uuid: HVM_IMAGE,
+				image_size: 10240
+			}, {
+				size: 20 * 1024
+			} ]
+		}),
+		// vmadm clamps the bhyve root quota to at least 1 GiB
+		hvmTicket(servers[1].uuid,
+		    '5d8a3b2e-1c4f-4a7b-9e6d-3f2a1b0c9d8e', {
+			brand: 'bhyve',
+			quota: 0,
+			image_size: 10240,
+			disks: [ {
+				image_uuid: HVM_IMAGE,
+				image_size: 10240
+			}, {
+				size: 25600
+			} ]
+		})
+	];
+
+	var opts = common.addCommonOpts({ tickets: tickets });
+
+	filter.run(servers, opts, function (err, results, reasons) {
+		t.ifError(err);
+		t.deepEqual(reasons, {});
+
+		t.deepEqual(results[0], {
+			uuid: servers[0].uuid,
+			disk_kvm_zvol_volsize_bytes: 0,
+			disk_zone_quota_bytes: (1 + 100) * GiB, // root + flex
+			vms: { '9e2f4c1a-7b3d-4e6f-8a5c-2d1b0e9f8a7c':
+			    hvmVm(tickets[0].id, 'bhyve', 1 + 100) }
+		});
+
+		t.deepEqual(results[1], {
+			uuid: servers[1].uuid,
+			disk_kvm_zvol_volsize_bytes: 0,
+			// root + zvols
+			disk_zone_quota_bytes: (1 + 10 + 25) * GiB,
+			vms: { '5d8a3b2e-1c4f-4a7b-9e6d-3f2a1b0c9d8e':
+			    hvmVm(tickets[1].id, 'bhyve', 1 + 10 + 25) }
+		});
+
+		t.end();
+	});
+});
+
+
 test('name', function (t) {
 	t.equal(typeof (filter.name), 'string');
 	t.end();
