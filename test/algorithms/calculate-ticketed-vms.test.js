@@ -361,6 +361,10 @@ var HVM_SERVERS = [ {
 	uuid: '7fbf5802-26b0-4e14-bbce-87e44c6aa926',
 	disk_kvm_zvol_volsize_bytes: 0,
 	disk_zone_quota_bytes: 0
+}, {
+	uuid: 'c2d4e6f8-0a1b-4c3d-8e5f-7a9b1c3d5e7f',
+	disk_kvm_zvol_volsize_bytes: 0,
+	disk_zone_quota_bytes: 0
 } ];
 
 function hvmTicket(serverUuid, vmUuid, extra) {
@@ -430,8 +434,22 @@ var HVM_TICKETS = [
 			size: 20480
 		} ]
 	}),
-	// unresolved disk size: the server cannot be accounted for
+	// kvm: vmadm only applies flexible_disk_size to bhyve
 	hvmTicket(HVM_SERVERS[3].uuid,
+	    'b7e2d9c4-3a1f-4c8e-9d6b-5e4f3a2b1c0d', {
+		brand: 'kvm',
+		quota: 10,
+		image_size: 10240,
+		flexible_disk_size: 1024,
+		disks: [ {
+			image_uuid: HVM_IMAGE,
+			image_size: 10240
+		}, {
+			size: 80 * 1024
+		} ]
+	}),
+	// unresolved disk size: the server cannot be accounted for
+	hvmTicket(HVM_SERVERS[4].uuid,
 	    'f4b9e3a6-0d2c-4f1b-b5e8-7a6c5d4e3f21', {
 		brand: 'bhyve',
 		image_size: 10240,
@@ -454,7 +472,7 @@ test('calculate ticketed HVM VMs', function (t) {
 
 		t.ifError(err);
 		t.deepEqual(reasons, {});
-		t.equal(servers.length, 3, 'unresolved server is removed');
+		t.equal(servers.length, 4, 'unresolved server is removed');
 
 		vmUuid = HVM_TICKETS[0].id;
 		t.deepEqual(servers[0], {
@@ -480,6 +498,15 @@ test('calculate ticketed HVM VMs', function (t) {
 			disk_kvm_zvol_volsize_bytes: 30 * GiB,
 			disk_zone_quota_bytes: 10 * GiB,
 			vms: { '6c3f1c64-2b0d-4f0e-9a8a-8f6b2d7c9e15':
+			    hvmVm(vmUuid, 'kvm', 10) }
+		});
+
+		vmUuid = HVM_TICKETS[3].id;
+		t.deepEqual(servers[3], {
+			uuid: HVM_SERVERS[3].uuid,
+			disk_kvm_zvol_volsize_bytes: 90 * GiB, // not 1 GiB
+			disk_zone_quota_bytes: 10 * GiB,
+			vms: { 'b7e2d9c4-3a1f-4c8e-9d6b-5e4f3a2b1c0d':
 			    hvmVm(vmUuid, 'kvm', 10) }
 		});
 
