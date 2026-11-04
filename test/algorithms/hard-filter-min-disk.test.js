@@ -462,6 +462,50 @@ test('filterMinDisk() with kvm sized from pkg', function (t) {
 });
 
 
+test('filterMinDisk() with kvm ignores flexible_disk_size', function (t) {
+	// vmadm only applies flexible_disk_size to bhyve, so kvm is sized from
+	// its disks: 10 GiB image + 80 GiB data + 10 GiB root + image + fudge
+	var servers = [ {
+		uuid: '79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf',
+		unreserved_disk: 112789,
+		overprovision_ratios: { disk: 1.0 }
+	}, {
+		uuid: '69003dc2-1122-4851-8a2a-fccb609e4e84',
+		unreserved_disk: 112790,
+		overprovision_ratios: { disk: 1.0 }
+	} ];
+
+	var expectServers = servers.slice(1);
+	var expectReasons = {
+		'79cc8d8a-1754-46d7-bd2c-ab5fe7f8c7bf':
+			'VM\'s calculated 112790 MiB disk is more than ' +
+			'server\'s spare 112789 MiB'
+	};
+
+	var opts = {
+		vm: {
+			brand: 'kvm',
+			quota: 10,
+			flexible_disk_size: 1024,
+			disks: [ {
+				image_uuid: IMAGE_UUID,
+				image_size: 10 * 1024
+			}, {
+				size: 80 * 1024
+			} ]
+		},
+		img: HVM_IMG,
+		pkg: {
+			quota: 50 * 1024,
+			overprovision_disk: 1.0
+		},
+		defaults: {}
+	};
+
+	checkFilter(t, servers, opts, expectServers, expectReasons);
+});
+
+
 test('filterMinDisk() with bhyve boot disk larger than image', function (t) {
 	// 80 GiB boot + 50 GiB data + 1 GiB root + image + fudge
 	var opts = {
