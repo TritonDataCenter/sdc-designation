@@ -585,6 +585,44 @@ test('calculate ticketed bhyve VMs with a flexible disk limit or quota 0',
 });
 
 
+test('calculate ticketed HVM VMs with a non-numeric image_size', function (t) {
+	// Ticket metadata is not validated. A size that is not a number
+	// cannot be accounted for, which removes the server rather than
+	// throwing out of the allocation.
+	var servers = [ {
+		uuid: '3b4157cd-8f2e-4d57-b7a0-bb43bea5455c',
+		disk_kvm_zvol_volsize_bytes: 0,
+		disk_zone_quota_bytes: 0
+	}, {
+		uuid: '62ccf0e0-268f-4f82-838a-218e4798d6c2',
+		disk_kvm_zvol_volsize_bytes: 0,
+		disk_zone_quota_bytes: 0
+	} ];
+
+	var tickets = [
+		hvmTicket(servers[0].uuid,
+		    '2e7c9a1b-4d3f-4b8e-a6c5-9f0d1e2b3a4c', {
+			brand: 'bhyve',
+			image_size: '10240',
+			disks: [ {
+				image_uuid: HVM_IMAGE
+			}, {
+				size: 25600
+			} ]
+		})
+	];
+
+	var opts = common.addCommonOpts({ tickets: tickets });
+
+	filter.run(servers, opts, function (err, results, reasons) {
+		t.ifError(err);
+		t.deepEqual(reasons, {});
+		t.deepEqual(results, [ servers[1] ]);
+		t.end();
+	});
+});
+
+
 test('name', function (t) {
 	t.equal(typeof (filter.name), 'string');
 	t.end();
